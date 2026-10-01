@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610010530">
+<meta name="build" content="202610011100">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -195,6 +195,24 @@ body.ttl #cht{display:none}
 #onl i,#onl2 i{display:inline-block;width:8px;height:8px;margin-right:6px;border-radius:50%;background:#5dff8a;box-shadow:0 0 8px #5dff8a;animation:onp 2.2s ease-in-out infinite}@keyframes onp{50%{opacity:.35}}
 #onl b,#onl2 b{color:#fff;font-weight:400}#onl2{margin-top:10px;color:#9fe8c0;font-size:16px;letter-spacing:.04em;min-height:20px}
 #nkm .cmp{margin:0 0 14px;line-height:1.75;font-size:17px;color:#e8f1ee}#nkm .cmp small{display:inline;color:#9fb5b0;font-size:14px}
+
+/* 랭킹 */
+#rk{z-index:22;align-items:center;justify-content:center;padding:12px;background:#02060acc;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#rk .pn{width:min(460px,100%);padding:16px 16px 18px;display:flex;flex-direction:column}
+#rk .tb{display:flex;gap:6px;margin:6px 0 8px}
+#rk .tb button{flex:1;width:auto;height:38px;border-radius:6px;border:1px solid #6b5228;background:linear-gradient(#1c262d,#0a1013);color:#f0d9a0;font:17px 'Do Hyeon',sans-serif;cursor:pointer}
+#rk .tb button.on{border-color:#c99a4a;background:linear-gradient(#3a2c12,#170f04);color:#ffe7a8}
+#rk .tb button:focus-visible,#rk .r:focus-visible{outline:2px solid #ffd27a;outline-offset:-2px}
+#rk .ls{min-height:120px;max-height:min(52vh,440px);overflow:auto;border-top:1px solid #3a2c12;touch-action:pan-y;overscroll-behavior:contain}
+#rk .r{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;box-sizing:border-box;height:auto;min-height:46px;padding:4px 10px 4px 4px;border:0;border-bottom:1px solid #ffffff12;border-radius:0;background:none;color:#e8f1ee;font:17px 'Do Hyeon',sans-serif;text-align:left;cursor:pointer}
+#rk .r:hover{background:#ffffff0c}#rk .r:active{background:#ffffff18;color:#e8f1ee}
+#rk .no{text-align:center;color:#9fb5b0;font-size:16px}#rk .no.t1{color:#ffd98a;font-size:22px}#rk .no.t2{color:#d5dde0;font-size:20px}#rk .no.t3{color:#d89a68;font-size:19px}
+#rk .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#rk .nm small{display:block;color:#9fb5b0;font-size:12px}
+#rk .v{font-weight:400;color:#ffe7a8;font-variant-numeric:tabular-nums}
+#rk .r.me{background:#7dffe014;box-shadow:inset 3px 0 #7dffe0}#rk .r.me .nm{color:#7dffe0}
+#rk .em{padding:34px 10px;text-align:center;color:#9fb5b0;line-height:1.6}
+#rk .mine{margin-top:8px;padding:8px 10px;border:1px solid #7dffe055;border-radius:6px;background:#7dffe00d;color:#7dffe0;font-size:15px;text-align:center}
+#rk .ft{margin-top:8px;color:#9fb5b0;font-size:12px;text-align:center;line-height:1.5}
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="hud"><div class="orb hp" id="ohp"><i></i><b></b></div><div class="xp"><span id="lv">Lv.1</span><span id="cp"></span><div class="xb"><i id="xpf"></i></div><span id="xpt">0%</span></div><div class="hb"><div class="grp mv"><button class="sl" data-k="l"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="sl" data-k="r"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button></div><div class="grp"><button class="sl" data-k="a"><svg viewBox="0 0 24 24"><path d="M5 19 19 5M14 5h5v5M8 16l-3 3"/></svg><span>베기</span><kbd>Z</kbd></button><button class="sl" data-k="s"><svg viewBox="0 0 24 24"><path d="M6 5Q19 12 6 19 12 12 6 5z"/></svg><span>검기</span><kbd>X</kbd></button><button class="sl" data-k="u"><svg viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg><span>폭발</span><kbd>C</kbd></button><button class="sl" data-k="j"><svg viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6"/></svg><span>점프</span><kbd>Spc</kbd></button></div></div><div class="grp mn"><button class="sl sm on" data-k="auto"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2-5M19 4v4h-4"/></svg><span>자동</span><kbd>Q</kbd></button><button class="sl sm on" data-k="mute"><svg viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4zM16 9q3 3 0 6"/></svg><span>소리</span><kbd>M</kbd></button><button class="sl sm" data-k="chr"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg><span>장비</span><kbd>I</kbd></button><button class="sl sm" data-k="shop"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5zM9 8a3 3 0 0 1 6 0"/></svg><span>단련</span><kbd>B</kbd></button><button class="sl sm" data-k="esc"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span><kbd>Esc</kbd></button></div><div class="orb mp" id="omp"><i></i><b></b></div><div id="sks"><button class="sl" data-k="k1"></button><button class="sl" data-k="k2"></button><button class="sl" data-k="k3"></button></div></div><button id="bossb" data-k="boss" style="display:none">보스 재도전 <small>R</small></button>
@@ -877,12 +895,12 @@ function buildTitle(){
   <div class="mb">${gated()?gateBtn():has
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
-  <button data-a="opt">설정</button>${gated()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>
+  <button data-a="opt">설정</button>${AF.user&&sb?'<button data-a="rank">랭킹</button>':''}${gated()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
   onShow();
 }
 pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><div class="mb">
-  <button class="pri" data-a="resume">계속하기</button><button data-a="opt">설정</button>${fsBtn()}<button data-a="title">타이틀로</button></div></div>`;
+  <button class="pri" data-a="resume">계속하기</button><button data-a="rank">랭킹</button><button data-a="opt">설정</button>${fsBtn()}<button data-a="title">타이틀로</button></div></div>`;
 
 const sl=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><input type="range" min="0" max="100" step="5" id="${id}" aria-label="${label}"><b id="${id}v"></b></div>`;
 const tg=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><button class="tg" id="${id}" data-a="${id}"></button></div>`;
@@ -894,7 +912,7 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
   <h3 class="kh">조작</h3>
   <div class="keys"><kbd>← →</kbd><span>이동</span><kbd>Space</kbd><span>점프</span><kbd>Z</kbd><span>베기</span><kbd>X</kbd><span>검기</span><kbd>C</kbd><span>폭발</span><kbd>Q</kbd><span>자동/수동</span><kbd>I</kbd><span>장비</span><kbd>B</kbd><span>단련</span><kbd>M</kbd><span>소리</span><kbd>Enter</kbd><span>채팅</span><kbd>F</kbd><span>전체화면</span><kbd>Esc</kbd><span>메뉴</span></div>
   <div class="mb bk"><button class="pri" data-a="back">돌아가기</button></div></div>`;
-document.body.append(tm,pm,om);
+const rk=$('div','ov');rk.id='rk';document.body.append(tm,pm,om,rk);
 
 /* ---- 설정 UI 동기화 ---- */
 const q=id=>om.querySelector('#'+id);
@@ -919,7 +937,7 @@ document.addEventListener('fullscreenchange',sync);document.addEventListener('we
 const items=r=>[...r.querySelectorAll('button:not([disabled]),input[type=range]')].filter(x=>x.getClientRects().length);
 const focusFirst=r=>{const l=items(r);l.length&&l[0].focus({preventScroll:true})};
 const move=(r,d)=>{const l=items(r);if(!l.length)return;let i=l.indexOf(document.activeElement);i=i<0?(d>0?0:l.length-1):(i+d+l.length)%l.length;l[i].focus({preventScroll:true})};
-const top=()=>document.body.classList.contains('nk')?null:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
+const top=()=>document.body.classList.contains('nk')?null:rk.classList.contains('on')?rk:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
 
 let opener=null,confirmT=0;
 function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
@@ -941,6 +959,7 @@ function act(a,btn){
     clearTimeout(confirmT);confirmT=setTimeout(()=>{if(btn.dataset.a=='new2'){btn.dataset.a='new';btn.classList.remove('dg');btn.textContent='새 게임'}},4000);return}
   if(a=='new2'){AF.resetting=true;try{localStorage.removeItem('ashen1')}catch(e){}cloudDel().then(()=>location.reload(),()=>{alert('서버에 저장된 데이터를 지우지 못했어요. 잠시 후 다시 시도해 주세요.');AF.resetting=false});return}
   if(a=='nick'){nkOpen(0);return}
+  if(a=='rank'){openRank(btn);return}if(a=='rk-x'){closeRank();return}
   if(a=='opt'){openOpt(btn);return}
   if(a=='back'){closeOpt();return}
   if(a=='fs'||a=='o-fs'){AF.toggleFS();return}
@@ -952,7 +971,44 @@ function act(a,btn){
   if(a=='o-pz'){AF.OPT.pz=AF.OPT.pz?0:1;if(pm.classList.contains('on')){AF.pz=!!AF.OPT.pz;pm.querySelector('#pht').textContent=AF.OPT.pz?'일시정지':'메뉴'}AF.saveOpt();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
 }
-[tm,pm,om].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
+[tm,pm,om,rk].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
+/* ===== 랭킹 (최고 스테이지 기준) — 실시간 연결·주기 요청 없이, 창을 열 때 get_ranking 1번만 불러와요 (2분 캐시).
+   · 순위 값은 서버가 저장 때 검증한 최고 스테이지예요 (ranking.sql) — 기기에서 올린 값 그대로가 아니에요
+   · 같은 스테이지면 먼저 도달한 사람이 위 · 내 정보 공개를 끈 사람은 빠져요 ===== */
+let RKC=null,rkTok=0,rkOpener=null,rkOff=0,rkErr=0;
+function rkRender(msg){
+  if(!rk.classList.contains('on'))return;
+  const me=AF.user&&AF.user.id;let ls='',mine='',ft='';
+  if(msg)ls=`<div class="em">${msg}</div>`;
+  else if(RKC){
+    const rows=RKC.d.rows,my=RKC.d.me;
+    ls=rows.length?rows.map((x,i)=>`<button class="r${x.u===me?' me':''}" data-u="${esc(x.u)}" data-n="${esc(x.n)}"><span class="no${i<3?' t'+(i+1):''}">${i+1}</span><span class="nm">${esc(x.n)}<small>Lv.${x.l|0} · 전투력 ${(+x.c||0).toLocaleString('ko-KR')}</small></span><b class="v">STAGE ${(x.s|0).toLocaleString('ko-KR')}</b></button>`).join(''):'<div class="em">아직 순위에 오른 모험가가 없어요.<br>플레이하면 저장될 때 반영돼요.</div>';
+    mine=!AF.pub?'<div class="mine" style="color:#ffcf4a;border-color:#ffcf4a55;background:#ffcf4a0d">내 정보 공개가 꺼져 있어서 랭킹에 표시되지 않아요<br><small>설정 → 공개에서 켤 수 있어요</small></div>'
+      :my&&my.r?`<div class="mine">내 순위 <b style="font-weight:400">${(my.r|0).toLocaleString('ko-KR')}위</b> · 최고 STAGE ${(my.s|0).toLocaleString('ko-KR')}</div>`
+      :'<div class="mine">아직 내 기록이 집계되지 않았어요<br><small>플레이하면 저장될 때 반영돼요</small></div>';
+    const d=new Date((+RKC.d.t||0)*1000);
+    ft=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} 집계 · 약 5분마다 갱신<br>최고 스테이지 기준 · 같으면 먼저 도달한 순 · 이름을 누르면 정보를 볼 수 있어요`}
+  rk.innerHTML=`<div class="pn"><h2>랭킹</h2><div class="st">최고 스테이지 상위 50명</div><div class="ls">${ls}</div>${mine}<div class="ft">${ft}</div><div class="mb bk"><button class="pri" data-a="rk-x">닫기</button></div></div>`;
+  const f=rk.querySelector('.r.me')||rk.querySelector('.r');if(f&&f.scrollIntoView)f.scrollIntoView({block:'nearest'});const bt=rk.querySelector('[data-a=rk-x]');if(bt)bt.focus({preventScroll:true})}
+async function rkLoad(){
+  const tk=++rkTok;
+  if(!sb||!AF.user){rkRender('로그인하면 볼 수 있어요.');return}
+  if(rkOff){rkRender('랭킹을 준비 중이에요.');return}
+  if(RKC&&Date.now()-RKC.at<120000){rkRender();return}
+  if(Date.now()-rkErr<15000){rkRender('불러오지 못했어요.<br>잠시 후 다시 열어 주세요.');return}
+  rkRender(RKC?null:'불러오는 중…');
+  try{const r=await sb.rpc('get_ranking');if(r.error)throw r.error;
+    if(!r.data||!Array.isArray(r.data.rows))throw new Error('bad ranking data');
+    RKC={at:Date.now(),d:r.data};if(tk===rkTok)rkRender()}
+  catch(e){const m=String((e&&e.message)||'');
+    if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m))){rkOff=1;console.warn('랭킹: get_ranking 함수가 없어요 (ranking.sql 실행 필요)')}
+    else rkErr=Date.now();
+    if(tk===rkTok)rkRender(rkOff?'랭킹을 준비 중이에요.':'불러오지 못했어요.<br>잠시 후 다시 열어 주세요.')}}
+function openRank(from){rkOpener=from||null;rk.classList.add('on');rkLoad()}
+function closeRank(){rkTok++;rk.classList.remove('on');rk.innerHTML='';const b=rkOpener&&rkOpener.isConnected?rkOpener:null;if(b)b.focus({preventScroll:true});else{const r=[tm,pm].find(x=>x.classList.contains('on'));r&&focusFirst(r)}}
+rk.addEventListener('click',e=>{const b=e.target.closest('button.r');if(b&&AF.showProfile)AF.showProfile(b.dataset.u,b.dataset.n)});
+rk.addEventListener('focusin',e=>{const t=e.target;if(t.classList&&t.classList.contains('r'))t.scrollIntoView({block:'nearest'})});
+
 
 /* ---- 키보드: 메뉴가 열려 있으면 게임 입력을 막고 메뉴 조작으로 처리 ---- */
 addEventListener('keydown',e=>{
@@ -960,7 +1016,7 @@ addEventListener('keydown',e=>{
   e.stopPropagation();
   const k=e.code,t=e.target;
   if(k=='KeyF'){e.preventDefault();if(!e.repeat)AF.toggleFS();return}
-  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===om)closeOpt();else if(on===pm)AF.pauseOff();return}
+  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===pm)AF.pauseOff();return}
   if(k=='ArrowDown'||k=='ArrowUp'){e.preventDefault();move(on,k=='ArrowDown'?1:-1);return}
   if(k=='Tab'){e.preventDefault();move(on,e.shiftKey?-1:1);return}
   if(t&&t.type=='range'&&(k=='ArrowLeft'||k=='ArrowRight'))return;
