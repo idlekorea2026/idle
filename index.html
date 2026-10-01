@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610010407">
+<meta name="build" content="202610010530">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -213,7 +213,7 @@ body.ttl #cht{display:none}
 (function(){
 const AF=window.AF={};
 
-let W=960,PXR=1;const cv=document.getElementById('c'),g=cv.getContext('2d'),H=540,GY=450,WORLD=4200,M=Math,R=M.random,rn=(a,b)=>a+R()*(b-a);
+let W=960,PXR=1;const cv=document.getElementById('c');let g=cv.getContext('2d');const H=540,GY=450,WORLD=4200,M=Math,R=M.random,rn=(a,b)=>a+R()*(b-a);
 cv.width=W;cv.height=H;
 const K={},KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'j',w:'j',' ':'j',z:'a',j:'a',x:'s',k:'s',q:'auto',b:'shop',c:'u',m:'mute',i:'chr',Escape:'esc'};
 const P={x:200,y:GY,vx:0,vy:0,hp:120,mp:60,lv:1,xp:0,f:1,g:1,j:0,at:0,cd:0,sc:0,combo:0,ct:0,inv:0,jq:0};
@@ -352,7 +352,7 @@ addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const k=
 addEventListener('keyup',e=>{const k=KC[e.code];if(k)K[k]=0});addEventListener('blur',()=>{for(const k in K)K[k]=0});
 document.querySelectorAll('button').forEach(b=>{const k=b.dataset.k;b.addEventListener('pointerdown',e=>{e.preventDefault();press(k)});['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,()=>K[k]=0))});
 cv.addEventListener('pointerdown',()=>{if(st>1)go()});
-let PL=[],auto=true,stage=1,sm=1,xm=1,dm=1,up=0,hu=0,clr=0,bn=0,dtm=0,best=1,farm=false,uc=0,og=0,mute=false,RG=[],ab=true,atr=false,frm=false,frt=0,fal=-1,fft=0,abt=0,LT=[],EQ={w:null,a:null,h:null,r:null,n:null,f:null},shopOpen=false,AC=null;
+let PUB=true,PL=[],auto=true,stage=1,sm=1,xm=1,dm=1,up=0,hu=0,clr=0,bn=0,dtm=0,best=1,farm=false,uc=0,og=0,mute=false,RG=[],ab=true,atr=false,frm=false,frt=0,fal=-1,fft=0,abt=0,LT=[],EQ={w:null,a:null,h:null,r:null,n:null,f:null},shopOpen=false,AC=null;
 const TH=[
 {n:'잿빛 숲',sky:['#08141f','#15343a','#26483f'],moon:'#cfeee6',r1:'#10262e',r2:'#0d1f25',t1:'#0a1a1d',t2:'#071316',gr:'#24352c',g1:'#4b8f63',g2:'#78c48a',gl:'#ff9a3a',sl:'#4fb58f',bs:'#5b5548',b:'폐허의 수호자',mons:['s','b','d'],mn:['이끼 슬라임','숲 박쥐','분열 이끼덩이']},
 {n:'보랏빛 늪',sky:['#120a24','#2a1a45','#3a2a5a'],moon:'#e6cfff',r1:'#1e1338',r2:'#170e2c',t1:'#120a26',t2:'#0c061a',gr:'#2e2440',g1:'#6a4fa0',g2:'#9a7ad8',gl:'#c07aff',sl:'#a06bd8',bs:'#4a3d66',b:'늪의 군주',mons:['s','r','x','h'],mn:['독개구리','늪 주술사','독기 포자','늪 치유사']},
@@ -461,8 +461,8 @@ const better=(it,c)=>!c||scr(it)>scr(c);
 function pick(it){const c=EQ[it.sl],sv=x=>M.round(x.v*SL[x.sl][4]*(1+sq(x)));sfx(700,.1,'triangle',.06,1.6);
 if(better(it,c)){EQ[it.sl]=it;if(c)gold+=sv(c);TX.push({x:P.x,y:P.y-100,t:'착용: '+it.n,l:1.3,c:icol(it)})}else{const m=sv(it);gold+=m;TX.push({x:P.x,y:P.y-100,t:'판매 +'+m,l:.9,c:'#ffcf4a'})}save()}
 let resetting=false;
-function save(){if(resetting)return;try{localStorage.setItem('ashen1',JSON.stringify({nk:NK,stage,best,farm,mute,ab,atr,frm,vol:VOL,ts:(st==0&&ot?lts:tnow()),lv:P.lv,xp:P.xp,gold,up,hu,EQ,en:EN,pt:PT,ps:PS,pu:PU,ir:IR,fr:frs,sk:SKS,tv:5}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem('ashen1'));if(d){NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null})}P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;EQ=Object.assign(EQ,d.EQ);if(!(d.tv>=3)){const mp=d.tv==2?[0,1,2,3,4,4]:[0,2,3,4,4];for(const k in EQ){const x=EQ[k];if(x&&mp[x.ri]!=null)x.ri=mp[x.ri]}}if(d.en)Object.assign(EN,d.en);if(!(d.tv>=4))for(const k in EQ){const x=EQ[k];if(x&&x.e){EN[k]=M.max(EN[k]|0,x.e|0);delete x.e}}if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});else{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);offCalc();P.hp=mhp();P.mp=mmp()}}catch(e){}}
+function save(){if(resetting)return;try{localStorage.setItem('ashen1',JSON.stringify({nk:NK,stage,best,farm,mute,ab,atr,frm,vol:VOL,ts:(st==0&&ot?lts:tnow()),lv:P.lv,xp:P.xp,gold,up,hu,EQ,en:EN,pt:PT,ps:PS,pu:PU,ir:IR,fr:frs,sk:SKS,pv:mkPv(),tv:5}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('ashen1'));if(d){NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null})}PUB=!(d.pv&&d.pv.sh===0);P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;EQ=Object.assign(EQ,d.EQ);if(!(d.tv>=3)){const mp=d.tv==2?[0,1,2,3,4,4]:[0,2,3,4,4];for(const k in EQ){const x=EQ[k];if(x&&mp[x.ri]!=null)x.ri=mp[x.ri]}}if(d.en)Object.assign(EN,d.en);if(!(d.tv>=4))for(const k in EQ){const x=EQ[k];if(x&&x.e){EN[k]=M.max(EN[k]|0,x.e|0);delete x.e}}if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});else{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);offCalc();P.hp=mhp();P.mp=mmp()}}catch(e){}}
 function offCalc(){if(ot<60)return;const w=IR.w;
 if(!(w>=OFF.minw)){og=M.round(ot*(.2+stage*.05));return}
 const t=ot*OFF.eff,cg=M.round(IR.g/w*t),xp=M.round(IR.x/w*t*OFF.xe),cnt=x=>M.floor(x)+(R()<x%1?1:0),items=[],pw=3+stage*4+P.lv*1.2;
@@ -718,6 +718,40 @@ o(OH,P.hp,mh);o(OM,P.mp,mm);LV.textContent='Lv.'+P.lv;CPE.textContent='전투력
 BU.style.setProperty('--cd',cu);BS.style.setProperty('--cd',cs);BU.classList.toggle('nomp',P.mp<40);BS.classList.toggle('nomp',P.mp<20)}
 let chrOpen=false,chrSel='w',chrMsg='',chrPS=0;
 const CIC={w:'<path d="M19 5 9 15M6.5 12.5l5 5M9 15 5 19"/>',h:'<path d="M5 15a7 7 0 0 1 14 0v3H5zM9 18v2M15 18v2"/>',a:'<path d="M8 4 4 7l2.5 3.5L8 10v10h8V10l1.5.5L20 7l-4-3q-4 3-8 0z"/>',r:'<circle cx="12" cy="15" r="5.5"/><path d="M9.5 6h5l1.2 2.5H8.3z"/>',n:'<path d="M6 4c0 8 2.5 11 6 11s6-3 6-11"/><circle cx="12" cy="18.5" r="2.3"/>',f:'<path d="M8 4h6v8l5 3v4H6z"/><path d="M8 8h6"/>'};
+/* ===== 상대 정보창: 채팅 닉네임을 누르면 레벨·전투력·장비와 캐릭터 모습을 보여줘요 (요청은 누를 때 1번) =====
+   공개용 요약은 저장 데이터의 pv({cp,sh})와 lv·stage·eq·en 에서 서버 함수 get_profile 이 뽑아 줘요. 골드·단련 같은 수치는 보내지 않아요. */
+function mkPv(){try{return{cp:cp(),sh:PUB?1:0}}catch(e){return null}}
+const PCL=(x,sl)=>{if(!x||typeof x!='object')return null;const r={sl,ri:M.max(0,M.min(TIERS.length-1,x.ri|0)),v:+x.v||0,k:M.max(0,M.min(sl=='w'?3:2,x.k|0)),n:String(x.n||'').slice(0,24)};if(x.u!=null&&UQ[x.u|0])r.u=x.u|0;r.o=(Array.isArray(x.o)?x.o.slice(0,6):[]).filter(q=>Array.isArray(q)&&OP[q[0]]).map(q=>[q[0],+q[1]||0]);return r};
+function drawDoll(c2,eq){const g0=g,e0=EQ;g=c2.getContext('2d');EQ=eq;try{const w=c2.width,h=c2.height,s=h/150;g.clearRect(0,0,w,h);g.save();g.translate(w/2,h-12*s);g.scale(s,s);
+g.fillStyle='#0008';g.beginPath();g.ellipse(0,0,24,6,0,0,7);g.fill();
+g.fillStyle='#2a3a52';g.fillRect(-9,-24,8,24);g.fillRect(2,-24,8,24);
+g.fillStyle='#c2452d';g.beginPath();g.moveTo(-8,-62);g.quadraticCurveTo(-30,-40+M.sin(T*3)*2,-20,-14);g.lineTo(-6,-26);g.fill();
+dA();g.fillStyle='#f0cfa8';g.fillRect(-9,-86,20,20);dH();g.fillStyle='#222';g.fillRect(5,-78,3,4);
+g.save();g.translate(10,-48);g.rotate(-1);dW();g.restore();g.restore()}catch(e){}finally{g=g0;EQ=e0}}
+const pfx=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+(function(){const st=document.createElement('style');st.textContent=`#pf{display:none;position:fixed;inset:0;z-index:30;background:#02060acc;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px calc(env(safe-area-inset-bottom,0px) + 10px);touch-action:pan-y;font-family:'Do Hyeon',sans-serif;color:#e8f1ee}#pf.on{display:flex}
+#pf .pc{width:min(440px,100%);max-height:100%;overflow:auto;border:2px solid #8a6a30;border-radius:12px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000}
+#pf .pt{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 16px;border-bottom:1px solid #3a2c12;background:linear-gradient(#2a2110,#120d05)}#pf .pt h2{margin:0;flex:1;font-weight:400;font-size:20px;color:#ffd98a}#pf .pt small{color:#9fb5b0}
+#pf .px{width:36px;height:36px;font-size:16px}#pf .pb{padding:12px 14px;display:flex;flex-direction:column;gap:10px}#pf canvas{align-self:center;width:220px;height:260px;border:1px solid #3a2c12;border-radius:10px;background:radial-gradient(circle at 50% 55%,#24333d,#080d10)}
+#pf .ps{display:flex;justify-content:space-around;font-size:16px}#pf .ps span{color:#9fb5b0}#pf .ps b{font-weight:400;color:#ffe7a8;margin-left:4px}
+#pf .pi{padding:6px 0;border-top:1px solid #ffffff12;font-size:15px}#pf .pi .l{display:flex;justify-content:space-between;gap:8px}#pf .pi small{display:block;color:#9fb5b0}#pf .pi.em{opacity:.45}#pf .pn{text-align:center;color:#9fb5b0;padding:24px 8px;line-height:1.6}`;document.head.appendChild(st)})();
+const PFC=new Map();let pfEl=null,pfRaf=0,pfTok=0;
+function pfClose(){pfTok++;cancelAnimationFrame(pfRaf);if(pfEl)pfEl.classList.remove('on')}
+function pfShow(title,body,sub){if(!pfEl){pfEl=document.createElement('div');pfEl.id='pf';document.body.appendChild(pfEl);pfEl.addEventListener('click',e=>{if(e.target===pfEl||e.target.closest('.px'))pfClose()});['keydown','keyup'].forEach(t=>pfEl.addEventListener(t,e=>e.stopPropagation()));addEventListener('keydown',e=>{if(e.key==='Escape'&&pfEl.classList.contains('on')){e.preventDefault();e.stopPropagation();pfClose()}},true)}
+cancelAnimationFrame(pfRaf);pfEl.innerHTML=`<div class="pc"><div class="pt"><h2>${pfx(title)}</h2>${sub?`<small>${pfx(sub)}</small>`:''}<button class="px" aria-label="닫기">✕</button></div><div class="pb">${body}</div></div>`;pfEl.classList.add('on')}
+function pfView(d,name,me){const nm=String(d.nk||name||'모험가').slice(0,12),eq={},en=d.en&&typeof d.en=='object'?d.en:{};for(const k of['w','a','h','r','n','f'])eq[k]=PCL(d.eq&&d.eq[k],k);
+const row=k=>{const x=eq[k];if(!x)return `<div class="pi em"><div class="l"><span>${SL[k][0]}</span><span>비어 있음</span></div></div>`;const e=M.max(0,M.min(30,en[k]|0)),v=M.round(x.v*(1+ENH.st*e));
+return `<div class="pi"><div class="l"><span style="color:${icol(x)}">${e?'+'+e+' ':''}${pfx(x.n)}</span><b style="font-weight:400;color:#ffe7a8">${SL[k][1]} +${v}</b></div><small>${iname(x)} ${SL[k][0]}${sn(x)?' · '+pfx(sn(x))+' 세트':''}</small>${x.o.length?`<small>${pfx(ots(x))}</small>`:''}</div>`};
+pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas><div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${(+d.cp||0).toLocaleString()}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>`,me?'내 정보':'');
+const c2=pfEl.querySelector('canvas'),t0=++pfTok;(function lp(){if(t0!==pfTok||!pfEl.classList.contains('on'))return;drawDoll(c2,eq);pfRaf=requestAnimationFrame(lp)})()}
+AF.showProfile=async function(uid,name){if(!uid)return;const tk=++pfTok;
+ if(uid===(AF.user&&AF.user.id)){pfView({nk:NK||name,lv:P.lv,st:stage,cp:cp(),eq:EQ,en:EN},name,1);return}
+ const hit=PFC.get(uid);if(hit&&Date.now()-hit.t<60000){pfView(hit.d,name,0);return}
+ pfShow(name,'<div class="pn">불러오는 중…</div>');
+ try{if(!AF.sb||!/^[0-9a-f-]{36}$/i.test(uid))throw 0;const r=await AF.sb.rpc('get_profile',{p_uid:uid});if(tk!==pfTok)return;if(r.error)throw r.error;const d=r.data;
+  if(!d){pfShow(name,'<div class="pn">아직 공개된 정보가 없어요.<br><small>상대가 새 버전으로 한 번 접속해야 정보가 생겨요.</small></div>');return}
+  if(d.hidden){pfShow(name,'<div class="pn">이 모험가는 정보를 공개하지 않았어요.</div>');return}
+  PFC.set(uid,{t:Date.now(),d});pfView(d,name,0)}catch(e){if(tk===pfTok)pfShow(name,'<div class="pn">정보를 불러오지 못했어요.<br>잠시 후 다시 시도해 주세요.</div>')}};
 function toggleChr(){if(st!=1&&!chrOpen)return;if(chrOpen)return closeChr();if(shopOpen)toggleShop();chrOpen=true;chrMsg='';const s=document.getElementById('chr');s.style.display='block';s.scrollTop=0;buildChr()}
 function closeChr(){chrOpen=false;document.getElementById('chr').style.display='none'}
 function buildChr(){const k=chrSel,x=EQ[k],pc=M.min(100,P.xp/need()*100)|0,cn=sb(),sr=(a,b)=>`<span>${a}</span><b>${b}</b>`;
@@ -793,7 +827,8 @@ Object.defineProperties(AF,{
   shopOpen:{get:()=>shopOpen,set:v=>{shopOpen=v},enumerable:true},
   pz:{get:()=>pz,set:v=>{pz=v},enumerable:true},
   resetting:{get:()=>resetting,set:v=>{resetting=v},enumerable:true},
-  nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true}
+  nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true},
+  pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true}
 });
 Object.assign(AF,{BOOST,P,cp,sfx,K,go,save});
 /* 시계 조작 방지: 서버 시각과 기기 시계의 차이(SK)를 구해서 저장 시각·방치 시간 계산에 반영해요 */
@@ -853,6 +888,7 @@ const tg=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</sm
 om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항은 바로 저장돼요</div>
   <h3>소리</h3>${tg('o-mute','소리')}${sl('o-vol','전체 볼륨')}${sl('o-sfx','효과음')}${sl('o-mus','배경음')}
   <h3>화면</h3>${FSOK?tg('o-fs','전체화면','F 키로도 전환해요'):''}${tg('o-sh','화면 흔들림')}${tg('o-fx','전투 연출','슬로모션 · 확대')}
+  <h3>공개</h3>${tg('o-pub','내 정보 공개','채팅에서 내 닉네임을 누르면 레벨·전투력·장비가 보여요 (로그인 시 서버에 반영)')}
   <h3>게임</h3>${tg('o-pz','메뉴 열면 게임 정지','꺼두면 메뉴를 열어도 전투가 계속돼요')}
   <h3 class="kh">조작</h3>
   <div class="keys"><kbd>← →</kbd><span>이동</span><kbd>Space</kbd><span>점프</span><kbd>Z</kbd><span>베기</span><kbd>X</kbd><span>검기</span><kbd>C</kbd><span>폭발</span><kbd>Q</kbd><span>자동/수동</span><kbd>I</kbd><span>장비</span><kbd>B</kbd><span>단련</span><kbd>M</kbd><span>소리</span><kbd>Enter</kbd><span>채팅</span><kbd>F</kbd><span>전체화면</span><kbd>Esc</kbd><span>메뉴</span></div>
@@ -865,7 +901,7 @@ function paint(r,v){r.value=v;r.style.setProperty('--v',v+'%');q(r.id+'v').textC
 function sync(){
   paint(q('o-vol'),Math.round(AF.VOL*100));paint(q('o-sfx'),Math.round(AF.SV*100));paint(q('o-mus'),Math.round(AF.MV*100));
   const t=(id,on,a,b)=>{const e=q(id);if(!e)return;e.classList.toggle('on',on);e.textContent=on?a:b};
-  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pz',!!AF.OPT.pz,'켜짐','꺼짐');t('o-fs',isFS(),'켜짐','꺼짐');
+  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pz',!!AF.OPT.pz,'켜짐','꺼짐');t('o-pub',!!AF.pub,'켜짐','꺼짐');t('o-fs',isFS(),'켜짐','꺼짐');
   document.querySelectorAll('[data-fs]').forEach(b=>b.textContent=isFS()?'전체화면 해제':'전체화면');
 }
 let ping=0;
@@ -911,6 +947,7 @@ function act(a,btn){
   if(a=='title'){AF.save();location.reload();return}
   if(a=='o-mute'){AF.mute=!AF.mute;mtog();applyVol();AF.saveOpt();sync();if(!AF.mute)AF.sfx(660,.08,'triangle',.06,1.2);return}
   if(a=='o-sh'){AF.OPT.sh=AF.OPT.sh?0:1;AF.saveOpt();sync();return}
+  if(a=='o-pub'){AF.pub=!AF.pub;try{AF.save()}catch(e){}AF.pubFlush();sync();return}
   if(a=='o-pz'){AF.OPT.pz=AF.OPT.pz?0:1;if(pm.classList.contains('on')){AF.pz=!!AF.OPT.pz;pm.querySelector('#pht').textContent=AF.OPT.pz?'일시정지':'메뉴'}AF.saveOpt();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
 }
@@ -993,6 +1030,7 @@ async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;co
   let o;try{o=JSON.parse(raw)}catch(e){return}const key=JSON.stringify(Object.assign({},o,{ts:0}));if(key===lastUp)return;
   lastUpT=n;const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key}
 async function cloudDel(){const u=AF.user;if(!sb||!u)return;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp=''}
+AF.pubFlush=()=>{lastUpT=0;cloudUp(true).catch(()=>{})};
 AF.cloudUp=g=>cloudUp(false,g).catch(()=>{});AF.cloudDel=cloudDel;
 setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(170000)},20000);/* 서버 자동 저장: 켜져 있으면 약 1분마다 */
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&AF.st==1){try{AF.save()}catch(e){}cloudUp(true).catch(()=>{})}});
@@ -1060,7 +1098,7 @@ function recv(m){
   m={ch:m.ch==='sys'?'sys':'chat',uid:m.uid,name:String(m.name||'').slice(0,12),text:m.text.slice(0,200),ts:m.ts||Date.now(),c:m.c};
   const el=document.createElement('div');el.className='ln';el._m=m;el._t=Date.now();
   const ts=document.createElement('span');ts.className='ts';ts.textContent=hm(m.ts);el.appendChild(ts);
-  if(m.ch==='chat'){const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=m.name+': ';el.appendChild(b)}
+  if(m.ch==='chat'){const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=m.name+': ';if(m.uid){b.style.cursor='pointer';b.title='정보 보기';b.addEventListener('pointerdown',e=>e.preventDefault());b.addEventListener('click',()=>{try{AF.showProfile(m.uid,m.name)}catch(e){}})}el.appendChild(b)}
   const tx=document.createElement('span');if(m.ch==='sys')tx.style.color=m.c||'#ffd98a';tx.textContent=m.text;el.appendChild(tx);
   if(!TABS.find(x=>x.id===tab).f(m))el.style.display='none';
   lg.insertBefore(el,lg.firstChild);/* column-reverse: 첫 자식이 맨 아래 줄 */
