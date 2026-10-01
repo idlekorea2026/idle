@@ -237,7 +237,7 @@ let W=960,PXR=1;const cv=document.getElementById('c');let g=cv.getContext('2d');
 cv.width=W;cv.height=H;
 const K={},KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'j',w:'j',' ':'j',z:'a',j:'a',x:'s',k:'s',q:'auto',b:'shop',c:'u',m:'mute',i:'chr',Escape:'esc'};
 const P={x:200,y:GY,vx:0,vy:0,hp:120,mp:60,lv:1,xp:0,f:1,g:1,j:0,at:0,cd:0,sc:0,combo:0,ct:0,inv:0,jq:0};
-let pz=false,OPT={sh:1,fx:1,pz:0},st=0,T=0,cam=0,shake=0,hs=0,gold=0,E=[],PR=[],EB=[],FX=[],TX=[],OB=[];
+let pz=false,OPT={sh:1,fx:1,pz:1},st=0,T=0,cam=0,shake=0,hs=0,gold=0,E=[],PR=[],EB=[],FX=[],TX=[],OB=[];
 const mhp=()=>M.round((100+P.lv*20+hu*HU.v+bs('hp')+bon('hp'))*(1+PT.vit*.015)),mmp=()=>M.round((40+P.lv*10)*(1+PT.wis*.02)),atk=()=>M.round((10+P.lv*4+up*6+bs('at')+bon('at'))*(1+PT.str*.01)),need=()=>20+P.lv*P.lv*8;
 /* 몬스터 체력 배율: k스테이지까지 완만(a씩) → 이후 직선(b씩). 난이도 조절은 여기 숫자만 바꾸면 돼요 */
 const SM={k:15,a:.12,b:.26},smf=n=>{const s=n-1;return 1+M.min(s,SM.k)*SM.a+M.max(0,s-SM.k)*SM.b};
@@ -299,7 +299,7 @@ const SKN=[3,6,12,24],SKL=[20,100,300];
 let NK='',SKS={own:{},eq:[null,null,null]},SKC=[0,0,0],SKQ=[],sbT=0,sbA=0,sdT=0,sdV=0,SKRES=0,chrSK=0;
 const skd=(s,L)=>{const pw=s.p+s.g*(L-1),q=v=>M.round(v*100);return({spin:'주변 적에게 공격력 '+q(pw)+'%',pierce:'적을 관통하는 검기 · 공격력 '+q(pw)+'%',slam:'전방 강타 공격력 '+q(pw)+'% · 방패 무시',flurry:'5연타 · 타당 공격력 '+q(pw)+'%',drain:'주변 공격 '+q(pw)+'% · 적중 시 체력 회복',heal:'최대 체력의 '+q(.25+.08*L)+'% 회복',rally:'8초간 주는 피해 +'+q(.15+.05*L)+'%',ward:'8초간 받는 피해 -'+q(.2+.04*L)+'%',focus:'최대 마나의 '+q(.3+.05*L)+'% 회복'})[s.k]};
 const skNear=(r,fw)=>E.filter(e=>!e.dead&&!e.gh&&M.abs(e.x-P.x)<r+e.w/2&&(!fw||(e.x-P.x)*P.f>-20)&&e.y>P.y-190&&e.y-e.h<P.y+20);
-function skCast(i){if(ci>0||st!=1)return 0;const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0)return 0;const s=SKT.find(z=>z.id==id),o=SKS.own[id];if(!s||!o||P.mp<s.mp)return 0;
+function skCast(i){if(ci>0||st!=1||pz||shopOpen||chrOpen)return 0;const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0)return 0;const s=SKT.find(z=>z.id==id),o=SKS.own[id];if(!s||!o||P.mp<s.mp)return 0;
 P.mp-=s.mp;SKC[i]=s.cd;P.at=.25;const L=o.lv,pw=s.p+s.g*(L-1);TX.push({x:P.x,y:P.y-125,t:s.n,l:.9,c:s.col});
 if(s.k=='spin'){shake=8;sfx(220,.3,'sawtooth',.07,2);nz(.4,1400,60,'lowpass',.3,.8);RG.push({x:P.x,t:0});for(const e of skNear(s.r))hit(e,atk()*pw,e.x>=P.x?1:-1)}
 else if(s.k=='pierce'){sfx(600,.3,'sawtooth',.05,2.2);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*900,l:1.2,d:P.f,h:new Set(),m:pw})}
@@ -902,7 +902,7 @@ AF.saveOpt=function(){try{localStorage.setItem(SK,JSON.stringify({vol:AF.VOL,mut
 try{const d=JSON.parse(localStorage.getItem(SK));if(d){
   if(typeof d.vol=='number')AF.VOL=d.vol;if(d.mute!=null)AF.mute=!!d.mute;
   if(typeof d.sv=='number')AF.SV=d.sv;if(typeof d.mv=='number')AF.MV=d.mv;
-  if(d.sh!=null)AF.OPT.sh=d.sh?1:0;if(d.fx!=null)AF.OPT.fx=d.fx?1:0;if(d.pz!=null)AF.OPT.pz=d.pz?1:0;mtog();
+  if(d.sh!=null)AF.OPT.sh=d.sh?1:0;if(d.fx!=null)AF.OPT.fx=d.fx?1:0;AF.OPT.pz=1;mtog();
 }}catch(e){}
 function applyVol(){if(AF.MG)AF.MG.gain.value=AF.mute?0:AF.VOL*AF.BOOST;if(AF.SF)AF.SF.gain.value=AF.SV;if(AF.MU)AF.MU.gain.value=AF.MV}
 
@@ -932,7 +932,7 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
   <h3>소리</h3>${tg('o-mute','소리')}${sl('o-vol','전체 볼륨')}${sl('o-sfx','효과음')}${sl('o-mus','배경음')}
   <h3>화면</h3>${FSOK?tg('o-fs','전체화면','F 키로도 전환해요'):''}${tg('o-sh','화면 흔들림')}${tg('o-fx','전투 연출','슬로모션 · 확대')}
   <h3>공개</h3>${tg('o-pub','내 정보 공개','채팅에서 내 닉네임을 누르면 레벨·전투력·장비가 보여요 (로그인 시 서버에 반영)')}
-  <h3>게임</h3>${tg('o-pz','메뉴 열면 게임 정지','꺼두면 메뉴를 열어도 전투가 계속돼요')}
+  
   <h3 class="kh">조작</h3>
   <div class="keys"><kbd>← →</kbd><span>이동</span><kbd>Space</kbd><span>점프</span><kbd>Z</kbd><span>베기</span><kbd>X</kbd><span>검기</span><kbd>C</kbd><span>폭발</span><kbd>Q</kbd><span>자동/수동</span><kbd>I</kbd><span>장비</span><kbd>B</kbd><span>단련</span><kbd>M</kbd><span>소리</span><kbd>Enter</kbd><span>채팅</span><kbd>F</kbd><span>전체화면</span><kbd>Esc</kbd><span>메뉴</span></div>
   <div class="mb bk"><button class="pri" data-a="back">돌아가기</button></div></div>`;
@@ -944,7 +944,7 @@ function paint(r,v){r.value=v;r.style.setProperty('--v',v+'%');q(r.id+'v').textC
 function sync(){
   paint(q('o-vol'),Math.round(AF.VOL*100));paint(q('o-sfx'),Math.round(AF.SV*100));paint(q('o-mus'),Math.round(AF.MV*100));
   const t=(id,on,a,b)=>{const e=q(id);if(!e)return;e.classList.toggle('on',on);e.textContent=on?a:b};
-  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pz',!!AF.OPT.pz,'켜짐','꺼짐');t('o-pub',!!AF.pub,'켜짐','꺼짐');t('o-fs',isFS(),'켜짐','꺼짐');
+  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pub',!!AF.pub,'켜짐','꺼짐');t('o-fs',isFS(),'켜짐','꺼짐');
   document.querySelectorAll('[data-fs]').forEach(b=>b.textContent=isFS()?'전체화면 해제':'전체화면');
 }
 let ping=0;
@@ -968,7 +968,7 @@ function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
 function closeOpt(){om.classList.remove('on');const r=opener&&opener.closest('.ov');const b=opener&&opener.isConnected?opener:null;b?b.focus({preventScroll:true}):r&&focusFirst(r)}
 AF.pauseOn=function(){
   if(AF.st!=1||pm.classList.contains('on')||AF.chrOpen||AF.shopOpen)return;
-  AF.pz=!!AF.OPT.pz;pm.querySelector('#pht').textContent=AF.OPT.pz?'일시정지':'메뉴';for(const k in AF.K)AF.K[k]=0;
+  AF.pz=true;pm.querySelector('#pht').textContent='일시정지';for(const k in AF.K)AF.K[k]=0;
   pm.querySelector('#pst').textContent=`STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}`;
   sync();pm.classList.add('on');focusFirst(pm);
 };
