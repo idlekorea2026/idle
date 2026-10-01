@@ -105,6 +105,7 @@ button.on{background:#ffb84a;color:#0b1218}
 .mb button:active{transform:translateX(4px) scale(.985);background:#ffb84a;color:#0b1218}
 .mb button.dg{border-color:#c2452d;color:#ffb0a0}
 .mb button.dg:hover,.mb button.dg:focus-visible{border-color:#ff7a5a;color:#ffd0c4;box-shadow:0 0 18px #c2452d66}
+.ofh{margin:14px auto 0;max-width:min(420px,86vw);padding:8px 14px;border:1px solid #ffb84a55;border-radius:10px;background:#ffb84a14;color:#ffd98a;font-size:15px;line-height:1.5;text-align:center}.ofh b{font-weight:400;color:#7dffe0}
 .tf{margin:clamp(14px,3vh,30px) 0 0;color:#6f8580;font-size:14px;letter-spacing:.06em;text-align:center}
 @media(pointer:coarse){.tf{display:none}}
 #pm,#om{align-items:center;justify-content:center;padding:12px;background:#02060ab8;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
@@ -257,7 +258,7 @@ const ENH={k:18,st:.12,fl:.2,auto:5},EN={w:0,a:0,h:0,r:0,n:0,f:0};
    아이템은 그 드롭 수만큼 등급 확률대로 만들어서 자동 처리해요(더 좋으면 장착, 아니면 판매). minw초 미만 플레이한 저장 데이터는 예전 방식(골드만)으로 계산해요.
    eff 를 올리면 방치가 후해지고, 내리면 짜져요. */
 /* xe: 방치 경험치에만 추가로 곱하는 배율(골드·아이템은 eff만 적용). 방치로 레벨이 너무 빨리 오르면 낮추세요 */
-const OFF={max:43200,eff:.8,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
+const OFF={max:43200,eff:.8,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=OFF;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
 /* 후퇴: 같은 스테이지에서 d번 연속 죽으면 한 단계 아래에서 반복 사냥 → 전투력이 후퇴 시점의 up배가 되거나 max번 클리어하면 원래 스테이지로 복귀 */
 const RT={d:2,up:1.1,max:6,cap:48};
 /* 보스 제한시간(초): 컷신이 끝난 뒤부터 세요. 넘기면 쓰러진 것과 같이 처리돼서 연속 실패 2번이면(RT.d) 후퇴해요. mini 는 5의 배수가 아닌 중간 보스, last 는 5/5 보스 */
@@ -578,7 +579,7 @@ else if(p==5){e.sh=2.8;for(const d of[-1,1])for(const v of[380,620])EB.push({x:e
 else if(p==6){e.sh=2;const a=M.atan2(ay,ax);for(let k=0;k<3;k++){const v=260+k*110;EB.push({x:e.x,y,vx:M.cos(a)*v,vy:M.sin(a)*v,g:0,l:3.2,c:'#4af0ff',bo:1})}}
 else if(p==7){e.sh=2.4;e.pc=!e.pc;if(e.pc)for(const d of[-1,1])EB.push({x:e.x,vx:d*520,l:1.6,bo:1});else{const a=M.atan2(ay,ax);for(let k=-2;k<3;k++){const b=a+k*.2;EB.push({x:e.x,y,vx:M.cos(b)*300,vy:M.sin(b)*300,g:0,l:3.2,c:'#ff4a6a',bo:1})}}}
 else e.sh=99}
-function go(){if(st==0){unlock();spawn();P.hp=mhp();P.mp=mmp();st=1;if(frs){TX.push({x:P.x,y:P.y-175,t:'밸런스 패치! 스탯 재분배 1회 무료 (I 키)',l:4,c:'#7dffe0'});csys('밸런스 패치: 스탯 재분배가 1회 무료예요. 장비창(I)에서 사용하세요.','#7dffe0')}if(OR)offApply();else if(og){gold+=og;TX.push({x:P.x,y:P.y-130,t:'방치 보상 +'+og+'G',l:2.8,c:'#ffcf4a'});offPop({h:ot>=3600?M.round(ot/360)/10+'시간':M.round(ot/60)+'분',g:og});og=0}ot=0;}else if(st==2){LT.slice().forEach(o=>pick(o.it));const wb=E.some(e=>e.t=='g'&&!e.dead&&e.intro);if(wb)dc=0;else dc++;if(!wb&&dc>=RT.d&&stage>1){if(!bk){rf=rf.s==stage?{s:stage,f:rf.f+1}:{s:stage,f:0};bk={s:stage,c:cp(),n:0,m:M.min(RT.cap,RT.max*M.pow(2,M.min(4,rf.f)))}}bk.n=0;stage--;dc=0;frm=false;spawn();TX.push({x:P.x,y:P.y-130,t:'후퇴! 강해지면 STAGE '+bk.s+' 재도전',l:3,c:'#ffb84a'})}else{const nf=!frm;frm=true;spawn();if(nf)TX.push({x:P.x,y:P.y-130,t:'쓰러졌어요 · 파밍 모드! 강해지면 보스 재도전',l:3.2,c:'#ffb84a'})}P.hp=mhp();P.mp=mmp();P.inv=2;dtm=0;st=1}}
+function go(){if(st==0){unlock();spawn();P.hp=mhp();P.mp=mmp();st=1;if(frs){TX.push({x:P.x,y:P.y-175,t:'밸런스 패치! 스탯 재분배 1회 무료 (I 키)',l:4,c:'#7dffe0'});csys('밸런스 패치: 스탯 재분배가 1회 무료예요. 장비창(I)에서 사용하세요.','#7dffe0')}try{if(!localStorage.getItem('ashen_offtip')){localStorage.setItem('ashen_offtip','1');setTimeout(()=>{csys('💤 오프라인 사냥: 게임을 꺼 둬도 최대 '+M.round(OFF.max/3600)+'시간 동안 사냥이 이어져요. 다시 접속하면 보상을 받아요!','#7dffe0');TX.push({x:P.x,y:P.y-155,t:'꺼 둬도 사냥은 계속돼요 (오프라인 사냥)',l:4,c:'#7dffe0'})},2500)}}catch(e){}if(OR)offApply();else if(og){gold+=og;TX.push({x:P.x,y:P.y-130,t:'방치 보상 +'+og+'G',l:2.8,c:'#ffcf4a'});offPop({h:ot>=3600?M.round(ot/360)/10+'시간':M.round(ot/60)+'분',g:og});og=0}ot=0;}else if(st==2){LT.slice().forEach(o=>pick(o.it));const wb=E.some(e=>e.t=='g'&&!e.dead&&e.intro);if(wb)dc=0;else dc++;if(!wb&&dc>=RT.d&&stage>1){if(!bk){rf=rf.s==stage?{s:stage,f:rf.f+1}:{s:stage,f:0};bk={s:stage,c:cp(),n:0,m:M.min(RT.cap,RT.max*M.pow(2,M.min(4,rf.f)))}}bk.n=0;stage--;dc=0;frm=false;spawn();TX.push({x:P.x,y:P.y-130,t:'후퇴! 강해지면 STAGE '+bk.s+' 재도전',l:3,c:'#ffb84a'})}else{const nf=!frm;frm=true;spawn();if(nf)TX.push({x:P.x,y:P.y-130,t:'쓰러졌어요 · 파밍 모드! 강해지면 보스 재도전',l:3.2,c:'#ffb84a'})}P.hp=mhp();P.mp=mmp();P.inv=2;dtm=0;st=1}}
 function burst(x,y,n,c){for(let i=0;i<n;i++)FX.push({x,y,vx:rn(-260,260),vy:rn(-320,120),l:rn(.3,.8),c})}
 function hurt(d,k){if(shopOpen||chrOpen||ci>0)return;if(pas(6))d=M.max(1,M.round(d*.9));if(sdT>0)d=M.max(1,M.round(d*(1-sdV)));{const r=M.min(40,bon('dr'));if(r)d=M.max(1,M.round(d*(1-r/100)))}if(pas(7)&&!ind&&P.hp-d<=0){ind=1;P.hp=M.max(1,M.round(mhp()*.3));P.inv=1.5;shake=12;sfx(520,.3,'triangle',.08,2);TX.push({x:P.x,y:P.y-100,t:'불굴!',l:1.2,c:'#ffd84a'});return}nz(.25,900,90,'lowpass',.18,1);sfx(110,.25,'sawtooth',.07,.4);P.hp-=d;P.inv=MOBT.inv;P.vx=k*380;P.vy=-330;shake=8;TX.push({x:P.x,y:P.y-90,t:d,l:.8,c:'#ff7a7a'});if(P.hp<=0){P.hp=0;st=2;csys('쓰러졌어요.','#ff7a7a');slw=.7;slf=.25;zm=1.1;burst(P.x,P.y-50,50,'#c2452d');burst(P.x,P.y-50,20,'#e8f1ee');sfx(240,1,'sawtooth',.08,.15)}}
 function splitD(e){const b=M.max(1,M.floor(e.mh/(e.el?4:1)*.3));for(const d of[-1,1])E.push({t:'m',x:e.x+d*24,y:e.y-16,vy:-380,vx:d*150,hp:b,mh:b,w:30,h:26,ph:R()*6,fl:0,xp:(e.xp*.2)|0,el:0,sh:1,ni:.3});burst(e.x,e.y-20,14,th.gl);sfx(330,.15,'triangle',.06,1.8)}
@@ -897,6 +898,7 @@ function buildTitle(){
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
   <button data-a="opt">설정</button>${AF.user&&sb?'<button data-a="rank">랭킹</button>':''}${gated()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>
+  <p class="ofh">💤 <b>오프라인 사냥</b> — 게임을 꺼 둬도 사냥이 계속돼요!<br>최대 ${Math.round(AF.OFF.max/3600)}시간, 골드·경험치·아이템을 ${Math.round(AF.OFF.eff*100)}% 보상으로 받아요</p>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
   onShow();
 }
