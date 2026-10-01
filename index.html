@@ -163,6 +163,7 @@ body.ttl #cht{display:none}
 #cht:not(.on) .tg{display:block;margin-top:4px;padding:6px 14px}
 #cht .sb{display:flex}
 #cht .xb2{display:flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:40px;border:1px solid #6b5228;border-radius:6px;background:#0a0f13;color:#9fb5b0;font:16px 'Do Hyeon',sans-serif;cursor:pointer;touch-action:manipulation}
+#cht .tg{position:relative}#cht .tg .nb{display:none;position:absolute;top:-7px;right:-5px;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#e0412f;color:#fff;font-size:12px;line-height:18px;text-align:center;border:1px solid #fff3;box-shadow:0 1px 4px #000a}#cht .tg.nw .nb{display:block}#cht.on .tg .nb{display:none}
 #cht .tg:hover,#cht .sb:hover,#cht .xb2:hover{border-color:#ffd27a;color:#fff2c4}
 #cht input{font-size:16px;padding:9px 10px}
 @media(pointer:coarse){#cht:not(.on) .tg{padding:8px 16px;font-size:15px}#cht .ct i{padding:7px 14px;font-size:15px}#cht .lg{font-size:15px}}
@@ -198,7 +199,7 @@ body.ttl #cht{display:none}
 <canvas id="c"></canvas>
 <div id="hud"><div class="orb hp" id="ohp"><i></i><b></b></div><div class="xp"><span id="lv">Lv.1</span><span id="cp"></span><div class="xb"><i id="xpf"></i></div><span id="xpt">0%</span></div><div class="hb"><div class="grp mv"><button class="sl" data-k="l"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="sl" data-k="r"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button></div><div class="grp"><button class="sl" data-k="a"><svg viewBox="0 0 24 24"><path d="M5 19 19 5M14 5h5v5M8 16l-3 3"/></svg><span>베기</span><kbd>Z</kbd></button><button class="sl" data-k="s"><svg viewBox="0 0 24 24"><path d="M6 5Q19 12 6 19 12 12 6 5z"/></svg><span>검기</span><kbd>X</kbd></button><button class="sl" data-k="u"><svg viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg><span>폭발</span><kbd>C</kbd></button><button class="sl" data-k="j"><svg viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6"/></svg><span>점프</span><kbd>Spc</kbd></button></div></div><div class="grp mn"><button class="sl sm on" data-k="auto"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2-5M19 4v4h-4"/></svg><span>자동</span><kbd>Q</kbd></button><button class="sl sm on" data-k="mute"><svg viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4zM16 9q3 3 0 6"/></svg><span>소리</span><kbd>M</kbd></button><button class="sl sm" data-k="chr"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg><span>장비</span><kbd>I</kbd></button><button class="sl sm" data-k="shop"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5zM9 8a3 3 0 0 1 6 0"/></svg><span>단련</span><kbd>B</kbd></button><button class="sl sm" data-k="esc"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span><kbd>Esc</kbd></button></div><div class="orb mp" id="omp"><i></i><b></b></div><div id="sks"><button class="sl" data-k="k1"></button><button class="sl" data-k="k2"></button><button class="sl" data-k="k3"></button></div></div><button id="bossb" data-k="boss" style="display:none">보스 재도전 <small>R</small></button>
 <div id="shop"></div><div id="chr"></div>
-<div id="cht"><div class="ct" id="chct"></div><div class="lg" id="chlg"></div><div class="ip"><form id="chf" action="javascript:void(0)"><input id="chin" maxlength="100" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Enter 전송 · Esc 닫기"><div class="xb2" id="chx" role="button" aria-label="닫기">✕</div><div class="sb" id="chs" role="button" aria-label="보내기">보내기</div></form></div><div class="tg" id="chtg">채팅</div></div>
+<div id="cht"><div class="ct" id="chct"></div><div class="lg" id="chlg"></div><div class="ip"><form id="chf" action="javascript:void(0)"><input id="chin" maxlength="100" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Enter 전송 · Esc 닫기"><div class="xb2" id="chx" role="button" aria-label="닫기">✕</div><div class="sb" id="chs" role="button" aria-label="보내기">보내기</div></form></div><div class="tg" id="chtg">채팅<b class="nb" id="chnb"></b></div></div>
 <script>/* =====================================================================
    잿빛 숲의 검사 — 구조 안내
    스크립트 3개로 나뉘어 있고, 서로는 오직 전역 객체 AF 를 통해서만 이야기해요.
@@ -1094,6 +1095,7 @@ const CHAT={me:ME,filter:t=>t/* 욕설 필터 자리: 나중에 여기서 치환
 function recv(m){
   if(!m||typeof m.text!=='string'||!m.text)return;
   if(m.id!=null){if(seen.has(m.id))return;seen.add(m.id);if(seen.size>500)seen.delete(seen.values().next().value)}
+  if(m.ch!=='sys'&&typeof m.id==='number')nbNote(m.id,m.uid===ME.id||isOpen);
   if(m.ch!=='sys'&&m.uid!==ME.id&&ign.has(m.name))return;
   m={ch:m.ch==='sys'?'sys':'chat',uid:m.uid,name:String(m.name||'').slice(0,12),text:m.text.slice(0,200),ts:m.ts||Date.now(),c:m.c};
   const el=document.createElement('div');el.className='ln';el._m=m;el._t=Date.now();
@@ -1121,8 +1123,20 @@ function submit(raw){let t=raw.replace(/\s+/g,' ').trim();if(!t)return;
   const m={id:ME.id+':'+(++seq)+':'+now,ch:'chat',uid:ME.id,name:ME.name,text:t,ts:now};
   if(CHAT.net.mode!=='supabase')recv(m);/* 서버 모드에선 서버가 돌려준 id로 한 번만 보여요 */
   Promise.resolve().then(()=>CHAT.net.send(m)).catch(()=>sys('전송에 실패했어요.','#ff9a8a'))}
-function open(byClick){if(isOpen)return;isOpen=true;chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
-function close(){if(!isOpen)return;isOpen=false;chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
+/* ===== 새 메시지 뱃지 — 실시간 연결은 늘리지 않아요.
+   ① 연결이 살아 있을 때(채팅창을 연 동안·닫고 90초)는 받은 메시지로 올리고
+   ② 그 밖에는 1분에 한 번 chat_latest() 로 '가장 최근 채팅 번호'만 물어봐요(요청 1번, 접속자 수 heartbeat 와 같은 주기). ===== */
+let nbSeen=null,nbLat=0,nbT=0,nbOff=0,nbBusy=0;
+const nbEl=$('chnb'),nbBtn=$('chtg');
+function nbDraw(){const n=nbSeen==null?0:Math.max(0,nbLat-nbSeen);nbEl.textContent=n>99?'99+':n;nbBtn.classList.toggle('nw',n>0&&!isOpen)}
+function nbNote(id,read){if(id>nbLat)nbLat=id;if(nbSeen==null)nbSeen=read?nbLat:id-1;if(read)nbSeen=nbLat;nbDraw()}
+async function nbPoll(){const sb=AF.sb;if(nbOff||nbBusy||isOpen||document.hidden||!sb||!AF.user||AF.st!==1)return;if(Date.now()-nbT<55000)return;nbT=Date.now();nbBusy=1;
+  try{const r=await sb.rpc('chat_latest');if(r.error)throw r.error;const n=+r.data;if(isFinite(n)){if(nbSeen==null)nbSeen=n;if(n>nbLat)nbLat=n;nbDraw()}}
+  catch(e){if(e&&(e.code==='PGRST202'||e.code==='42883'||e.code==='42501'))nbOff=1}finally{nbBusy=0}}
+/* 서버 함수가 아직 없으면(chat_latest 미생성) 조용히 꺼져요 */
+setInterval(nbPoll,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(nbPoll,500)});
+function open(byClick){if(isOpen)return;isOpen=true;nbSeen=nbLat;nbDraw();chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
+function close(){if(!isOpen)return;isOpen=false;nbSeen=nbLat;nbDraw();chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
 /* 키보드가 올라오면(visualViewport) 채팅창을 키보드 바로 위로 올리고, 화면이 낮으면 로그 높이를 줄여요 */
 function place(){const h=vv?vv.height:innerHeight,top=vv?vv.offsetTop:0;
   if(isOpen){const kb=M_max(0,innerHeight-h-top);box.style.bottom=(kb>60?kb+6:(hud.offsetHeight||110)+8)+'px';lg.style.height=Math.max(56,Math.min(150,h-130))+'px'}
