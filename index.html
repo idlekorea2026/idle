@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610010326">
+<meta name="build" content="202610010346">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -187,6 +187,10 @@ body.ttl #cht{display:none}
 #nkm .er{min-height:20px;margin:6px 0 8px;color:#ff9a8a;font-size:15px}
 #nkm .bt{display:flex;flex-direction:column;gap:8px}#nkm button{width:100%;height:auto;min-height:44px;padding:6px 14px;border:1px solid #6b5228;border-radius:6px;background:linear-gradient(#1c262d,#0a1013);color:#f0d9a0;font:19px/1.25 'Do Hyeon',sans-serif;cursor:pointer}
 #nkm button.pri{border-color:#c99a4a;background:linear-gradient(#3a2c12,#170f04);color:#ffe7a8}#nkm button small{display:block;color:#9fb5b0;font-size:13px}#nkm button:disabled{opacity:.5}
+#onl{position:fixed;left:max(10px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 8px);z-index:4;display:none;align-items:center;padding:3px 11px 3px 9px;border:1px solid #6b5228aa;border-radius:12px;background:#0a0f13b8;color:#cfe8dc;font:13px 'Do Hyeon',sans-serif;pointer-events:none}
+#onl.on{display:flex}body.ttl #onl{display:none!important}
+#onl i,#onl2 i{display:inline-block;width:8px;height:8px;margin-right:6px;border-radius:50%;background:#5dff8a;box-shadow:0 0 8px #5dff8a;animation:onp 2.2s ease-in-out infinite}@keyframes onp{50%{opacity:.35}}
+#onl b,#onl2 b{color:#fff;font-weight:400}#onl2{margin-top:10px;color:#9fe8c0;font-size:16px;letter-spacing:.04em;min-height:20px}
 #nkm .cmp{margin:0 0 14px;line-height:1.75;font-size:17px;color:#e8f1ee}#nkm .cmp small{display:inline;color:#9fb5b0;font-size:14px}
 </style></head><body>
 <canvas id="c"></canvas>
@@ -773,12 +777,13 @@ const fsBtn=()=>FSOK?`<button data-a="fs" data-fs>${isFS()?'전체화면 해제'
 
 function buildTitle(){
   const has=AF.P.lv>1||AF.P.xp>0||AF.stage>1||AF.gold>0||AF.up>0||AF.hu>0;
-  tm.innerHTML=`<div class="tt"><small>ASHEN FOREST</small><h1>잿빛 숲의 검사</h1><hr></div>
+  tm.innerHTML=`<div class="tt"><small>ASHEN FOREST</small><h1>잿빛 숲의 검사</h1><hr><div id="onl2"></div></div>
   <div class="mb">${gated()?gateBtn():has
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
   <button data-a="opt">설정</button>${gated()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
+  onShow();
 }
 pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><div class="mb">
   <button class="pri" data-a="resume">계속하기</button><button data-a="opt">설정</button>${fsBtn()}<button data-a="title">타이틀로</button></div></div>`;
@@ -937,6 +942,19 @@ function setUser(ses){const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:
   if(prev&&!nu&&AF.st==1){try{AF.save()}catch(e){}location.reload();return}
   if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}window.dispatchEvent(new Event('af-user'));if(nu)cloudSync()}
 if(sb){sb.auth.getSession().then(r=>setUser(r.data&&r.data.session),()=>setUser(null));sb.auth.onAuthStateChange((ev,ses)=>setUser(ses))}else setUser(null)
+
+/* ===== 접속자 수 (로그인한 사람만 센다) — 실시간 연결(Realtime/Presence)은 쓰지 않고, 접속자당 1분에 요청 1번(heartbeat)만 보내요.
+   서버: online_users 표 + heartbeat() 함수가 필요해요 (online_users.sql). 아직 안 만들었으면 표시만 조용히 꺼져요. ===== */
+let onN=0,onT=0,onErr=0,onLast=0,onOff=0;
+const onB=document.createElement('div');onB.id='onl';document.body.appendChild(onB);
+const onTxt=()=>onN>0?'<i></i>접속 중 <b>'+onN.toLocaleString('ko-KR')+'</b>명':'';
+function onShow(){const h=onTxt();onB.innerHTML=h;onB.classList.toggle('on',!!h);const t=document.getElementById('onl2');if(t)t.innerHTML=h}
+async function beat(){onLast=Date.now();if(onOff||!sb||!AF.user)return;
+  try{const r=await sb.rpc('heartbeat');if(r.error)throw r.error;onErr=0;const n=+r.data;if(n>0){onN=n;onShow()}}
+  catch(e){onErr++;const m=String((e&&e.message)||'');if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m))){onOff=1;onN=0;onShow();console.warn('접속자 수: heartbeat 함수가 없어요 (online_users.sql 실행 필요)')}}}
+function onLoop(){clearTimeout(onT);if(onOff||!AF.user)return;const base=(document.hidden?120000:60000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
+window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user){beat();onLoop()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&!onOff&&Date.now()-onLast>40000){beat();onLoop()}});
 buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirst(tm);
 })();
 </script>
@@ -1043,10 +1061,14 @@ CHAT.recv=recv;CHAT.sys=sys;CHAT.open=open;CHAT.close=close;CHAT.isOpen=()=>isOp
 CHAT.start=()=>Promise.resolve(CHAT.net.connect(recv)).then(()=>CHAT.net.history('chat',50)).then(h=>{(h||[]).slice().reverse().forEach(recv)}).catch(()=>sys('채팅 서버에 연결하지 못했어요.','#ff9a8a'));
 AF.CHAT=CHAT;AF.chatSys=sys;
 const row=x=>({id:x.id,ch:'chat',uid:x.uid,name:x.name,text:x.text,ts:Date.parse(x.created_at)});let chCh=null;
+/* 실시간(Realtime)은 로그인한 사람만 써요: 로그인 전에는 채널·전송 코드가 아예 실행되지 않아요(supabase-js 는 채널을 만들 때 처음 연결해요).
+   서버에서 막는 건 server_lockdown.sql — RT_PRIVATE 는 그 파일의 '선택 2단계'까지 마친 뒤에만 true 로 바꾸세요. */
+const RT_PRIVATE=false;
 function goNet(){const sb=AF.sb,u=AF.user;if(!sb||!u)return;if(chCh&&ME.id===u.id&&CHAT.net.mode==='supabase')return;ME.id=u.id;ME.name=String(AF.nk||u.name).slice(0,12);
   CHAT.net={mode:'supabase',
-    connect(on){if(chCh)sb.removeChannel(chCh);chCh=sb.channel('chat').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>on(row(p.new))).subscribe();return Promise.resolve()},
-    send(m){return sb.from('chat_messages').insert({text:m.text}).select().single().then(r=>{if(r.error)throw r.error;recv(row(r.data))})},
+    connect(on){if(chCh)sb.removeChannel(chCh);chCh=sb.channel('chat',RT_PRIVATE?{config:{private:true}}:{}).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>on(row(p.new))).subscribe();return Promise.resolve()},
+    send(m){if(!AF.user)return Promise.reject(new Error('login'));const go=b=>sb.from('chat_messages').insert(b).select().single();/* 닉네임을 같이 보내 보고, 서버가 name 을 거부하면 이름 없이 다시 보내요(서버가 이름을 정하는 경우) */
+      return go({text:m.text,name:ME.name}).then(r=>r.error?go({text:m.text}):r).then(r=>{if(r.error)throw r.error;recv(row(r.data))})},
     history(ch,n){return sb.from('chat_messages').select().eq('ch',ch).order('id',{ascending:false}).limit(n).then(r=>{if(r.error)throw r.error;return(r.data||[]).map(row)})}};
   CHAT.start()}
 window.addEventListener('af-user',goNet);window.addEventListener('af-nick',()=>{if(AF.user&&AF.nk){ME.name=String(AF.nk).slice(0,12);saveMe()}});goNet();
