@@ -386,7 +386,7 @@ const RA=TIERS,RN=TIERS.map(t=>t.n),TQ=TIERS.map(t=>t.q),TM=TIERS.map(t=>t.m),OC
 const icol=x=>x.u!=null?UC:TIERS[x.ri].c,iname=x=>x.u!=null?(x.ri>=5?TIERS[x.ri].n+' 유니크':'유니크'):TIERS[x.ri].n,sq=x=>TQ[x.ri]+(x.u!=null?1:0);
 const SW=[['낡은 검',6,50],['강철 검',16,200],['은빛 장검',34,600],['룬 검',60,1600],['용살검',100,4000]],SA=[['가죽 갑옷',40,50],['사슬 갑옷',100,200],['강화 판금',200,600],['룬 판금',360,1600],['용비늘 갑옷',600,4000]];
 const MOB=matchMedia('(pointer:coarse)').matches,IOS=/iPad|iPhone|iPod/.test(navigator.userAgent),BOOST=MOB?6:1,cph=()=>MOB||W<720;
-let AHINT=null,SF,MU,MG,NB,SI,SV=1,MV=1,VOL=.7,nx=0,stp=0,lht=0;
+let AHINT=MOB?'playback':null,SF,MU,MG,NB,SI,SV=1,MV=1,VOL=.7,nx=0,stp=0,lht=0;
 function audio(){if(mute||VOL<=0)return null;try{if(!AC){AC=AHINT?new(window.AudioContext||window.webkitAudioContext)({latencyHint:AHINT}):new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();const cp=AC.createDynamicsCompressor();cp.threshold.value=-14;cp.knee.value=12;cp.ratio.value=4;cp.release.value=.15;MG.connect(cp);cp.connect(AC.destination);AC.onstatechange=()=>{if(AC.state!='running'&&!document.hidden){try{const r=AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}};SF=AC.createGain();SF.connect(MG);MU=AC.createGain();MU.connect(MG);SF.gain.value=SV;MU.gain.value=MV;
 NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const nd=NB.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=R()*2-1}
 MG.gain.value=VOL*BOOST;if(AC.state!='running'){const r=AC.resume();r&&r.catch&&r.catch(()=>{})}}catch(e){return null}return AC}
