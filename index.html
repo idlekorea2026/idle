@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610011100">
+<meta name="build" content="202610011200">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -532,7 +532,8 @@ function buyAll(){let b=0;
 if(ab)for(const k of SK){if(EQ[k]&&(EN[k]|0)<AE&&gold>=ec(EN[k]|0)){enh(k);b=1}}
 if(atr)for(;;){const wh=hu<up*HU.r,c=40+(wh?hu:up)*30;if(gold<c)break;gold-=c;if(wh)hu++;else up++;b=1}if(b)TX.push({x:P.x,y:P.y-110,t:'자동 구매',l:.9,c:'#ffcf4a'})}
 function bossRetry(){if(st!=1||!frm||ci>0||shopOpen||chrOpen||pz)return;frm=false;dc=0;spawn(1);P.hp=mhp();P.mp=mmp();P.inv=2;save()}
-function toggleShop(){if(st!=1&&!shopOpen)return;if(chrOpen)closeChr();shopOpen=!shopOpen;const s=document.getElementById('shop');s.style.display=shopOpen?'block':'none';if(shopOpen)buildShop()}
+function bossLock(){if(E.some(e=>e.t=='g'&&!e.dead&&e.intro)){try{toast('보스전 중에는 열 수 없어요','#ff7a7a')}catch(x){}return 1}return 0}
+function toggleShop(){if(st!=1&&!shopOpen)return;if(!shopOpen&&bossLock())return;if(chrOpen)closeChr();shopOpen=!shopOpen;const s=document.getElementById('shop');s.style.display=shopOpen?'block':'none';if(shopOpen)buildShop()}
 let shopTab=0;
 function buildShop(){const row=(t,sub,btn,dis,id)=>`<div class="row"><div>${t}<br><small>${sub}</small></div><button data-b="${id}" ${dis?'disabled':''}>${btn}</button></div>`;
 const TB=['단련','설정'];
@@ -611,7 +612,7 @@ const w=big?140:105,x0=P.f>0?P.x:P.x-w;
 for(const e of E)if(!e.dead&&e.x+e.w/2>x0&&e.x-e.w/2<x0+w&&e.y>P.y-130&&e.y-e.h<P.y+10)hit(e,atk()*(big?1.8:1),P.f)}
 if(fs&&P.sc<=0&&P.mp>=20){P.mp-=20;P.sc=.5;P.at=.2;sfx(500,.3,'sawtooth',.04,2.5);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*760,l:.9,d:P.f,h:new Set()})}
 uc-=dt;if(uc<=0&&P.mp>=40&&(K.u||(auto&&(E.filter(e=>!e.dead&&M.abs(e.x-P.x)<230&&e.y>P.y-160).length>=3||E.some(e=>e.t=='g'&&!e.dead&&M.abs(e.x-P.x)<230))))){uc=9;P.mp-=40;shake=12;sfx(90,.5,'sawtooth',.1,3);RG.push({x:P.x,t:0});nz(.7,1800,50,'lowpass',.3,.7);for(const e of E)if(!e.dead&&M.abs(e.x-P.x)<260&&e.y>P.y-180)hit(e,atk()*3,e.x>=P.x?1:-1,1)}
-SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=btf(b0.mini,stage);ci=2.4;slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
+SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=btf(b0.mini,stage);ci=2.4;if(chrOpen)closeChr();if(shopOpen)toggleShop();slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
 {const bb=E.find(e=>e.t=='g'&&!e.dead&&e.intro);if(bb&&bt>0&&ci<=0&&st==1&&!shopOpen&&!chrOpen){bt-=dt;if(bt<=5&&bt>0&&M.ceil(bt)!=btl){btl=M.ceil(bt);sfx(880,.08,'square',.05)}if(bt<=0){const rp=M.ceil(bb.hp/bb.mh*100);bt=0;P.hp=0;st=2;csys('시간 초과! 보스 체력 '+rp+'% 남음','#ff7a7a');TX.push({x:P.x,y:P.y-100,t:'시간 초과! 보스 '+rp+'% 남음',l:1.8,c:'#ff7a7a'});slw=.7;slf=.25;zm=1.1;sfx(240,1,'sawtooth',.08,.15)}}}
 if((ab||atr)&&(abt-=dt)<=0){abt=2;buyAll()}
 PR=PR.filter(p=>{p.x+=p.vx*dt;p.l-=dt;FX.push({x:p.x,y:p.y+rn(-25,25),vx:0,vy:rn(-40,40),l:.3,c:'#7dffe0'});
@@ -771,7 +772,7 @@ AF.showProfile=async function(uid,name){if(!uid)return;const tk=++pfTok;
   if(!d){pfShow(name,'<div class="pn">아직 공개된 정보가 없어요.<br><small>상대가 새 버전으로 한 번 접속해야 정보가 생겨요.</small></div>');return}
   if(d.hidden){pfShow(name,'<div class="pn">이 모험가는 정보를 공개하지 않았어요.</div>');return}
   PFC.set(uid,{t:Date.now(),d});pfView(d,name,0)}catch(e){if(tk===pfTok)pfShow(name,'<div class="pn">정보를 불러오지 못했어요.<br>잠시 후 다시 시도해 주세요.</div>')}};
-function toggleChr(){if(st!=1&&!chrOpen)return;if(chrOpen)return closeChr();if(shopOpen)toggleShop();chrOpen=true;chrMsg='';const s=document.getElementById('chr');s.style.display='block';s.scrollTop=0;buildChr()}
+function toggleChr(){if(st!=1&&!chrOpen)return;if(chrOpen)return closeChr();if(bossLock())return;if(shopOpen)toggleShop();chrOpen=true;chrMsg='';const s=document.getElementById('chr');s.style.display='block';s.scrollTop=0;buildChr()}
 function closeChr(){chrOpen=false;document.getElementById('chr').style.display='none'}
 function buildChr(){const k=chrSel,x=EQ[k],pc=M.min(100,P.xp/need()*100)|0,cn=sb(),sr=(a,b)=>`<span>${a}</span><b>${b}</b>`;
 const eq=z=>{const y=EQ[z],e=EN[z]|0;return `<button class="eq${y?'':' em'}${k==z?' sel':''}" data-sl="${z}" style="--rc:${y?icol(y):'#4a5a5a'};grid-area:${z}" aria-label="${SL[z][0]}"><svg viewBox="0 0 24 24">${CIC[z]}</svg><span>${SL[z][0]}</span>${e?`<i class="pl">+${e}</i>`:''}</button>`};
@@ -800,12 +801,12 @@ else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강�
 sfx(880,.08,'square',.05);save();buildChr()});
 function fxu(dt){FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{t.y-=40*dt;t.l-=dt;return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;function loop(t){const rd=M.min(.033,(t-last)/1000||0);let dt=rd;last=t;if(!OPT.sh)shake=0;if(!OPT.fx){slw=0;zm=1}if(slw>0){slw-=rd;dt*=slf}zm+=(1-zm)*M.min(1,rd*7);if(ci>0)ci-=rd;
-if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}
+if(st==1){if(!pz&&!shopOpen&&!chrOpen){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}
 render();hudUp();requestAnimationFrame(loop)}
 fit();addEventListener('resize',fit);addEventListener('load',fit);load();document.querySelector('[data-k=mute]').classList.toggle('on',!mute);addEventListener('pagehide',save);setInterval(()=>{if(st==1&&!document.hidden)save()},10000);/* 자동 저장: 화면이 켜져 있으면 10초마다 */document.addEventListener('visibilitychange',()=>{if(document.hidden&&st==1)save()});setInterval(()=>{if(st==1)save()},3000);setInterval(mus,150);document.addEventListener('visibilitychange',()=>{if(AC){try{const r=document.hidden?AC.suspend():AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}});requestAnimationFrame(loop);
 /* ===== 백그라운드 사냥: 탭이 숨겨져도 워커 타이머로 게임을 계속 돌려요 ===== */
 let bgLast=0,bgAcc=0;
-function bgStep(dt){if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else if(st==2){T+=dt;fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}if(ci>0)ci-=dt;if(slw>0)slw-=dt}
+function bgStep(dt){if(st==1){if(!pz&&!shopOpen&&!chrOpen){if(hs>0)hs-=dt;else upd(dt)}}else if(st==2){T+=dt;fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}if(ci>0)ci-=dt;if(slw>0)slw-=dt}
 function bgTick(){const n=performance.now();if(!document.hidden||st==0){bgLast=n;bgAcc=0;return}
   bgAcc+=M.min(n-bgLast,600000)/1000;bgLast=n;
   if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:M.round(ot/60)+'분',g:og});og=0}ot=0}}/* 너무 오래 밀리면 방치 보상으로 정산 */
