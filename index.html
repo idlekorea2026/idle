@@ -682,6 +682,15 @@ let last=0,slw=0,slf=1,zm=1,ci=0;function loop(t){const rd=M.min(.033,(t-last)/1
 if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}
 render();hudUp();requestAnimationFrame(loop)}
 fit();addEventListener('resize',fit);addEventListener('load',fit);load();document.querySelector('[data-k=mute]').classList.toggle('on',!mute);addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden&&st==1)save()});setInterval(()=>{if(st==1)save()},3000);setInterval(mus,150);document.addEventListener('visibilitychange',()=>{if(AC){try{const r=document.hidden?AC.suspend():AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}});requestAnimationFrame(loop);
+/* ===== 백그라운드 사냥: 탭이 숨겨져도 워커 타이머로 게임을 계속 돌려요 ===== */
+let bgLast=0,bgAcc=0;
+function bgStep(dt){if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else if(st==2){T+=dt;fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}if(ci>0)ci-=dt;if(slw>0)slw-=dt}
+function bgTick(){const n=performance.now();if(!document.hidden||st==0){bgLast=n;bgAcc=0;return}
+  bgAcc+=M.min(n-bgLast,600000)/1000;bgLast=n;
+  if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;og=0}ot=0}}/* 너무 오래 밀리면 방치 보상으로 정산 */
+  let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}if(st==1)save()}
+try{const wk=new Worker(URL.createObjectURL(new Blob(['setInterval(()=>postMessage(0),250)'],{type:'text/javascript'})));wk.onmessage=bgTick}catch(e){setInterval(bgTick,1000)}
+document.addEventListener('visibilitychange',()=>{bgLast=performance.now();if(!document.hidden){last=0;const a=bgAcc;if(a>=.05&&st==1){let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}}bgAcc=0}});
 
 /* ===== 난이도 시뮬레이터: 주소 뒤에 ?sim 을 붙이거나 F2 =====
    스테이지별 '60초 안에 끝내는 데 필요한 초당 피해'와 내 캐릭터의 예상 클리어 시간을 표로 보여줘요(추정치, 실제 플레이와 다를 수 있어요) */
@@ -754,10 +763,10 @@ const fsBtn=()=>FSOK?`<button data-a="fs" data-fs>${isFS()?'전체화면 해제'
 function buildTitle(){
   const has=AF.P.lv>1||AF.P.xp>0||AF.stage>1||AF.gold>0||AF.up>0||AF.hu>0;
   tm.innerHTML=`<div class="tt"><small>ASHEN FOREST</small><h1>잿빛 숲의 검사</h1><hr></div>
-  <div class="mb">${has
+  <div class="mb">${gated()?gateBtn():has
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
-  <button data-a="opt">설정</button>${fsBtn()}${acctBtn()}</div>
+  <button data-a="opt">설정</button>${fsBtn()}${gated()?'':acctBtn()}</div>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
 }
 pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><div class="mb">
@@ -811,7 +820,8 @@ AF.pauseOn=function(){
 AF.pauseOff=function(){AF.pz=false;pm.classList.remove('on');om.classList.remove('on');if(document.activeElement)document.activeElement.blur()};
 
 function act(a,btn){
-  if(a=='login'){kakaoLogin();return}if(a=='logout'){if(sb)sb.auth.signOut();return}
+  if(!AF.user&&(a=='cont'||a=='new'||a=='new2'))return;
+  if(a=='login'){kakaoLogin();return}if(a=='logout'){if(sb)sb.auth.signOut().then(()=>location.reload());return}
   if(a=='cont'){document.body.classList.remove('ttl');tm.classList.add('out');setTimeout(()=>tm.classList.remove('on','out'),300);if(document.activeElement)document.activeElement.blur();AF.go();return}
   if(a=='new'){
     btn.dataset.a='new2';btn.classList.add('dg');btn.innerHTML='정말 처음부터 시작할까요?<small>저장 데이터가 지워져요 · 한 번 더 누르세요</small>';
@@ -845,14 +855,18 @@ addEventListener('keydown',e=>{
 
 /* ===== 카카오 로그인 (Supabase) — 아래 두 값만 채우면 돼요 ===== */
 const SB_URL='https://ulhfkgokgxvwbxotamds.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsaGZrZ29rZ3h2d2J4b3RhbWRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3OTQ2OTIsImV4cCI6MjEwNjM3MDY5Mn0.1clWa2SQHFfDcjIg3iZu80uAvI1ld-Jy5qxUXY5g6ug';
-let sb=null;AF.user=null;
-try{if(window.supabase&&!/^YOUR_/.test(SB_URL+SB_KEY))sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',persistSession:true,detectSessionInUrl:true}});else console.warn('Supabase URL/ANON KEY를 입력하면 로그인 버튼이 나타나요')}catch(e){console.warn('supabase init',e)}
+let sb=null;AF.user=null;AF.authReady=0;AF.sb=null;
+try{if(window.supabase&&!/^YOUR_/.test(SB_URL+SB_KEY))sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',persistSession:true,detectSessionInUrl:true}});else console.warn('Supabase URL/ANON KEY를 입력하면 로그인 버튼이 나타나요')}catch(e){console.warn('supabase init',e)}AF.sb=sb;
+const gated=()=>!AF.user;
+const gateBtn=()=>!sb?`<button disabled>로그인 서비스에 연결할 수 없어요<small>새로고침해 보세요</small></button>`:!AF.authReady?`<button disabled>로그인 확인 중…</button>`:`<button data-a="login" class="kk">카카오로 로그인<small>로그인해야 플레이할 수 있어요</small></button>`;
 const acctBtn=()=>!sb?'':AF.user?`<button data-a="logout" class="kk out">${AF.user.name} 님<small>로그아웃</small></button>`:`<button data-a="login" class="kk">카카오로 로그인</button>`;
 function kakaoLogin(){if(!sb)return;if(location.protocol=='file:'){alert('로그인은 https 주소에서만 동작해요. 서버에 올린 뒤 시도해 주세요.');return}try{AF.save()}catch(e){}
   sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+location.pathname,scopes:'profile_nickname profile_image'}}).then(r=>{if(r.error)alert('로그인 실패: '+r.error.message)})}
-function setUser(ses){const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:u.id,name:m.nickname||m.name||m.full_name||m.preferred_username||'모험가',avatar:m.avatar_url||m.picture||''}:null;
-  if((AF.user&&AF.user.id)===(nu&&nu.id))return;AF.user=nu;if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}}
-if(sb){sb.auth.getSession().then(r=>setUser(r.data&&r.data.session));sb.auth.onAuthStateChange((ev,ses)=>setUser(ses))}
+function setUser(ses){const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:u.id,name:m.nickname||m.name||m.full_name||m.preferred_username||'모험가',avatar:m.avatar_url||m.picture||''}:null,prev=AF.user,ch=(prev&&prev.id)!==(nu&&nu.id)||!AF.authReady;
+  AF.user=nu;AF.authReady=1;if(!ch)return;
+  if(prev&&!nu&&AF.st==1){try{AF.save()}catch(e){}location.reload();return}
+  if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}window.dispatchEvent(new Event('af-user'))}
+if(sb){sb.auth.getSession().then(r=>setUser(r.data&&r.data.session),()=>setUser(null));sb.auth.onAuthStateChange((ev,ses)=>setUser(ses))}else setUser(null)
 buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirst(tm);
 })();
 </script>
@@ -907,7 +921,7 @@ const sys=(t,c)=>recv({ch:'sys',text:String(t),c});
 function cmd(t){const p=t.slice(1).split(' '),c=p[0].toLowerCase(),a=p.slice(1).join(' ').trim();
   if(c==='help'||c==='도움말')sys('/name 이름 · /ignore 이름 · /unignore 이름 · /clear · /w 이름 내용(서버 연결 후)');
   else if(c==='clear')lg.textContent='';
-  else if(c==='name'){if(!/^[가-힣A-Za-z0-9_]{2,12}$/.test(a))sys('이름은 2~12자, 한글·영문·숫자·_ 만 쓸 수 있어요.','#ff9a8a');else{ME.name=a;saveMe();sys('이름을 '+a+'(으)로 바꿨어요.')}}
+  else if(c==='name'){if(AF.user){sys('카카오 닉네임이 채팅 이름으로 쓰여요.','#ff9a8a');return}if(!/^[가-힣A-Za-z0-9_]{2,12}$/.test(a))sys('이름은 2~12자, 한글·영문·숫자·_ 만 쓸 수 있어요.','#ff9a8a');else{ME.name=a;saveMe();sys('이름을 '+a+'(으)로 바꿨어요.')}}
   else if(c==='ignore'){if(!a||a===ME.name)sys('차단할 이름을 적어 주세요. 예) /ignore 이름','#ff9a8a');else{ign.add(a);saveMe();sys(a+' 님의 채팅을 숨겨요.')}}
   else if(c==='unignore'){ign.delete(a);saveMe();sys(a+' 님 차단을 풀었어요.')}
   else if(c==='w'||c==='r')sys('귓속말은 서버에 연결되면 쓸 수 있어요.');
@@ -920,7 +934,7 @@ function submit(raw){let t=raw.replace(/\s+/g,' ').trim();if(!t)return;
   if(t===lastM&&now-lastMT<LIM.dup){sys('같은 말을 반복해서 보낼 수 없어요.','#ff9a8a');return}
   t=CHAT.filter(t.slice(0,LIM.len));lastT=now;lastM=t;lastMT=now;
   const m={id:ME.id+':'+(++seq)+':'+now,ch:'chat',uid:ME.id,name:ME.name,text:t,ts:now};
-  recv(m);/* 먼저 화면에 보여 주고, 서버가 같은 id를 돌려주면 recv가 중복으로 무시해요 */
+  if(CHAT.net.mode!=='supabase')recv(m);/* 서버 모드에선 서버가 돌려준 id로 한 번만 보여요 */
   Promise.resolve().then(()=>CHAT.net.send(m)).catch(()=>sys('전송에 실패했어요.','#ff9a8a'))}
 function open(byClick){if(isOpen)return;isOpen=true;keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
 function close(){if(!isOpen)return;isOpen=false;pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
@@ -957,6 +971,16 @@ setInterval(()=>{const now=Date.now();for(const el of lg.children)if(!el._fd&&no
   if(!welcomed&&!document.body.classList.contains('ttl')){welcomed=true;sys('채팅: Enter 또는 아래 [채팅] 버튼으로 입력 · /help 로 명령어 확인')}},500);
 CHAT.recv=recv;CHAT.sys=sys;CHAT.open=open;CHAT.close=close;CHAT.isOpen=()=>isOpen;
 CHAT.start=()=>Promise.resolve(CHAT.net.connect(recv)).then(()=>CHAT.net.history('chat',50)).then(h=>{(h||[]).slice().reverse().forEach(recv)}).catch(()=>sys('채팅 서버에 연결하지 못했어요.','#ff9a8a'));
-AF.CHAT=CHAT;AF.chatSys=sys;CHAT.start();
+AF.CHAT=CHAT;AF.chatSys=sys;
+const row=x=>({id:x.id,ch:'chat',uid:x.uid,name:x.name,text:x.text,ts:Date.parse(x.created_at)});let chCh=null;
+function goNet(){const sb=AF.sb,u=AF.user;if(!sb||!u)return;if(chCh&&ME.id===u.id&&CHAT.net.mode==='supabase')return;ME.id=u.id;ME.name=String(u.name).slice(0,12);
+  CHAT.net={mode:'supabase',
+    connect(on){if(chCh)sb.removeChannel(chCh);chCh=sb.channel('chat').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>on(row(p.new))).subscribe();return Promise.resolve()},
+    send(m){return sb.from('chat_messages').insert({text:m.text}).select().single().then(r=>{if(r.error)throw r.error;recv(row(r.data))})},
+    history(ch,n){return sb.from('chat_messages').select().eq('ch',ch).order('id',{ascending:false}).limit(n).then(r=>{if(r.error)throw r.error;return(r.data||[]).map(row)})}};
+  CHAT.start()}
+window.addEventListener('af-user',goNet);goNet();
+/* 로그 절약: 탭이 1분 넘게 숨겨지면 실시간 연결을 끊고, 돌아오면 다시 연결해요 */
+let hidT=0;document.addEventListener('visibilitychange',()=>{clearTimeout(hidT);if(document.hidden){hidT=setTimeout(()=>{if(chCh&&AF.sb){try{AF.sb.removeChannel(chCh)}catch(e){}chCh=null}},60000)}else if(!chCh&&CHAT.net.mode==='supabase')CHAT.start()});
 })();
 </script></body></html>
