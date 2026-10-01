@@ -237,7 +237,7 @@ let W=960,PXR=1;const cv=document.getElementById('c');let g=cv.getContext('2d');
 cv.width=W;cv.height=H;
 const K={},KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'j',w:'j',' ':'j',z:'a',j:'a',x:'s',k:'s',q:'auto',b:'shop',c:'u',m:'mute',i:'chr',Escape:'esc'};
 const P={x:200,y:GY,vx:0,vy:0,hp:120,mp:60,lv:1,xp:0,f:1,g:1,j:0,at:0,cd:0,sc:0,combo:0,ct:0,inv:0,jq:0};
-let pz=false,OPT={sh:1,fx:1,pz:1},st=0,T=0,cam=0,shake=0,hs=0,gold=0,E=[],PR=[],EB=[],FX=[],TX=[],OB=[];
+let pz=false,OPT={sh:1,fx:1,pz:0},st=0,T=0,cam=0,shake=0,hs=0,gold=0,E=[],PR=[],EB=[],FX=[],TX=[],OB=[];
 const mhp=()=>M.round((100+P.lv*20+hu*HU.v+bs('hp')+bon('hp'))*(1+PT.vit*.015)),mmp=()=>M.round((40+P.lv*10)*(1+PT.wis*.02)),atk=()=>M.round((10+P.lv*4+up*6+bs('at')+bon('at'))*(1+PT.str*.01)),need=()=>20+P.lv*P.lv*8;
 /* 몬스터 체력 배율: k스테이지까지 완만(a씩) → 이후 직선(b씩). 난이도 조절은 여기 숫자만 바꾸면 돼요 */
 const SM={k:15,a:.12,b:.26},smf=n=>{const s=n-1;return 1+M.min(s,SM.k)*SM.a+M.max(0,s-SM.k)*SM.b};
@@ -258,7 +258,7 @@ const ENH={k:18,st:.12,fl:.2,auto:5},EN={w:0,a:0,h:0,r:0,n:0,f:0};
    아이템은 그 드롭 수만큼 등급 확률대로 만들어서 자동 처리해요(더 좋으면 장착, 아니면 판매). minw초 미만 플레이한 저장 데이터는 예전 방식(골드만)으로 계산해요.
    eff 를 올리면 방치가 후해지고, 내리면 짜져요. */
 /* xe: 방치 경험치에만 추가로 곱하는 배율(골드·아이템은 eff만 적용). 방치로 레벨이 너무 빨리 오르면 낮추세요 */
-const OFF={max:43200,eff:.8,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=OFF;let DG=0,DGS=null,DGD={d:0},dgBusy=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
+const OFF={max:43200,eff:.8,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
 /* 후퇴: 같은 스테이지에서 d번 연속 죽으면 한 단계 아래에서 반복 사냥 → 전투력이 후퇴 시점의 up배가 되거나 max번 클리어하면 원래 스테이지로 복귀 */
 const RT={d:2,up:1.1,max:6,cap:48};
 /* 보스 제한시간(초): 컷신이 끝난 뒤부터 세요. 넘기면 쓰러진 것과 같이 처리돼서 연속 실패 2번이면(RT.d) 후퇴해요. mini 는 5의 배수가 아닌 중간 보스, last 는 5/5 보스 */
@@ -299,7 +299,7 @@ const SKN=[3,6,12,24],SKL=[20,100,300];
 let NK='',SKS={own:{},eq:[null,null,null]},SKC=[0,0,0],SKQ=[],sbT=0,sbA=0,sdT=0,sdV=0,SKRES=0,chrSK=0;
 const skd=(s,L)=>{const pw=s.p+s.g*(L-1),q=v=>M.round(v*100);return({spin:'주변 적에게 공격력 '+q(pw)+'%',pierce:'적을 관통하는 검기 · 공격력 '+q(pw)+'%',slam:'전방 강타 공격력 '+q(pw)+'% · 방패 무시',flurry:'5연타 · 타당 공격력 '+q(pw)+'%',drain:'주변 공격 '+q(pw)+'% · 적중 시 체력 회복',heal:'최대 체력의 '+q(.25+.08*L)+'% 회복',rally:'8초간 주는 피해 +'+q(.15+.05*L)+'%',ward:'8초간 받는 피해 -'+q(.2+.04*L)+'%',focus:'최대 마나의 '+q(.3+.05*L)+'% 회복'})[s.k]};
 const skNear=(r,fw)=>E.filter(e=>!e.dead&&!e.gh&&M.abs(e.x-P.x)<r+e.w/2&&(!fw||(e.x-P.x)*P.f>-20)&&e.y>P.y-190&&e.y-e.h<P.y+20);
-function skCast(i){if(ci>0||st!=1||pz||shopOpen||chrOpen)return 0;const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0)return 0;const s=SKT.find(z=>z.id==id),o=SKS.own[id];if(!s||!o||P.mp<s.mp)return 0;
+function skCast(i){if(ci>0||st!=1||pz)return 0;const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0)return 0;const s=SKT.find(z=>z.id==id),o=SKS.own[id];if(!s||!o||P.mp<s.mp)return 0;
 P.mp-=s.mp;SKC[i]=s.cd;P.at=.25;const L=o.lv,pw=s.p+s.g*(L-1);TX.push({x:P.x,y:P.y-125,t:s.n,l:.9,c:s.col});
 if(s.k=='spin'){shake=8;sfx(220,.3,'sawtooth',.07,2);nz(.4,1400,60,'lowpass',.3,.8);RG.push({x:P.x,t:0});for(const e of skNear(s.r))hit(e,atk()*pw,e.x>=P.x?1:-1)}
 else if(s.k=='pierce'){sfx(600,.3,'sawtooth',.05,2.2);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*900,l:1.2,d:P.f,h:new Set(),m:pw})}
@@ -602,9 +602,9 @@ else if(p==7){e.sh=2.4;e.pc=!e.pc;if(e.pc)for(const d of[-1,1])EB.push({x:e.x,vx
 else e.sh=99}
 function go(){if(st==0){unlock();spawn();P.hp=mhp();P.mp=mmp();st=1;if(frs){TX.push({x:P.x,y:P.y-175,t:'밸런스 패치! 스탯 재분배 1회 무료 (I 키)',l:4,c:'#7dffe0'});csys('밸런스 패치: 스탯 재분배가 1회 무료예요. 장비창(I)에서 사용하세요.','#7dffe0')}try{if(!localStorage.getItem('ashen_offtip')){localStorage.setItem('ashen_offtip','1');setTimeout(()=>{csys('💤 오프라인 사냥: 게임을 꺼 둬도 최대 '+M.round(OFF.max/3600)+'시간 동안 사냥이 이어져요. 다시 접속하면 보상을 받아요!','#7dffe0');TX.push({x:P.x,y:P.y-155,t:'꺼 둬도 사냥은 계속돼요 (오프라인 사냥)',l:4,c:'#7dffe0'})},2500)}}catch(e){}if(OR)offApply();else if(og){gold+=og;TX.push({x:P.x,y:P.y-130,t:'방치 보상 +'+og+'G',l:2.8,c:'#ffcf4a'});offPop({h:ot>=3600?M.round(ot/360)/10+'시간':M.round(ot/60)+'분',g:og});og=0}ot=0;}else if(st==2){if(DG){dgEnd(0);return}LT.slice().forEach(o=>pick(o.it));const wb=E.some(e=>e.t=='g'&&!e.dead&&e.intro);if(wb)dc=0;else dc++;if(!wb&&dc>=RT.d&&stage>1){if(!bk){rf=rf.s==stage?{s:stage,f:rf.f+1}:{s:stage,f:0};bk={s:stage,c:cp(),n:0,m:M.min(RT.cap,RT.max*M.pow(2,M.min(4,rf.f)))}}bk.n=0;stage--;dc=0;frm=false;spawn();TX.push({x:P.x,y:P.y-130,t:'후퇴! 강해지면 STAGE '+bk.s+' 재도전',l:3,c:'#ffb84a'})}else{const nf=!frm;frm=true;spawn();if(nf)TX.push({x:P.x,y:P.y-130,t:'쓰러졌어요 · 파밍 모드! 강해지면 보스 재도전',l:3.2,c:'#ffb84a'})}P.hp=mhp();P.mp=mmp();P.inv=2;dtm=0;st=1}}
 function burst(x,y,n,c){for(let i=0;i<n;i++)FX.push({x,y,vx:rn(-260,260),vy:rn(-320,120),l:rn(.3,.8),c})}
-function hurt(d,k){if(shopOpen||chrOpen||ci>0)return;if(pas(6))d=M.max(1,M.round(d*.9));if(sdT>0)d=M.max(1,M.round(d*(1-sdV)));{const r=M.min(40,bon('dr'));if(r)d=M.max(1,M.round(d*(1-r/100)))}if(pas(7)&&!ind&&P.hp-d<=0){ind=1;P.hp=M.max(1,M.round(mhp()*.3));P.inv=1.5;shake=12;sfx(520,.3,'triangle',.08,2);TX.push({x:P.x,y:P.y-100,t:'불굴!',l:1.2,c:'#ffd84a'});return}nz(.25,900,90,'lowpass',.18,1);sfx(110,.25,'sawtooth',.07,.4);P.hp-=d;P.inv=MOBT.inv;P.vx=k*380;P.vy=-330;shake=8;TX.push({x:P.x,y:P.y-90,t:d,l:.8,c:'#ff7a7a'});if(P.hp<=0){P.hp=0;st=2;csys('쓰러졌어요.','#ff7a7a');slw=.7;slf=.25;zm=1.1;burst(P.x,P.y-50,50,'#c2452d');burst(P.x,P.y-50,20,'#e8f1ee');sfx(240,1,'sawtooth',.08,.15)}}
+function hurt(d,k){if(ci>0)return;if(pas(6))d=M.max(1,M.round(d*.9));if(sdT>0)d=M.max(1,M.round(d*(1-sdV)));{const r=M.min(40,bon('dr'));if(r)d=M.max(1,M.round(d*(1-r/100)))}if(pas(7)&&!ind&&P.hp-d<=0){ind=1;P.hp=M.max(1,M.round(mhp()*.3));P.inv=1.5;shake=12;sfx(520,.3,'triangle',.08,2);TX.push({x:P.x,y:P.y-100,t:'불굴!',l:1.2,c:'#ffd84a'});return}nz(.25,900,90,'lowpass',.18,1);sfx(110,.25,'sawtooth',.07,.4);P.hp-=d;P.inv=MOBT.inv;P.vx=k*380;P.vy=-330;shake=8;TX.push({x:P.x,y:P.y-90,t:d,l:.8,c:'#ff7a7a'});if(P.hp<=0){P.hp=0;st=2;csys('쓰러졌어요.','#ff7a7a');slw=.7;slf=.25;zm=1.1;burst(P.x,P.y-50,50,'#c2452d');burst(P.x,P.y-50,20,'#e8f1ee');sfx(240,1,'sawtooth',.08,.15)}}
 function splitD(e){const b=M.max(1,M.floor(e.mh/(e.el?4:1)*.3));for(const d of[-1,1])E.push({t:'m',x:e.x+d*24,y:e.y-16,vy:-380,vx:d*150,hp:b,mh:b,w:30,h:26,ph:R()*6,fl:0,xp:(e.xp*.2)|0,el:0,sh:1,ni:.3});burst(e.x,e.y-20,14,th.gl);sfx(330,.15,'triangle',.06,1.8)}
-function hit(e,d,kx,nb){if(e.dead||e.ni>0)return;if(e.gh){TX.push({x:e.x,y:e.y-e.h,t:'회피',l:.5,c:'#9aa6b2',s:22});return}d*=dmg(e);let bl=0;if(e.t=='k'&&e.gu&&!nb){d*=.25;bl=1;sfx(1800,.05,'square',.04);burst(e.x+kx*-20,e.y-30,4,'#cfd8e0')}const cr=R()<M.min(.8,.15+bon('cr')/100);d=M.floor(d*(.9+R()*.2)*(cr?1.8:1));e.hp-=d;{const l=M.min(20,bon('ls'));if(l)P.hp=M.min(mhp(),P.hp+d*l/100)}if(AC&&AC.currentTime-lht>.035){hitSnd(cr)}e.fl=.12;if(cr){slw=.07;slf=.3;zm=M.max(zm,1.025)}e.x+=kx*(e.t=='g'||e.t=='o'?4:bl?3:14);
+function hit(e,d,kx,nb){if(e.dead||e.ni>0||(e.t=='g'&&ci>0))return;if(e.gh){TX.push({x:e.x,y:e.y-e.h,t:'회피',l:.5,c:'#9aa6b2',s:22});return}d*=dmg(e);let bl=0;if(e.t=='k'&&e.gu&&!nb){d*=.25;bl=1;sfx(1800,.05,'square',.04);burst(e.x+kx*-20,e.y-30,4,'#cfd8e0')}const cr=R()<M.min(.8,.15+bon('cr')/100);d=M.floor(d*(.9+R()*.2)*(cr?1.8:1));e.hp-=d;{const l=M.min(20,bon('ls'));if(l)P.hp=M.min(mhp(),P.hp+d*l/100)}if(AC&&AC.currentTime-lht>.035){hitSnd(cr)}e.fl=.12;if(cr){slw=.07;slf=.3;zm=M.max(zm,1.025)}e.x+=kx*(e.t=='g'||e.t=='o'?4:bl?3:14);
 TX.push({x:e.x,y:e.y-e.h,t:cr?d+'!':d,l:.8,c:bl?'#9aa6b2':cr?'#ff9a3a':'#ffe08a',s:cr?46:bl?22:26});burst(e.x,e.y-e.h/2,6,'#ffd27a');shake=M.max(shake,4);hs=.04;
 if(e.hp<=0){sfx(700,.12,'sine',.05,1.8);e.dead=1;if(e.t=='d')splitD(e);{const xg=M.round(e.xp*(1+bon('xp')/100));P.xp+=xg;IR.x+=xg}burst(e.x,e.y-e.h/2,18,'#9fe8d8');burst(e.x,e.y-e.h/2,e.el?30:14,e.t=='g'?th.bs:th.sl);if(e.el)burst(e.x,e.y-e.h/2,20,'#ffd84a');drop(e);const n=e.t=='g'?14:e.t=='m'?1:3;
 for(let i=0;i<n;i++)OB.push({x:e.x,y:e.y-e.h/2,vx:rn(-120,120),vy:rn(-350,-150),t:R()<HO?'h':'c'});
@@ -634,8 +634,8 @@ const w=big?140:105,x0=P.f>0?P.x:P.x-w;
 for(const e of E)if(!e.dead&&e.x+e.w/2>x0&&e.x-e.w/2<x0+w&&e.y>P.y-130&&e.y-e.h<P.y+10)hit(e,atk()*(big?1.8:1),P.f)}
 if(fs&&P.sc<=0&&P.mp>=20){P.mp-=20;P.sc=.5;P.at=.2;sfx(500,.3,'sawtooth',.04,2.5);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*760,l:.9,d:P.f,h:new Set()})}
 uc-=dt;if(uc<=0&&P.mp>=40&&(K.u||(auto&&(E.filter(e=>!e.dead&&M.abs(e.x-P.x)<230&&e.y>P.y-160).length>=3||E.some(e=>e.t=='g'&&!e.dead&&M.abs(e.x-P.x)<230))))){uc=9;P.mp-=40;shake=12;sfx(90,.5,'sawtooth',.1,3);RG.push({x:P.x,t:0});nz(.7,1800,50,'lowpass',.3,.7);for(const e of E)if(!e.dead&&M.abs(e.x-P.x)<260&&e.y>P.y-180)hit(e,atk()*3,e.x>=P.x?1:-1,1)}
-SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=btf(b0.mini,stage);ci=2.4;if(chrOpen)closeChr();if(shopOpen)toggleShop();slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
-{const bb=E.find(e=>e.t=='g'&&!e.dead&&e.intro);if(bb&&bt>0&&ci<=0&&st==1&&!shopOpen&&!chrOpen){bt-=dt;if(bt<=5&&bt>0&&M.ceil(bt)!=btl){btl=M.ceil(bt);sfx(880,.08,'square',.05)}if(bt<=0){const rp=M.ceil(bb.hp/bb.mh*100);bt=0;P.hp=0;st=2;csys('시간 초과! 보스 체력 '+rp+'% 남음','#ff7a7a');TX.push({x:P.x,y:P.y-100,t:'시간 초과! 보스 '+rp+'% 남음',l:1.8,c:'#ff7a7a'});slw=.7;slf=.25;zm=1.1;sfx(240,1,'sawtooth',.08,.15)}}}
+SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=btf(b0.mini,stage);ci=2.4;sbT=0;sdT=0;if(chrOpen)closeChr();if(shopOpen)toggleShop();slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
+{const bb=E.find(e=>e.t=='g'&&!e.dead&&e.intro);if(bb&&bt>0&&ci<=0&&st==1){bt-=dt;if(bt<=5&&bt>0&&M.ceil(bt)!=btl){btl=M.ceil(bt);sfx(880,.08,'square',.05)}if(bt<=0){const rp=M.ceil(bb.hp/bb.mh*100);bt=0;P.hp=0;st=2;csys('시간 초과! 보스 체력 '+rp+'% 남음','#ff7a7a');TX.push({x:P.x,y:P.y-100,t:'시간 초과! 보스 '+rp+'% 남음',l:1.8,c:'#ff7a7a'});slw=.7;slf=.25;zm=1.1;sfx(240,1,'sawtooth',.08,.15)}}}
 if((ab||atr)&&(abt-=dt)<=0){abt=2;buyAll()}
 PR=PR.filter(p=>{p.x+=p.vx*dt;p.l-=dt;FX.push({x:p.x,y:p.y+rn(-25,25),vx:0,vy:rn(-40,40),l:.3,c:'#7dffe0'});
 for(const e of E)if(!e.dead&&!p.h.has(e)&&M.abs(e.x-p.x)<e.w/2+20&&p.y>e.y-e.h-30&&p.y<e.y+10){p.h.add(e);hit(e,atk()*(p.m||2.2),p.d)}
@@ -823,12 +823,12 @@ else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강�
 sfx(880,.08,'square',.05);save();buildChr()});
 function fxu(dt){FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{t.y-=40*dt;t.l-=dt;return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;function loop(t){const rd=M.min(.033,(t-last)/1000||0);let dt=rd;last=t;if(!OPT.sh)shake=0;if(!OPT.fx){slw=0;zm=1}if(slw>0){slw-=rd;dt*=slf}zm+=(1-zm)*M.min(1,rd*7);if(ci>0)ci-=rd;
-if(st==1){if(!pz&&!shopOpen&&!chrOpen){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}
+if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}
 render();hudUp();requestAnimationFrame(loop)}
 fit();addEventListener('resize',fit);addEventListener('load',fit);load();document.querySelector('[data-k=mute]').classList.toggle('on',!mute);addEventListener('pagehide',save);setInterval(()=>{if(st==1&&!document.hidden)save()},10000);/* 자동 저장: 화면이 켜져 있으면 10초마다 */document.addEventListener('visibilitychange',()=>{if(document.hidden&&st==1)save()});setInterval(()=>{if(st==1)save()},3000);setInterval(mus,150);document.addEventListener('visibilitychange',()=>{if(AC){try{const r=document.hidden?AC.suspend():AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}});requestAnimationFrame(loop);
 /* ===== 백그라운드 사냥: 탭이 숨겨져도 워커 타이머로 게임을 계속 돌려요 ===== */
 let bgLast=0,bgAcc=0;
-function bgStep(dt){if(st==1){if(!pz&&!shopOpen&&!chrOpen){if(hs>0)hs-=dt;else upd(dt)}}else if(st==2){T+=dt;fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}if(ci>0)ci-=dt;if(slw>0)slw-=dt}
+function bgStep(dt){if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else if(st==2){T+=dt;fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}if(ci>0)ci-=dt;if(slw>0)slw-=dt}
 function bgTick(){const n=performance.now();if(!document.hidden||st==0){bgLast=n;bgAcc=0;return}
   bgAcc+=M.min(n-bgLast,600000)/1000;bgLast=n;
   if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:M.round(ot/60)+'분',g:og});og=0}ot=0}}/* 너무 오래 밀리면 방치 보상으로 정산 */
@@ -858,13 +858,13 @@ Object.defineProperties(AF,{
   MG:{get:()=>MG,set:v=>{MG=v},enumerable:true},
   SF:{get:()=>SF,set:v=>{SF=v},enumerable:true},
   MU:{get:()=>MU,set:v=>{MU=v},enumerable:true},
-  stage:{get:()=>stage,set:v=>{stage=v},enumerable:true},
-  gold:{get:()=>gold,set:v=>{gold=v},enumerable:true},
-  up:{get:()=>up,set:v=>{up=v},enumerable:true},
-  hu:{get:()=>hu,set:v=>{hu=v},enumerable:true},
-  og:{get:()=>og,set:v=>{og=v},enumerable:true},
+  stage:{get:()=>stage,enumerable:true},
+  gold:{get:()=>gold,enumerable:true},
+  up:{get:()=>up,enumerable:true},
+  hu:{get:()=>hu,enumerable:true},
+  og:{get:()=>og,enumerable:true},
   ogs:{get:()=>ogs,enumerable:true},
-  st:{get:()=>st,set:v=>{st=v},enumerable:true},
+  st:{get:()=>st,enumerable:true},
   chrOpen:{get:()=>chrOpen,set:v=>{chrOpen=v},enumerable:true},
   shopOpen:{get:()=>shopOpen,set:v=>{shopOpen=v},enumerable:true},
   pz:{get:()=>pz,set:v=>{pz=v},enumerable:true},
@@ -872,7 +872,7 @@ Object.defineProperties(AF,{
   nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true},
   pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true}
 });
-Object.assign(AF,{BOOST,P,cp,sfx,K,go,save});
+Object.assign(AF,{BOOST,P:new Proxy(P,{set:()=>true,defineProperty:()=>false,deleteProperty:()=>false}),cp,sfx,K,go,save});
 /* 시계 조작 방지: 서버 시각과 기기 시계의 차이(SK)를 구해서 저장 시각·방치 시간 계산에 반영해요 */
 AF.tsync=async(u,k)=>{try{const t0=Date.now();let sv=0;
 try{const r=await fetch(u+'/rest/v1/rpc/server_time',{method:'POST',headers:{apikey:k,Authorization:'Bearer '+k,'Content-Type':'application/json'},body:'{}'});if(r.ok){const j=await r.json();sv=Date.parse(j)||0}}catch(e){}
@@ -902,7 +902,7 @@ AF.saveOpt=function(){try{localStorage.setItem(SK,JSON.stringify({vol:AF.VOL,mut
 try{const d=JSON.parse(localStorage.getItem(SK));if(d){
   if(typeof d.vol=='number')AF.VOL=d.vol;if(d.mute!=null)AF.mute=!!d.mute;
   if(typeof d.sv=='number')AF.SV=d.sv;if(typeof d.mv=='number')AF.MV=d.mv;
-  if(d.sh!=null)AF.OPT.sh=d.sh?1:0;if(d.fx!=null)AF.OPT.fx=d.fx?1:0;AF.OPT.pz=1;mtog();
+  if(d.sh!=null)AF.OPT.sh=d.sh?1:0;if(d.fx!=null)AF.OPT.fx=d.fx?1:0;AF.OPT.pz=0;mtog();
 }}catch(e){}
 function applyVol(){if(AF.MG)AF.MG.gain.value=AF.mute?0:AF.VOL*AF.BOOST;if(AF.SF)AF.SF.gain.value=AF.SV;if(AF.MU)AF.MU.gain.value=AF.MV}
 
@@ -968,7 +968,7 @@ function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
 function closeOpt(){om.classList.remove('on');const r=opener&&opener.closest('.ov');const b=opener&&opener.isConnected?opener:null;b?b.focus({preventScroll:true}):r&&focusFirst(r)}
 AF.pauseOn=function(){
   if(AF.st!=1||pm.classList.contains('on')||AF.chrOpen||AF.shopOpen)return;
-  AF.pz=true;pm.querySelector('#pht').textContent='일시정지';for(const k in AF.K)AF.K[k]=0;
+  AF.pz=false;pm.querySelector('#pht').textContent='메뉴';for(const k in AF.K)AF.K[k]=0;
   pm.querySelector('#pst').textContent=`STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}`;
   sync();pm.classList.add('on');focusFirst(pm);
 };
