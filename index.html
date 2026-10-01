@@ -258,7 +258,7 @@ const ENH={k:18,st:.12,fl:.2,auto:5},EN={w:0,a:0,h:0,r:0,n:0,f:0};
    아이템은 그 드롭 수만큼 등급 확률대로 만들어서 자동 처리해요(더 좋으면 장착, 아니면 판매). minw초 미만 플레이한 저장 데이터는 예전 방식(골드만)으로 계산해요.
    eff 를 올리면 방치가 후해지고, 내리면 짜져요. */
 /* xe: 방치 경험치에만 추가로 곱하는 배율(골드·아이템은 eff만 적용). 방치로 레벨이 너무 빨리 오르면 낮추세요 */
-const OFF={max:43200,eff:.8,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
+const OFF={max:43200,eff:.8,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0,chrIt=null,chrLv=0,shT=0,shG=-1,ptrT=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
 /* 후퇴: 같은 스테이지에서 d번 연속 죽으면 한 단계 아래에서 반복 사냥 → 전투력이 후퇴 시점의 up배가 되거나 max번 클리어하면 원래 스테이지로 복귀 */
 const RT={d:2,up:1.1,max:6,cap:48};
 /* 보스 제한시간(초): 컷신이 끝난 뒤부터 세요. 넘기면 쓰러진 것과 같이 처리돼서 연속 실패 2번이면(RT.d) 후퇴해요. mini 는 5의 배수가 아닌 중간 보스, last 는 5/5 보스 */
@@ -325,7 +325,7 @@ for(let i=0;i<3;i++){const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0)continue;c
 function skGain(id){const s=SKT.find(z=>z.id==id);if(!s)return;try{toast('스킬북 · '+s.n,'#c9a0ff')}catch(e){}let o=SKS.own[id];
 if(!o){SKS.own[id]={lv:1,c:0};for(let i=0;i<3;i++)if(!SKS.eq[i]&&P.lv>=SKL[i]){SKS.eq[i]=id;break}TX.push({x:P.x,y:P.y-150,t:'새 스킬 '+s.n+'!',l:2.2,c:'#c9a0ff'});csys('새 스킬북: '+s.n+' — '+skd(s,1),'#c9a0ff')}
 else{o.c++;let up=0;while(o.lv<5&&o.c>=SKN[o.lv-1]){o.c-=SKN[o.lv-1];o.lv++;up=1}if(up){TX.push({x:P.x,y:P.y-150,t:s.n+' Lv.'+o.lv+'!',l:2.2,c:'#c9a0ff'});csys('스킬 강화: '+s.n+' Lv.'+o.lv,'#c9a0ff')}else{TX.push({x:P.x,y:P.y-150,t:s.n+' 조각 +1',l:1.6,c:'#c9a0ff'});csys('스킬 조각: '+s.n+' ('+o.c+'/'+SKN[o.lv-1]+')','#c9a0ff')}}
-sfx(784,.3,'triangle',.06,1.6);save()}
+sfx(784,.3,'triangle',.06,1.6);save();if(chrOpen)buildChr()}
 const SKMIN=80;/* 스킬북은 이 스테이지부터만 떨어져요 */
 function skDrop(e){if(stage<SKMIN)return;const bs=e.t=='g',pr=bs?(e.mini?.01:.03):e.el?.003:0;if(!pr||R()>=pr)return;const w=SKT.map(s=>{const o=SKS.own[s.id];return !o?3:o.lv<5?1:0}),tot=w.reduce((a,b)=>a+b,0);if(!tot)return;let r=R()*tot,i=0;for(;i<w.length-1;i++){r-=w[i];if(r<0)break}skGain(SKT[i].id)}
 function skEq(id){if(P.lv<SKL[chrSK]||!SKS.own[id])return;const c=SKS.eq.indexOf(id);if(c==chrSK)SKS.eq[chrSK]=null;else{if(c>=0)SKS.eq[c]=null;SKS.eq[chrSK]=id}}
@@ -536,6 +536,10 @@ if(ab)for(const k of SK){if(EQ[k]&&(EN[k]|0)<AE&&gold>=ec(EN[k]|0)){enh(k);b=1}}
 if(atr)for(;;){const wh=hu<up*HU.r,c=40+(wh?hu:up)*30;if(gold<c)break;gold-=c;if(wh)hu++;else up++;b=1}if(b)TX.push({x:P.x,y:P.y-110,t:'자동 구매',l:.9,c:'#ffcf4a'})}
 function bossRetry(){if(st!=1||!frm||ci>0||shopOpen||chrOpen||pz)return;frm=false;dc=0;spawn(1);P.hp=mhp();P.mp=mmp();P.inv=2;save()}
 function bossLock(){if(E.some(e=>e.t=='g'&&!e.dead&&e.intro)){try{toast('보스전 중에는 열 수 없어요','#ff7a7a')}catch(x){}return 1}return 0}
+/* 창을 열어 둔 채 사냥이 계속되므로, 열린 창이 낡은 정보를 보이지 않게 새로 그려요: 장비창은 보고 있는 칸의 장비·레벨이 바뀔 때만, 상점은 골드가 변했고 최근 1.2초간 터치가 없을 때만(탭 도중 버튼이 바뀌어 클릭이 씹히지 않게) */
+addEventListener('pointerdown',()=>{ptrT=performance.now()},true);
+function uiRef(){if(chrOpen&&(EQ[chrSel]!==chrIt||P.lv!==chrLv)){chrIt=EQ[chrSel];chrLv=P.lv;const c=document.getElementById('chr'),y=c.scrollTop;buildChr();c.scrollTop=y}
+if(shopOpen){const n=performance.now();if(gold!==shG&&n-ptrT>1200&&n-shT>1000){shG=gold;shT=n;const c=document.getElementById('shop'),y=c.scrollTop;buildShop();c.scrollTop=y}}}
 function toggleShop(){if(DG&&!shopOpen){toast('던전 중에는 열 수 없어요','#ff7a7a');return}if(st!=1&&!shopOpen)return;if(!shopOpen&&bossLock())return;if(chrOpen)closeChr();shopOpen=!shopOpen;const s=document.getElementById('shop');s.style.display=shopOpen?'block':'none';if(shopOpen)buildShop()}
 /* ===== 요일 던전: 하루 1번, 요일마다 보상이 달라요. 던전 중엔 stage·farm·frm·bk·dc·IR 을 DGS 에 백업해 두고(저장도 백업값으로), 끝나면 그대로 되돌려요 → 방치 보상·후퇴 로직에 영향 없음 ===== */
 const DGT=[['일','전 부문','골드·경험치·장비·스킬북 소량'],['월','골드','골드 대량'],['화','골드','골드 대량'],['수','경험치','경험치 대량'],['목','경험치','경험치 대량'],['금','장비','장비 3개 (등급 상승 확률 ↑)'],['토','스킬북','스킬북 1개']];
@@ -824,7 +828,7 @@ sfx(880,.08,'square',.05);save();buildChr()});
 function fxu(dt){FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{t.y-=40*dt;t.l-=dt;return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;function loop(t){const rd=M.min(.033,(t-last)/1000||0);let dt=rd;last=t;if(!OPT.sh)shake=0;if(!OPT.fx){slw=0;zm=1}if(slw>0){slw-=rd;dt*=slf}zm+=(1-zm)*M.min(1,rd*7);if(ci>0)ci-=rd;
 if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}
-render();hudUp();requestAnimationFrame(loop)}
+uiRef();render();hudUp();requestAnimationFrame(loop)}
 fit();addEventListener('resize',fit);addEventListener('load',fit);load();document.querySelector('[data-k=mute]').classList.toggle('on',!mute);addEventListener('pagehide',save);setInterval(()=>{if(st==1&&!document.hidden)save()},10000);/* 자동 저장: 화면이 켜져 있으면 10초마다 */document.addEventListener('visibilitychange',()=>{if(document.hidden&&st==1)save()});setInterval(()=>{if(st==1)save()},3000);setInterval(mus,150);document.addEventListener('visibilitychange',()=>{if(AC){try{const r=document.hidden?AC.suspend():AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}});requestAnimationFrame(loop);
 /* ===== 백그라운드 사냥: 탭이 숨겨져도 워커 타이머로 게임을 계속 돌려요 ===== */
 let bgLast=0,bgAcc=0;
