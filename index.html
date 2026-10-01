@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610010346">
+<meta name="build" content="202610010352">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -222,6 +222,10 @@ const SM={k:15,a:.12,b:.26},smf=n=>{const s=n-1;return 1+M.min(s,SM.k)*SM.a+M.ma
 /* 난이도 벽: s0 스테이지부터 몬스터가 지수로 강해져요(체력은 th, 공격력은 td 스테이지마다 약 2.7배 = e배).
    숫자가 작을수록 벽이 빨리·가파르게 와요. 경험치·골드는 벽의 영향을 안 받아서 벽에서 사냥해도 계속 성장해요. */
 const WALL={s0:70,th:35,td:70},wallf=(n,t)=>M.exp(M.min(40,M.max(0,n-WALL.s0)/t));
+/* 몹 공격력 보정: 스테이지가 올라갈수록 장비·단련으로 체력이 훨씬 빨리 커져서 몹 공격이 체력바에 티가 안 났어요.
+   g 스테이지당 추가 배율(+1.2%p) · cap 최대 추가 배율(+60% = 최대 ×1.6, 약 STAGE 51부터). 초반은 거의 그대로고 갈수록 따끔해져요.
+   접촉·탄·폭탄·충격파·보스 공격 전부에 적용돼요. 더 세게 하려면 g·cap을 올리세요. 경험치·골드·몹 체력은 그대로예요. */
+const MA={g:.012,cap:.6},maf=n=>1+M.min(MA.cap,M.max(0,n-1)*MA.g);
 /* 슬롯 강화: 장비가 아니라 슬롯(무기·방어구·투구·반지)에 단계가 붙어서 장비를 바꿔도 유지돼요
    k 비용 계수(단계 n→n+1 비용 = k×(n+1)(n+2)+40) · st 단계당 효과(+12%) · fl 성공률 바닥 · auto 자동 구매가 올려 주는 단계 */
 const ENH={k:18,st:.12,fl:.2,auto:5},EN={w:0,a:0,h:0,r:0,n:0,f:0};
@@ -493,7 +497,7 @@ if(eqp&&it.u!=null&&UQ[it.u][2]>=0){const si=UQ[it.u][2];let n=(sb()[si]|0)+1;if
 g.font='14px "Do Hyeon",sans-serif';const w3=g.measureText(s2).width+14;g.fillStyle='rgba(6,10,14,.82)';g.fillRect(x-w3/2,y-68-ly,w3,20);g.strokeStyle=cc;g.lineWidth=1;g.strokeRect(x-w3/2,y-68-ly,w3,20);g.fillStyle=cc;g.fillText(s2,x,y-54-ly)}
 if(o.it.o&&o.it.o.length){const u=ots(o.it);g.font='13px "Do Hyeon",sans-serif';const w2=g.measureText(u).width+14;g.fillStyle='rgba(6,10,14,.82)';g.fillRect(x-w2/2,y-90-ly,w2,20);g.strokeStyle=c;g.strokeRect(x-w2/2,y-90-ly,w2,20);g.fillStyle='#e8f1ee';g.fillText(u,x,y-76-ly)}}}}
 
-function spawn(){clr=0;bt=0;ind=0;th=TH[tix(stage)];best=M.max(best,stage);sm=smf(stage)*wallf(stage,WALL.th)*zef(stage);xm=1+.25*(stage-1);dm=xm*wallf(stage,WALL.td)*zef(stage);PL=[];for(let x=700;x<WORLD-900;x+=rn(480,700)|0)PL.push({x,y:GY-rn(110,190),w:rn(150,250)});P.x=200;P.vx=0;cam=0;bn=2.5;{const u=RMIN.indexOf(stage);if(u>0)TX.push({x:200,y:GY-140,t:RN[u]+' 등급 장비 드롭 시작!',l:3,c:RA[u].c})}if(stage>1&&(stage-1)%TS==0)TX.push({x:200,y:GY-175,t:th.n+' 진입!',l:3.2,c:th.gl});OB=[];EB=[];PR=[];LT=[];E=[];const ti=tix(stage),last=(stage-1)%5==4;
+function spawn(){clr=0;bt=0;ind=0;th=TH[tix(stage)];best=M.max(best,stage);sm=smf(stage)*wallf(stage,WALL.th)*zef(stage);xm=1+.25*(stage-1);dm=xm*wallf(stage,WALL.td)*zef(stage)*maf(stage);PL=[];for(let x=700;x<WORLD-900;x+=rn(480,700)|0)PL.push({x,y:GY-rn(110,190),w:rn(150,250)});P.x=200;P.vx=0;cam=0;bn=2.5;{const u=RMIN.indexOf(stage);if(u>0)TX.push({x:200,y:GY-140,t:RN[u]+' 등급 장비 드롭 시작!',l:3,c:RA[u].c})}if(stage>1&&(stage-1)%TS==0)TX.push({x:200,y:GY-175,t:th.n+' 진입!',l:3.2,c:th.gl});OB=[];EB=[];PR=[];LT=[];E=[];const ti=tix(stage),last=(stage-1)%5==4;
 for(let x=800;x<WORLD-1000;x+=rn(200,340)){const a=x/WORLD,t=th.mons[rn(0,th.mons.length)|0],el=R()<.08,k=el?1.4:1,hp=M.floor(((MB[t]||40)+a*70)*2.5*sm*(el?4:1));
 E.push({t,x,y:t=='b'?GY-rn(110,230):GY,vy:0,hp,mh:hp,w:MD[t][0]*k,h:MD[t][1]*k,ph:R()*6,fl:0,xp:(XPB[t]||14)*xm*(el?4:1)|0,el,sh:rn(1,3)})}
 for(const t of th.mons)if(MT[t]&&!MSN.has(t)){MSN.add(t);csys('새 몬스터 '+th.mn[th.mons.indexOf(t)]+': '+MT[t],'#ffd84a')}
@@ -709,7 +713,7 @@ document.addEventListener('visibilitychange',()=>{bgLast=performance.now();if(!d
 /* ===== 난이도 시뮬레이터: 주소 뒤에 ?sim 을 붙이거나 F2 =====
    스테이지별 '60초 안에 끝내는 데 필요한 초당 피해'와 내 캐릭터의 예상 클리어 시간을 표로 보여줘요(추정치, 실제 플레이와 다를 수 있어요) */
 function simRows(){const B=MB,cr=M.min(.8,.15+bon('cr')/100),dps=atk()*(1+cr*.8)/(.26/(1+M.min(50,bon('as'))/100))*.6,dr=1-M.min(40,bon('dr'))/100,R2=[];let pv=0;
-for(let n=1;n<=200;n++){const z=TH[tix(n)],s=smf(n)*wallf(n,WALL.th)*zef(n),d=(1+.25*(n-1))*wallf(n,WALL.td)*zef(n),last=(n-1)%5==4,
+for(let n=1;n<=200;n++){const z=TH[tix(n)],s=smf(n)*wallf(n,WALL.th)*zef(n),d=(1+.25*(n-1))*wallf(n,WALL.td)*zef(n)*maf(n),last=(n-1)%5==4,
 ab=z.mons.reduce((a,t)=>a+B[t],0)/z.mons.length,hp=9*(ab+33)*2.5*s*1.24+(last?500+M.min(n,30)*350:200+M.min(n,30)*120)*s,need=hp/60,inc=(9*1.2*14+8*30)*d*dr*MOBT.sim;
 R2.push({n,z:z.n,need,t:((last?500+M.min(n,30)*350:200+M.min(n,30)*120)*s)/dps,lim:btf(!last,n),hp:inc*3*BD,r:pv?need/pv:1});pv=need}return R2}
 function simShow(){let o=document.getElementById('simov');if(o){o.remove();return}
