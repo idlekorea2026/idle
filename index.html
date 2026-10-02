@@ -403,7 +403,7 @@ const TIERS=[
 {n:'초월',c:'#c07aff',m:10,q:5,oc:5,min:300,p:.0003,pre:'초월의 ',snd:[523,659,784,1046,1318,1568],fx:1,ann:1,uq:.5}
 ],UC='#5dff8a';/* UC: 유니크 표시 색 (등급이 아니라 전설 이상에 붙는 특수 표시) */
 const RA=TIERS,RN=TIERS.map(t=>t.n),TQ=TIERS.map(t=>t.q),TM=TIERS.map(t=>t.m),OC=TIERS.map(t=>t.oc),RMIN=TIERS.map(t=>t.min);
-const icol=x=>x.u!=null?UC:TIERS[x.ri].c,iname=x=>x.u!=null?(x.ri>=5?TIERS[x.ri].n+' 유니크':'유니크'):TIERS[x.ri].n,sq=x=>TQ[x.ri]+(x.u!=null?1:0);
+const icol=x=>TIERS[x.ri].c,iname=x=>x.u!=null?(x.ri>=5?TIERS[x.ri].n+' 유니크':'유니크'):TIERS[x.ri].n,sq=x=>TQ[x.ri]+(x.u!=null?1:0);
 const SW=[['낡은 검',6,50],['강철 검',16,200],['은빛 장검',34,600],['룬 검',60,1600],['용살검',100,4000]],SA=[['가죽 갑옷',40,50],['사슬 갑옷',100,200],['강화 판금',200,600],['룬 판금',360,1600],['용비늘 갑옷',600,4000]];
 const MOB=matchMedia('(pointer:coarse)').matches,IOS=/iPad|iPhone|iPod/.test(navigator.userAgent),BOOST=MOB?6:1,cph=()=>MOB||W<720;
 let AHINT=MOB?'playback':null,SF,MU,MG,NB,SI,SV=1,MV=1,VOL=.7,nx=0,stp=0,lht=0;
@@ -468,6 +468,9 @@ function sb(){const c={};for(const k of SK){const x=EQ[k];if(x&&x.u!=null){const
 const sn=x=>x.u!=null&&UQ[x.u][2]>=0?ST[UQ[x.u][2]][0]:'';
 function bon(t){let s=bx(t);for(const k in EQ){const x=EQ[k];if(x&&x.o)for(const q of x.o)if(q[0]==t)s+=q[1]}const c=sb();for(const i in c)for(const b of ST[i][1])if(c[i]>=b[0])for(const q of b[1])if(q[0]==t)s+=q[1];return s}
 const iv=x=>M.round(x.v*(1+ENH.st*(EN[x.sl]|0))),scr=x=>x.v*(1+.1*(x.o?x.o.length:0))*(x.u!=null?1.5:1),ots=x=>(x.o||[]).map(q=>OP[q[0]][0]+' +'+q[1]+OP[q[0]][3]).join(' · ');
+/* 옵션 최대 수치: rv()의 상한과 같은 식 (유니크는 ×1.25) */
+function omx(q,x){const d=OP[q[0]],m=M.max(1,M.round(d[2]*(.7+TQ[x.ri]*.3)*(d[4]?ipw(x)/10:1)));return M.max(q[1],x.u!=null?M.round(m*1.25):m)}
+function otsm(x){return (x.o||[]).map(q=>OP[q[0]][0]+' +'+q[1]+OP[q[0]][3]+'('+omx(q,x)+OP[q[0]][3]+')').join(' · ')}
 function rv(t,ri,p){const d=OP[t];return M.max(1,M.round((d[1]+R()*(d[2]-d[1]))*(.7+TQ[ri]*.3)*(d[4]?p/10:1)))}
 const ipw=x=>x.p||x.v/TM[x.ri]/SL[x.sl][2];
 function mk(sl,ri,pw){const b=SL[sl][6],ks=Object.keys(OP);let k=rn(0,b.length)|0,o=[],u,n;
@@ -581,11 +584,11 @@ function drawLT(){let li=0;const cur=Object.assign({},EQ);for(const o of LT){con
 if(ri>0){g.globalCompositeOperation='lighter';const tq=sq(o.it),bw=8+tq*7,bh=120+tq*90,q=g.createLinearGradient(0,y,0,y-bh);q.addColorStop(0,c);q.addColorStop(1,'rgba(0,0,0,0)');g.globalAlpha=o.l?.55+M.sin(T*4)*.15:.3;g.fillStyle=q;g.fillRect(x-bw/2,y-bh,bw,bh);g.globalAlpha=1;glow(x,GY-6,50+tq*20,c,.6);g.globalCompositeOperation='source-over'}
 g.save();g.translate(x,y+(o.l?M.sin(T*3+x)*3-6:0));g.rotate(o.l?0:o.t*9);g.fillStyle=c;
 if(o.it.sl=='w'){g.fillRect(-2,-16,4,26);g.fillRect(-8,4,16,4)}else if(o.it.sl=='h'){g.beginPath();g.arc(0,2,11,M.PI,0);g.fill();g.fillRect(-11,2,22,5)}else if(o.it.sl=='r'){g.strokeStyle=c;g.lineWidth=4;g.beginPath();g.arc(0,0,8,0,7);g.stroke()}else if(o.it.sl=='n'){g.strokeStyle=c;g.lineWidth=3;g.beginPath();g.arc(0,-3,9,.3,M.PI-.3);g.stroke();g.beginPath();g.arc(0,9,4,0,7);g.fill()}else if(o.it.sl=='f'){g.fillRect(-6,-12,9,16);g.fillRect(-6,2,16,7)}else{g.beginPath();g.moveTo(-10,-10);g.lineTo(10,-10);g.lineTo(8,6);g.lineTo(0,14);g.lineTo(-8,6);g.fill()}g.restore();
-if(o.l){const t=o.it.n+(sn(o.it)?' ['+sn(o.it)+']':'')+'  '+SL[o.it.sl][1]+' +'+o.it.v;g.font=(TIERS[ri].fx?'17px':'14px')+' "Do Hyeon",sans-serif';g.textAlign='center';const w=g.measureText(t).width+14;g.fillStyle='rgba(6,10,14,.82)';g.fillRect(x-w/2,y-46-ly,w,22);g.strokeStyle=c;g.lineWidth=1;g.strokeRect(x-w/2,y-46-ly,w,22);g.fillStyle=c;g.fillText(t,x,y-30-ly);
+if(o.l){const t=(o.it.u!=null?'★ ':'')+o.it.n+(sn(o.it)?' ['+sn(o.it)+']':'')+'  '+SL[o.it.sl][1]+' +'+o.it.v;g.font=(TIERS[ri].fx?'17px':'14px')+' "Do Hyeon",sans-serif';g.textAlign='center';const w=g.measureText(t).width+14;g.fillStyle='rgba(6,10,14,.82)';g.fillRect(x-w/2,y-46-ly,w,22);g.strokeStyle=c;g.lineWidth=1;g.strokeRect(x-w/2,y-46-ly,w,22);g.fillStyle=c;g.fillText(t,x,y-30-ly);
 {const it=o.it;let s2,cc;if(!c0){s2='빈 슬롯 · 착용';cc='#5dff8a'}else{const dm=iv(it)-iv(c0),sp=M.round((scr(it)/scr(c0)-1)*100),sv=M.round(it.v*SL[it.sl][4]*(1+sq(it)));s2=(eqp?'▲ 착용':'▼ 판매 +'+sv+'G')+'  '+SL[it.sl][1]+' '+(dm>=0?'+':'')+dm+'  종합 '+(sp>=0?'+':'')+sp+'%';cc=eqp?'#5dff8a':'#ff9a8a'}
 if(eqp&&it.u!=null&&UQ[it.u][2]>=0){const si=UQ[it.u][2];let n=(sb()[si]|0)+1;if(c0&&c0.u!=null&&UQ[c0.u][2]==si)n--;s2+='  세트 '+n+'/4'}
 g.font='14px "Do Hyeon",sans-serif';const w3=g.measureText(s2).width+14;g.fillStyle='rgba(6,10,14,.82)';g.fillRect(x-w3/2,y-68-ly,w3,20);g.strokeStyle=cc;g.lineWidth=1;g.strokeRect(x-w3/2,y-68-ly,w3,20);g.fillStyle=cc;g.fillText(s2,x,y-54-ly)}
-if(o.it.o&&o.it.o.length){const u=ots(o.it);g.font='13px "Do Hyeon",sans-serif';const w2=g.measureText(u).width+14;g.fillStyle='rgba(6,10,14,.82)';g.fillRect(x-w2/2,y-90-ly,w2,20);g.strokeStyle=c;g.strokeRect(x-w2/2,y-90-ly,w2,20);g.fillStyle='#e8f1ee';g.fillText(u,x,y-76-ly)}}}}
+if(o.it.o&&o.it.o.length){const u=otsm(o.it);g.font='13px "Do Hyeon",sans-serif';const w2=g.measureText(u).width+14;g.fillStyle='rgba(6,10,14,.82)';g.fillRect(x-w2/2,y-90-ly,w2,20);g.strokeStyle=c;g.strokeRect(x-w2/2,y-90-ly,w2,20);g.fillStyle='#e8f1ee';g.fillText(u,x,y-76-ly)}}}}
 
 function spawn(gate,qs){clr=0;bt=0;ind=0;frt=0;fal=-1;fft=0;th=TH[tix(stage)];best=M.max(best,stage);sm=smf(stage)*wallf(stage,WALL.th)*zef(stage);xm=1+.25*(stage-1);dm=xm*wallf(stage,WALL.td)*zef(stage)*maf(stage);PL=[];for(let x=700;x<WORLD-900;x+=rn(480,700)|0)PL.push({x,y:GY-rn(110,190),w:rn(150,250)});P.x=200;P.vx=0;cam=0;bn=qs?.8:2.5;{const u=RMIN.indexOf(stage);if(u>0&&!qs)TX.push({x:200,y:GY-140,t:RN[u]+' 등급 장비 드롭 시작!',l:3,c:RA[u].c})}if(stage>1&&(stage-1)%TS==0&&!qs)TX.push({x:200,y:GY-175,t:th.n+' 진입!',l:3.2,c:th.gl});OB=[];EB=[];PR=[];LT=[];E=[];const ti=tix(stage),last=(stage-1)%5==4;
 for(let x=800;x<WORLD-(frm?600:1000);x+=rn(200,340)){const a=x/WORLD,t=th.mons[rn(0,th.mons.length)|0],el=R()<.08,k=el?1.4:1,hp=M.floor(((MB[t]||40)+a*70)*2.5*sm*(el?4:1));
@@ -804,8 +807,8 @@ function buildChr(){const k=chrSel,x=EQ[k],pc=M.min(100,P.xp/need()*100)|0,cn=sb
 const eq=z=>{const y=EQ[z],e=EN[z]|0;return `<button class="eq${y?'':' em'}${k==z?' sel':''}" data-sl="${z}" style="--rc:${y?icol(y):'#4a5a5a'};grid-area:${z}" aria-label="${SL[z][0]}"><svg viewBox="0 0 24 24">${CIC[z]}</svg><span>${SL[z][0]}</span>${e?`<i class="pl">+${e}</i>`:''}</button>`};
 const e=EN[k]|0,c=ec(e),enr=`<div class="cw-ln"><span>슬롯 강화 +${e} → +${e+1}</span><small>성공 ${M.round(er(e)*100)}%</small><button class="ac" data-c="e" ${gold<c?'disabled':''}>${c}G</button></div>`;
 let d;if(!x)d=`<div class="cw-nm">${SL[k][0]}</div><small>착용한 장비가 없어요. 몬스터가 떨어뜨려요.</small>`+enr;
-else{const q=rc(x);d=`<div class="cw-nm" style="color:${icol(x)}">${e?'+'+e+' ':''}${x.n}</div><small>${iname(x)} ${SL[k][0]}${sn(x)?' · '+sn(x)+' 세트':''}</small><div class="cw-ln"><span>${SL[k][1]}</span><b>+${iv(x)}${e?` <small>(기본 ${x.v})</small>`:''}${x.p?` <small>· 롤 ${M.max(0,M.min(100,M.round(((x.v/(x.p*TM[x.ri]*SL[x.sl][2])-.9)/.2)*100)))}%</small>`:''}</b></div>`
-+(x.o||[]).map((o,j)=>`<div class="cw-ln"><span>${OP[o[0]][0]}</span><b>+${o[1]}${OP[o[0]][3]}</b>${x.u!=null?'':`<button class="ac" data-c="r${j}" ${gold<q?'disabled':''}>재굴림 ${q}G</button>`}</div>`).join('')
+else{const q=rc(x);d=`<div class="cw-nm" style="color:${icol(x)}">${e?'+'+e+' ':''}${x.n}</div><small>${x.u!=null?'<span style="color:'+UC+'">'+iname(x)+'</span>':iname(x)} ${SL[k][0]}${sn(x)?' · '+sn(x)+' 세트':''}</small><div class="cw-ln"><span>${SL[k][1]}</span><b>+${iv(x)}${e?` <small>(기본 ${x.v})</small>`:''}${x.p?` <small>· 롤 ${M.max(0,M.min(100,M.round(((x.v/(x.p*TM[x.ri]*SL[x.sl][2])-.9)/.2)*100)))}%</small>`:''}</b></div>`
++(x.o||[]).map((o,j)=>`<div class="cw-ln"><span>${OP[o[0]][0]}</span><b>+${o[1]}${OP[o[0]][3]} <small>(최대 ${omx(o,x)}${OP[o[0]][3]})</small></b>${x.u!=null?'':`<button class="ac" data-c="r${j}" ${gold<q?'disabled':''}>재굴림 ${q}G</button>`}</div>`).join('')
 +(x.u!=null?'<small>유니크 옵션은 재굴림할 수 없어요.</small>':'')
 +enr}
 const sets=ST.map((z,i)=>{const n=cn[i]|0;return `<div class="cw-set"><div>${z[0]} <small>${n}/4</small></div>${z[1].map(b=>`<small class="${n>=b[0]?'act':''}">${b[0]}세트 · ${b[1].map(o=>OP[o[0]][0]+' +'+o[1]+OP[o[0]][3]).join(', ')}</small>`).join('')}</div>`}).join('');
