@@ -279,6 +279,8 @@ const PV=[
 {n:'강철 피부',d:'받는 피해 -10%'},
 {n:'불굴',d:'스테이지당 1번, 죽을 피해를 받으면 체력 30%로 버텨요'}],PSL=[30,120,300],PS=[null,null,null],PU=[],PMS=[[10,7],[20,6],[30,0],[40,3],[50,5],[60,4],[70,1],[80,2]];
 const csys=(t,c)=>{try{AF.chatSys(t,c)}catch(e){}};
+/* 게스트 로그인 안내: 보스 마일스톤(STAGE 10·30·60·100)을 처음 넘길 때만, 접속당 1번, 채팅 시스템 줄로 조용히 */
+let gnS=0;const gnudge=()=>{try{if(gnS||!AF.guest||!AF.guest())return;const ms=[10,30,60,100],d=+localStorage.getItem('ashen_gn')||0,m=ms.filter(x=>x<=stage).pop();if(!m||m<=d)return;gnS=1;localStorage.setItem('ashen_gn',String(m));setTimeout(()=>{try{if(AF.guest())csys('🔥 STAGE '+m+' 돌파! 로그인하면 지금까지의 진행이 서버에 안전하게 저장돼요. (메뉴 → 카카오로 로그인)','#ffd98a')}catch(e){}},3000)}catch(e){}};
 function pgrant(s){for(const m of PMS)if(m[0]==s&&!PU.includes(m[1])){PU.push(m[1]);csys('패시브 획득: '+PV[m[1]].n,'#ffd84a');TX.push({x:P.x,y:P.y-160,t:'패시브 획득: '+PV[m[1]].n+'! (I 키)',l:3,c:'#ffd84a'});sfx(880,.3,'triangle',.07,1.5)}}
 /* 스탯 포인트: 레벨업마다 3점. 힘 공격력 +1% · 활력 체력 +1.5% · 민첩 치명타 +0.1% · 지혜 마나 +2%·마나 회복 +1.5% (점당) */
 const PT={str:0,vit:0,dex:0,wis:0,free:0,auto:true};
@@ -534,6 +536,8 @@ TX.push({x:P.x,y:P.y-95,t:'경험치 +'+R.x.toLocaleString()+(P.lv>l0?'  Lv.'+l0
 const AE=ENH.auto,er=n=>n<2?1:M.max(ENH.fl,1-(n-1)*.1),ec=n=>M.round(ENH.k*(n+1)*(n+2)+40);
 const rc=x=>M.round(150+x.v*SL[x.sl][5]*3);
 function enh(k){const n=EN[k]|0,c=ec(n);if(gold<c)return 0;gold-=c;if(R()<er(n)){EN[k]=n+1;TX.push({x:P.x,y:P.y-135,t:SL[k][0]+' 강화 성공 +'+EN[k],l:1.2,c:'#7dffe0'});sfx(880,.15,'triangle',.07,1.5);burst(P.x,P.y-50,16,'#7dffe0')}else{TX.push({x:P.x,y:P.y-135,t:'강화 실패',l:1,c:'#ff7a7a'});sfx(160,.2,'sawtooth',.05,.5)}return 1}
+/* 일괄 강화: 장착 중인 슬롯 중 단계가 가장 낮은 슬롯부터 한 번씩 시도해서 골고루 올려요. 골드가 모자라질 때까지(최대 3000회) 진행 */
+function bulkEnh(){const ks=SK.filter(k=>EQ[k]);if(!ks.length)return '장착한 장비가 없어요';if(!confirm('보유 골드로 장착 슬롯을 낮은 단계부터 골고루 강화할까요?\n실패해도 골드는 소모되고, 골드가 부족해질 때까지 진행해요.'))return chrMsg;let t=0,s=0,sp=0;while(t<3000){let q=ks[0],l=EN[q]|0;for(const k of ks){const v=EN[k]|0;if(v<l){l=v;q=k}}const c=ec(l);if(gold<c)break;gold-=c;sp+=c;t++;if(R()<er(l)){EN[q]=l+1;s++}}if(!t)return '골드가 부족해요';TX.push({x:P.x,y:P.y-135,t:'일괄 강화 완료',l:1.2,c:'#7dffe0'});sfx(880,.15,'triangle',.07,1.5);burst(P.x,P.y-50,16,'#7dffe0');return '일괄 강화: '+t+'회 시도 · 성공 '+s+' · '+sp+'G 사용<br>'+ks.map(k=>SL[k][0]+' +'+(EN[k]|0)).join(' · ')}
 function reroll(x,j){if(!x||!x.o||!x.o[j]||x.u!=null)return 0;const c=rc(x);if(gold<c)return 0;gold-=c;const ot=x.o.map(q=>q[0]),ks=Object.keys(OP).filter(t=>t==ot[j]||!ot.includes(t)),t=ks[rn(0,ks.length)|0];x.o[j]=[t,rv(t,x.ri,ipw(x))];sfx(660,.12,'triangle',.06,1.4);return 1}
 function buyAll(){let b=0;
 if(ab)for(const k of SK){if(EQ[k]&&(EN[k]|0)<AE&&gold>=ec(EN[k]|0)){enh(k);b=1}}
@@ -617,7 +621,7 @@ TX.push({x:e.x,y:e.y-e.h,t:cr?d+'!':d,l:.8,c:bl?'#9aa6b2':cr?'#ff9a3a':'#ffe08a'
 if(e.hp<=0){sfx(700,.12,'sine',.05,1.8);e.dead=1;if(e.t=='d')splitD(e);{const xg=M.round(e.xp*(1+bon('xp')/100));P.xp+=xg;IR.x+=xg}burst(e.x,e.y-e.h/2,18,'#9fe8d8');burst(e.x,e.y-e.h/2,e.el?30:14,e.t=='g'?th.bs:th.sl);if(e.el)burst(e.x,e.y-e.h/2,20,'#ffd84a');drop(e);const n=e.t=='g'?14:e.t=='m'?1:3;
 for(let i=0;i<n;i++)OB.push({x:e.x,y:e.y-e.h/2,vx:rn(-120,120),vy:rn(-350,-150),t:R()<HO?'h':'c'});
 while(P.xp>=need()){P.xp-=need();P.lv++;gainPts(3);csys('레벨 '+P.lv+' 달성!','#7dffe0');if(PSL.includes(P.lv))TX.push({x:P.x,y:P.y-130,t:'패시브 슬롯 해금! (I 키)',l:2.5,c:'#ffd84a'});if(SKL.includes(P.lv))TX.push({x:P.x,y:P.y-160,t:'스킬 슬롯 해금! (I 키)',l:2.5,c:'#c9a0ff'});P.hp=mhp();P.mp=mmp();TX.push({x:P.x,y:P.y-100,t:'LEVEL UP!',l:1.6,c:'#7dffe0'});[523,659,784,1046].forEach((f,i)=>setTimeout(()=>sfx(f,.2,'triangle',.06),i*90));burst(P.x,P.y-40,40,'#7dffe0')}
-if(e.t=='g'){slw=.8;slf=.2;zm=1.14;shake=16;burst(e.x,e.y-e.h/2,70,th.gl);burst(e.x,e.y-e.h/2,40,th.bs);clr=3.2;[392,494,587,784,988].forEach((f,i)=>setTimeout(()=>sfx(f,.5,'triangle',.07),i*140));TX.push({x:P.x,y:P.y-120,t:'보스 격파!',l:1.6,c:'#ffb84a'});csys('STAGE '+stage+' 보스를 처치했어요.','#ffb84a');pgrant(stage)}}}
+if(e.t=='g'){slw=.8;slf=.2;zm=1.14;shake=16;burst(e.x,e.y-e.h/2,70,th.gl);burst(e.x,e.y-e.h/2,40,th.bs);clr=3.2;[392,494,587,784,988].forEach((f,i)=>setTimeout(()=>sfx(f,.5,'triangle',.07),i*140));TX.push({x:P.x,y:P.y-120,t:'보스 격파!',l:1.6,c:'#ffb84a'});csys('STAGE '+stage+' 보스를 처치했어요.','#ffb84a');pgrant(stage);gnudge()}}}
 function upd(dt){T+=dt;{const k=M.exp(-dt/OFF.win);IR.g*=k;IR.x*=k;IR.n*=k;IR.b*=k;IR.w=IR.w*k+dt}
 if(clr>0){clr-=dt;if(clr<=0){if(DG){dgEnd(1);return}LT.slice().forEach(o=>pick(o.it));dc=0;let ret=0;if(bk){bk.n++;if(cp()>=bk.c*RT.up||bk.n>=bk.m){stage=bk.s;bk=null;ret=1;frm=true}}else if(!farm&&!frm)stage++;clr=0;spawn();P.hp=mhp();P.mp=mmp();if(ret)TX.push({x:P.x,y:P.y-130,t:'STAGE '+stage+' 복귀! 보스 재도전 버튼으로 도전하세요',l:2.5,c:'#7dffe0'});return}}
 if(frm){if(frt>0){frt-=dt;if(frt<=0){LT.slice().forEach(o=>pick(o.it));dc=0;spawn(0,1);P.hp=mhp();P.mp=mmp();return}}else if(ci<=0){const al=E.reduce((a,e)=>a+(e.dead?0:1),0);if(!al)frt=1.2;else if(al!=fal){fal=al;fft=0}else if((fft+=dt)>40)frt=.1}}
@@ -806,7 +810,7 @@ function toggleChr(){if(st!=1&&!chrOpen)return;if(chrOpen)return closeChr();if(b
 function closeChr(){chrOpen=false;document.getElementById('chr').style.display='none'}
 function buildChr(){const k=chrSel,x=EQ[k],pc=M.min(100,P.xp/need()*100)|0,cn=sb(),sr=(a,b)=>`<span>${a}</span><b>${b}</b>`;
 const eq=z=>{const y=EQ[z],e=EN[z]|0;return `<button class="eq${y?'':' em'}${k==z?' sel':''}" data-sl="${z}" style="--rc:${y?icol(y):'#4a5a5a'};grid-area:${z}" aria-label="${SL[z][0]}"><svg viewBox="0 0 24 24">${CIC[z]}</svg><span>${SL[z][0]}</span>${e?`<i class="pl">+${e}</i>`:''}</button>`};
-const e=EN[k]|0,c=ec(e),enr=`<div class="cw-ln"><span>슬롯 강화 +${e} → +${e+1}</span><small>성공 ${M.round(er(e)*100)}%</small><button class="ac" data-c="e" ${gold<c?'disabled':''}>${c}G</button></div>`;
+const e=EN[k]|0,c=ec(e),ebs=SK.filter(z=>EQ[z]),ebm=ebs.length?M.min(...ebs.map(z=>EN[z]|0)):-1,ebd=ebm<0||gold<ec(ebm),enr=`<div class="cw-ln"><span>슬롯 강화 +${e} → +${e+1}</span><small>성공 ${M.round(er(e)*100)}%</small><button class="ac" data-c="e" ${gold<c?'disabled':''}>${c}G</button></div><div class="cw-ln"><span>일괄 강화 <small>장착 슬롯을 낮은 단계부터 골고루</small></span><button class="ac" data-c="eb" ${ebd?'disabled':''}>일괄</button></div>`;
 let d;if(!x)d=`<div class="cw-nm">${SL[k][0]}</div><small>착용한 장비가 없어요. 몬스터가 떨어뜨려요.</small>`+enr;
 else{const q=rc(x);d=`<div class="cw-nm" style="color:${icol(x)}">${e?'+'+e+' ':''}${x.n}</div><small>${x.u!=null?'<span style="color:'+UC+'">'+iname(x)+'</span>':iname(x)} ${SL[k][0]}${sn(x)?' · '+sn(x)+' 세트':''}</small><div class="cw-ln"><span>${SL[k][1]}</span><b>+${iv(x)}${e?` <small>(기본 ${x.v})</small>`:''}${x.p?` <small>· 롤 ${M.max(0,M.min(100,M.round(((x.v/(x.p*TM[x.ri]*SL[x.sl][2])-.9)/.2)*100)))}%</small>`:''}</b></div>`
 +(x.o||[]).map((o,j)=>`<div class="cw-ln"><span>${OP[o[0]][0]}</span><b>+${o[1]}${OP[o[0]][3]} <small>(최대 ${omx(o,x)}${OP[o[0]][3]})</small></b>${x.u!=null?'':`<button class="ac" data-c="r${j}" ${gold<q?'disabled':''}>재굴림 ${q}G</button>`}</div>`).join('')
@@ -827,7 +831,7 @@ else if(id.startsWith('q:'))chrPS=+id.slice(2);
 else if(id.startsWith('v:'))eqPas(+id.slice(2));
 else if(id.startsWith('sq:'))chrSK=+id.slice(3);
 else if(id.startsWith('sv:'))skEq(id.slice(3));
-else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강화 성공! +'+EN[chrSel]:'강화 실패 · 단계는 그대로예요'}else if(id[0]=='r'&&x){chrMsg=reroll(x,+id.slice(1))?'옵션을 재굴림했어요':''}
+else if(id=='eb'){chrMsg=bulkEnh()}else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강화 성공! +'+EN[chrSel]:'강화 실패 · 단계는 그대로예요'}else if(id[0]=='r'&&x){chrMsg=reroll(x,+id.slice(1))?'옵션을 재굴림했어요':''}
 sfx(880,.08,'square',.05);save();buildChr()});
 function fxu(dt){FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{t.y-=40*dt;t.l-=dt;return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;function loop(t){const rd=M.min(.033,(t-last)/1000||0);let dt=rd;last=t;if(!OPT.sh)shake=0;if(!OPT.fx){slw=0;zm=1}if(slw>0){slw-=rd;dt*=slf}zm+=(1-zm)*M.min(1,rd*7);if(ci>0)ci-=rd;
@@ -1136,12 +1140,12 @@ let onN=0,onT=0,onErr=0,onLast=0,onOff=0;
 const onB=document.createElement('div');onB.id='onl';document.body.appendChild(onB);
 const onTxt=()=>onN>0?'<i></i>접속 중 <b>'+onN.toLocaleString('ko-KR')+'</b>명':(AF.guest()?'<i class="g"></i>접속 중 <b>?</b>명':'');
 function onShow(){const h=onTxt();onB.innerHTML=h;onB.classList.toggle('on',!!h);const t=document.getElementById('onl2');if(t)t.innerHTML=h}
-async function beat(){onLast=Date.now();if(onOff||!sb||(!AF.user&&!AF.guest()))return;/* 게스트는 숫자만 읽어요(online_count, 읽기 전용) — 집계에 기록되지 않아요 */
-  try{const r=await sb.rpc(AF.user?'heartbeat':'online_count');if(r.error)throw r.error;onErr=0;const n=+r.data;if(n>0){onN=n;onShow()}}
+async function beat(){onLast=Date.now();if(onOff||!sb||!AF.user)return;/* 게스트는 접속자 수 요청도 보내지 않아요(로그인한 사람만 heartbeat) */
+  try{const r=await sb.rpc('heartbeat');if(r.error)throw r.error;onErr=0;const n=+r.data;if(n>0){onN=n;onShow()}}
   catch(e){onErr++;const m=String((e&&e.message)||'');if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m))){onOff=1;onN=0;onShow();console.warn('접속자 수: heartbeat 함수가 없어요 (online_users.sql 실행 필요)')}}}
-function onLoop(){clearTimeout(onT);if(onOff||(!AF.user&&!AF.guest()))return;const base=(document.hidden?180000:120000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
-window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user||AF.guest()){beat();onLoop()}});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(AF.user||AF.guest())&&!onOff&&Date.now()-onLast>40000){beat();onLoop()}});
+function onLoop(){clearTimeout(onT);if(onOff||!AF.user)return;const base=(document.hidden?180000:120000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
+window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user){beat();onLoop()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&!onOff&&Date.now()-onLast>40000){beat();onLoop()}});
 buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirst(tm);
 })();
 </script>
