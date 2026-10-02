@@ -192,6 +192,7 @@ body.ttl #cht{display:none}
 #nkm .bt{display:flex;flex-direction:column;gap:8px}#nkm button{width:100%;height:auto;min-height:44px;padding:6px 14px;border:1px solid #6b5228;border-radius:6px;background:linear-gradient(#1c262d,#0a1013);color:#f0d9a0;font:19px/1.25 'Do Hyeon',sans-serif;cursor:pointer}
 #nkm button.pri{border-color:#c99a4a;background:linear-gradient(#3a2c12,#170f04);color:#ffe7a8}#nkm button small{display:block;color:#9fb5b0;font-size:13px}#nkm button:disabled{opacity:.5}
 #onl{position:fixed;left:max(10px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 8px);z-index:4;display:none;align-items:center;padding:3px 11px 3px 9px;border:1px solid #6b5228aa;border-radius:12px;background:#0a0f13b8;color:#cfe8dc;font:13px 'Do Hyeon',sans-serif;pointer-events:none}
+#onl i.g,#onl2 i.g{background:#8a8f99;box-shadow:none;animation:none}.gn{margin:10px auto 0;max-width:340px;padding:8px 12px;border:1px solid #8a6a2a99;border-radius:8px;background:#2a1f0acc;color:#ffd98a;font-size:12px;line-height:1.55;text-align:center}.gn b{color:#fff0c0}#cht.lk .tg{opacity:.55}#cht.lk .tg::before{content:'🔒 '}
 #onl.on{display:flex}body.ttl #onl{display:none!important}
 #onl i,#onl2 i{display:inline-block;width:8px;height:8px;margin-right:6px;border-radius:50%;background:#5dff8a;box-shadow:0 0 8px #5dff8a;animation:onp 2.2s ease-in-out infinite}@keyframes onp{50%{opacity:.35}}
 #onl b,#onl2 b{color:#fff;font-weight:400}#onl2{margin-top:10px;color:#9fe8c0;font-size:16px;letter-spacing:.04em;min-height:20px}
@@ -547,7 +548,7 @@ function toggleShop(){if(DG&&!shopOpen){toast('던전 중에는 열 수 없어�
 /* ===== 요일 던전: 하루 1번, 요일마다 보상이 달라요. 던전 중엔 stage·farm·frm·bk·dc·IR 을 DGS 에 백업해 두고(저장도 백업값으로), 끝나면 그대로 되돌려요 → 방치 보상·후퇴 로직에 영향 없음 ===== */
 const DGT=[['일','전 부문','골드·경험치·장비·스킬북 소량'],['월','골드','골드 대량'],['화','골드','골드 대량'],['수','경험치','경험치 대량'],['목','경험치','경험치 대량'],['금','장비','장비 3개 (등급 상승 확률 ↑)'],['토','스킬북','스킬북 1개']];
 const dgNow=()=>{const d=new Date(tnow()+324e5);return{k:d.getUTCFullYear()*1e4+(d.getUTCMonth()+1)*100+d.getUTCDate(),w:d.getUTCDay()}},dgWk=k=>new Date(Date.UTC(k/1e4|0,(k/100|0)%100-1,k%100)).getUTCDay(),dgStage=()=>M.max(1,M.round(best*.8));
-async function dgEnter(){if(DG||dgBusy||st!=1||ci>0||bossLock())return;const n=dgNow();if(DGD.d==n.k){toast('오늘 던전은 이미 입장했어요','#ff7a7a');return}
+async function dgEnter(){if(!AF.user){toast('로그인 후에 이용할 수 있는 기능이에요','#ff7a7a');return}if(DG||dgBusy||st!=1||ci>0||bossLock())return;const n=dgNow();if(DGD.d==n.k){toast('오늘 던전은 이미 입장했어요','#ff7a7a');return}
 dgBusy=1;let k=n.k;/* 서버가 하루 1번을 판정(KST 날짜·요일은 서버가 돌려준 값). 서버 함수가 아직 없으면 로컬 기록으로만 막아요 */
 try{if(AF.sb&&AF.user){const r=await AF.sb.rpc('dungeon_enter');if(r.error)throw r.error;const v=+r.data;if(!v){DGD={d:n.k};save();toast('오늘 던전은 이미 입장했어요','#ff7a7a');if(shopOpen)buildShop();return}k=v}}
 catch(e){const m=String((e&&e.message)||'');if(!(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))){toast('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요','#ff7a7a');return}}finally{dgBusy=0}
@@ -568,7 +569,7 @@ const TB=['단련','설정','던전'];
 let h=`<div class="sh-h"><div class="sh-t"><h2>단련 <small>● ${gold}</small></h2><button class="sh-x" data-b="close" aria-label="닫기">✕</button></div><div class="tabs">${TB.map((n,i)=>`<button data-b="t${i}" class="${shopTab==i?'on':''}">${n}</button>`).join('')}</div></div>`;
 if(shopTab==0){
 const c=40+up*30;h+='<h3>단련</h3>'+row('공격 단련 +'+up,'공격력 +6 (누적)',c+'G',gold<c,'up')+row('체력 단련 +'+hu,'체력 +'+HU.v+' (누적)',(40+hu*30)+'G',gold<40+hu*30,'hu')+'<h3>자동 단련</h3>'+row('자동 단련 '+(atr?'ON':'OFF'),'골드가 모이면 공격·체력 단련을 자동으로 올려요 (기본 꺼짐 · 골드를 직접 쓰려면 끄세요)',atr?'끄기':'켜기',0,'atr')}
-else if(shopTab==2){const n=dgNow(),T=DGT[n.w],u=DGD.d==n.k;h+='<h3>요일 던전</h3>'+row(T[0]+'요일 · '+T[1]+' 던전','STAGE '+dgStage()+' 난이도 · 클리어 시 '+T[2]+(u?' · 오늘 입장 완료':'')+'<br>죽거나 포기하면 보상이 없고 오늘은 다시 못 들어가요. 방치 보상에는 영향이 없어요.',u?'완료':'입장',u||st!=1||DG||dgBusy,'dg')}
+else if(shopTab==2){const n=dgNow(),T=DGT[n.w],u=DGD.d==n.k;h+='<h3>요일 던전</h3>'+row(T[0]+'요일 · '+T[1]+' 던전','STAGE '+dgStage()+' 난이도 · 클리어 시 '+T[2]+(u?' · 오늘 입장 완료':'')+'<br>죽거나 포기하면 보상이 없고 오늘은 다시 못 들어가요. 방치 보상에는 영향이 없어요.'+(AF.user?'':'<br>🔒 로그인 후에 이용할 수 있어요.'),AF.user?(u?'완료':'입장'):'로그인 필요',!AF.user||u||st!=1||DG||dgBusy,'dg')}
 else{
 h+='<h3>자동 구매</h3>'+row('자동 구매 '+(ab?'ON':'OFF'),'골드가 모이면 슬롯 강화 +'+AE+'까지 자동으로 진행해요 (재굴림 골드를 모으려면 끄세요)',ab?'끄기':'켜기',0,'ab')
 +'<h3>사냥터</h3>'+row('STAGE '+stage+' · '+th.n+(bk?' · 후퇴 중':''),'최고 도달 STAGE '+best+' · 보스를 잡아도 이 스테이지에 머물기 '+(farm?'켜짐':'꺼짐'),'머물기 '+(farm?'끄기':'켜기'),0,'fm')+'<div class="row"><button data-b="sp" '+(stage<=1?'disabled':'')+'>◀ 이전</button><button data-b="sn" '+(stage>=best?'disabled':'')+'>다음 ▶</button></div>'
@@ -793,7 +794,7 @@ const row=k=>{const x=eq[k];if(!x)return `<div class="pi em"><div class="l"><spa
 return `<div class="pi"><div class="l"><span style="color:${icol(x)}">${e?'+'+e+' ':''}${pfx(x.n)}</span><b style="font-weight:400;color:#ffe7a8">${SL[k][1]} +${v}</b></div><small>${iname(x)} ${SL[k][0]}${sn(x)?' · '+pfx(sn(x))+' 세트':''}</small>${x.o.length?`<small>${pfx(ots(x))}</small>`:''}</div>`};
 pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas><div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${(+d.cp||0).toLocaleString()}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>`,me?'내 정보':'');
 const c2=pfEl.querySelector('canvas'),t0=++pfTok;(function lp(){if(t0!==pfTok||!pfEl.classList.contains('on'))return;drawDoll(c2,eq);pfRaf=requestAnimationFrame(lp)})()}
-AF.showProfile=async function(uid,name){if(!uid)return;const tk=++pfTok;
+AF.showProfile=async function(uid,name){if(!uid||!AF.user)return;const tk=++pfTok;
  if(uid===(AF.user&&AF.user.id)){pfView({nk:NK||name,lv:P.lv,st:stage,cp:cp(),eq:EQ,en:EN},name,1);return}
  const hit=PFC.get(uid);if(hit&&Date.now()-hit.t<60000){pfView(hit.d,name,0);return}
  pfShow(name,'<div class="pn">불러오는 중…</div>');
@@ -925,12 +926,12 @@ function buildTitle(){
   <div class="mb">${gated()?gateBtn():has
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
-  <button data-a="opt">설정</button>${AF.user&&sb?'<button data-a="rank">랭킹</button>':''}${gated()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>
+  <button data-a="opt">설정</button>${AF.user&&sb?'<button data-a="rank">랭킹</button>':AF.guest()?'<button disabled>랭킹<small>로그인 필요</small></button>':''}${gated()||AF.guest()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>${AF.guest()?'<p class="gn">⚠️ 로그인하지 않고 플레이 중이에요<br>진행은 <b>이 기기(브라우저)에만</b> 저장돼요 · 브라우저 데이터를 지우면 사라져요<br>일부 기능은 <b>로그인 후</b>에 이용할 수 있어요</p>':''}
   <p class="ofh">💤 <b>오프라인 사냥</b> — 게임을 꺼 둬도 사냥이 계속돼요!<br>최대 ${Math.round(AF.OFF.max/3600)}시간, 골드·경험치·아이템을 ${Math.round(AF.OFF.eff*100)}% 보상으로 받아요</p>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
   onShow();
 }
-pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><div class="mb">
+pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><p class="gn" id="pgn" style="display:none"></p><div class="mb">
   <button class="pri" data-a="resume">계속하기</button><button data-a="rank">랭킹</button><button data-a="opt">설정</button>${fsBtn()}<button data-a="title">타이틀로</button></div></div>`;
 
 const sl=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><input type="range" min="0" max="100" step="5" id="${id}" aria-label="${label}"><b id="${id}v"></b></div>`;
@@ -977,14 +978,14 @@ AF.pauseOn=function(){
   if(AF.st!=1||pm.classList.contains('on')||AF.chrOpen||AF.shopOpen)return;
   AF.pz=false;pm.querySelector('#pht').textContent='메뉴';for(const k in AF.K)AF.K[k]=0;
   pm.querySelector('#pst').textContent=`STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}`;
-  sync();pm.classList.add('on');focusFirst(pm);
+  {const g=pm.querySelector('#pgn');if(g){g.style.display=AF.user?'none':'';g.innerHTML=AF.user?'':'⚠️ 로그인 없이 플레이 중 — 진행은 이 기기에만 저장돼요<br>일부 기능은 로그인 후에 이용할 수 있어요'}const rb=pm.querySelector('button[data-a="rank"]');if(rb){rb.disabled=!AF.user;rb.innerHTML=AF.user?'랭킹':'랭킹<small>로그인 필요</small>'}}sync();pm.classList.add('on');focusFirst(pm);
 };
 AF.pauseOff=function(){AF.pz=false;pm.classList.remove('on');om.classList.remove('on');if(document.activeElement)document.activeElement.blur()};
 
 function act(a,btn){
   if(gated()&&(a=='cont'||a=='new'||a=='new2'))return;if(a=='resync'){AF.syncErr=0;buildTitle();focusFirst(tm);cloudSync();return}
   if(a=='login'){kakaoLogin();return}if(a=='logout'){if(sb)cloudUp(true).catch(()=>{}).then(()=>sb.auth.signOut()).then(()=>location.reload());return}
-  if(a=='cont'){document.body.classList.remove('ttl');tm.classList.add('out');setTimeout(()=>tm.classList.remove('on','out'),300);if(document.activeElement)document.activeElement.blur();AF.go();return}
+  if(a=='cont'){document.body.classList.remove('ttl');tm.classList.add('out');setTimeout(()=>tm.classList.remove('on','out'),300);if(document.activeElement)document.activeElement.blur();if(AF.guest())setTimeout(()=>{try{AF.chatSys('⚠ 로그인 없이 플레이 중이에요. 진행은 이 기기에만 저장되고, 일부 기능은 로그인 후에 이용할 수 있어요.','#ffd98a')}catch(e){}},1200);AF.go();return}
   if(a=='new'){
     btn.dataset.a='new2';btn.classList.add('dg');btn.innerHTML='정말 처음부터 시작할까요?<small>저장 데이터가 지워져요 · 한 번 더 누르세요</small>';
     clearTimeout(confirmT);confirmT=setTimeout(()=>{if(btn.dataset.a=='new2'){btn.dataset.a='new';btn.classList.remove('dg');btn.textContent='새 게임'}},4000);return}
@@ -1077,10 +1078,10 @@ function nkOpen(first){
 
 /* ===== 저장 덮어쓰기 확인 — 서버 저장이 이 기기 저장보다 최근이라 기기 진행을 덮어쓰게 될 때만 물어봐요 ===== */
 const hasProg=x=>{try{const d=JSON.parse(x)||{};return d.lv>1||d.xp>0||d.stage>1||d.gold>0||d.up>0||d.hu>0}catch(e){return false}};
-function ovrAsk(local,cs){return new Promise(res=>{
+function ovrAsk(local,cs,g){return new Promise(res=>{
   const sm=x=>{try{const d=JSON.parse(x)||{};return 'STAGE '+(d.stage||1)+' · Lv.'+(d.lv||1)}catch(e){return '?'}},
     tm2=x=>{try{return new Date(tsOf(x)).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return ''}};
-  nkm.innerHTML='<div class="bx"><h2>서버 저장으로 덮어쓸까요?</h2><p>서버에 이 기기보다 더 최근 저장이 있어요.</p>'
+  nkm.innerHTML='<div class="bx"><h2>서버 저장으로 덮어쓸까요?</h2><p>'+(g?'로그인 전에 이 기기에서 진행한 저장이 있어요. 어느 쪽을 쓸까요?':'서버에 이 기기보다 더 최근 저장이 있어요.')+'</p>'
     +'<div class="cmp">서버 · <b>'+sm(cs)+'</b> <small>'+tm2(cs)+'</small><br>이 기기 · <b>'+sm(local)+'</b> <small>'+tm2(local)+'</small></div>'
     +'<div class="bt"><button class="pri" data-n="srv">서버 저장으로 덮어쓰기<small>이 기기의 진행은 사라져요</small></button><button data-n="loc">이 기기 저장 유지<small>서버 저장이 이 기기의 진행으로 바뀌어요</small></button></div></div>';
   document.body.classList.add('nk');nkm.classList.add('on');
@@ -1092,9 +1093,9 @@ function ovrAsk(local,cs){return new Promise(res=>{
 const SB_URL='https://ulhfkgokgxvwbxotamds.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsaGZrZ29rZ3h2d2J4b3RhbWRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3OTQ2OTIsImV4cCI6MjEwNjM3MDY5Mn0.1clWa2SQHFfDcjIg3iZu80uAvI1ld-Jy5qxUXY5g6ug';
 let sb=null;try{AF.tsync&&AF.tsync(SB_URL,SB_KEY)}catch(e){}AF.user=null;AF.authReady=0;AF.sb=null;
 try{if(window.supabase&&!/^YOUR_/.test(SB_URL+SB_KEY))sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',persistSession:true,detectSessionInUrl:true}});else console.warn('Supabase URL/ANON KEY를 입력하면 로그인 버튼이 나타나요')}catch(e){console.warn('supabase init',e)}AF.sb=sb;
-const gated=()=>!AF.user||!AF.synced;
+const gated=()=>AF.user?!AF.synced:!AF.authReady;AF.guest=()=>!!AF.authReady&&!AF.user;/* 게스트: 로그인 없이 플레이 — 서버로 가는 요청·실시간 연결을 전혀 쓰지 않아요 */
 const gateBtn=()=>!sb?`<button disabled>로그인 서비스에 연결할 수 없어요<small>새로고침해 보세요</small></button>`:!AF.authReady?`<button disabled>로그인 확인 중…</button>`:!AF.user?`<button data-a="login" class="kk">카카오로 로그인<small>로그인해야 플레이할 수 있어요</small></button>`:AF.syncErr?`<button data-a="resync">저장 데이터를 불러오지 못했어요<small>눌러서 다시 시도</small></button>`:`<button disabled>저장 데이터 확인 중…</button>`;
-const acctBtn=()=>!sb?'':AF.user?`<button data-a="logout" class="kk out">${esc(AF.nk||AF.user.name)} 님<small>로그아웃</small></button>`:`<button data-a="login" class="kk">카카오로 로그인</button>`;
+const acctBtn=()=>!sb?'':AF.user?`<button data-a="logout" class="kk out">${esc(AF.nk||AF.user.name)} 님<small>로그아웃</small></button>`:`<button data-a="login" class="kk">카카오로 로그인<small>로그인하면 더 많은 기능을 쓸 수 있어요</small></button>`;
 function kakaoLogin(){if(!sb)return;if(location.protocol=='file:'){alert('로그인은 https 주소에서만 동작해요. 서버에 올린 뒤 시도해 주세요.');return}try{AF.save()}catch(e){}
   sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+location.pathname,scopes:'profile_nickname profile_image'}}).then(r=>{if(r.error)alert('로그인 실패: '+r.error.message)})}
 /* ===== 클라우드 저장 (Supabase game_saves) ===== */
@@ -1106,8 +1107,8 @@ async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=tr
     const cloud=r.data&&r.data.data,cs=cloud?JSON.stringify(cloud):null,local=lsGet();let owner=null;try{owner=localStorage.getItem(OW)}catch(e){}
     let useCloud=false,wipe=false;
     if(owner&&owner!==u.id){try{if(local)localStorage.setItem(LS+'@'+owner,local)}catch(e){}if(cloud)useCloud=true;else wipe=true}
-    else if(cloud&&(!local||tsOf(cs)>tsOf(local)))useCloud=true;
-    let keepLocal=false;if(useCloud&&!wipe&&local&&!(owner&&owner!==u.id)&&hasProg(local)){if(!(await ovrAsk(local,cs))){useCloud=false;keepLocal=true}}
+    else if(cloud&&(!local||tsOf(cs)>tsOf(local)||(!owner&&hasProg(local))))useCloud=true;
+    let keepLocal=false;if(useCloud&&!wipe&&local&&!(owner&&owner!==u.id)&&hasProg(local)){if(!(await ovrAsk(local,cs,!owner))){useCloud=false;keepLocal=true}}
     try{localStorage.setItem(OW,u.id)}catch(e){}
     if((useCloud||wipe)&&!sessionStorage.getItem('afr')){AF.resetting=true;try{if(useCloud)localStorage.setItem(LS,cs);else localStorage.removeItem(LS)}catch(e){}sessionStorage.setItem('afr','1');location.reload();return}
     sessionStorage.removeItem('afr');cloudOK=true;if(cs)lastUp=JSON.stringify(Object.assign({},cloud,{ts:0}));
@@ -1133,14 +1134,14 @@ if(sb){sb.auth.getSession().then(r=>setUser(r.data&&r.data.session),()=>setUser(
    서버: online_users 표 + heartbeat() 함수가 필요해요 (online_users.sql). 아직 안 만들었으면 표시만 조용히 꺼져요. ===== */
 let onN=0,onT=0,onErr=0,onLast=0,onOff=0;
 const onB=document.createElement('div');onB.id='onl';document.body.appendChild(onB);
-const onTxt=()=>onN>0?'<i></i>접속 중 <b>'+onN.toLocaleString('ko-KR')+'</b>명':'';
+const onTxt=()=>onN>0?'<i></i>접속 중 <b>'+onN.toLocaleString('ko-KR')+'</b>명':(AF.guest()?'<i class="g"></i>접속 중 <b>?</b>명':'');
 function onShow(){const h=onTxt();onB.innerHTML=h;onB.classList.toggle('on',!!h);const t=document.getElementById('onl2');if(t)t.innerHTML=h}
-async function beat(){onLast=Date.now();if(onOff||!sb||!AF.user)return;
-  try{const r=await sb.rpc('heartbeat');if(r.error)throw r.error;onErr=0;const n=+r.data;if(n>0){onN=n;onShow()}}
+async function beat(){onLast=Date.now();if(onOff||!sb||(!AF.user&&!AF.guest()))return;/* 게스트는 숫자만 읽어요(online_count, 읽기 전용) — 집계에 기록되지 않아요 */
+  try{const r=await sb.rpc(AF.user?'heartbeat':'online_count');if(r.error)throw r.error;onErr=0;const n=+r.data;if(n>0){onN=n;onShow()}}
   catch(e){onErr++;const m=String((e&&e.message)||'');if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m))){onOff=1;onN=0;onShow();console.warn('접속자 수: heartbeat 함수가 없어요 (online_users.sql 실행 필요)')}}}
-function onLoop(){clearTimeout(onT);if(onOff||!AF.user)return;const base=(document.hidden?180000:120000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
-window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user){beat();onLoop()}});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&!onOff&&Date.now()-onLast>40000){beat();onLoop()}});
+function onLoop(){clearTimeout(onT);if(onOff||(!AF.user&&!AF.guest()))return;const base=(document.hidden?180000:120000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
+window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user||AF.guest()){beat();onLoop()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(AF.user||AF.guest())&&!onOff&&Date.now()-onLast>40000){beat();onLoop()}});
 buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirst(tm);
 })();
 </script>
@@ -1222,7 +1223,8 @@ async function nbPoll(){const sb=AF.sb;if(nbOff||nbBusy||isOpen||document.hidden
   catch(e){if(e&&(e.code==='PGRST202'||e.code==='42883'||e.code==='42501'))nbOff=1}finally{nbBusy=0}}
 /* 서버 함수가 아직 없으면(chat_latest 미생성) 조용히 꺼져요 */
 setInterval(nbPoll,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(nbPoll,500)});
-function open(byClick){if(isOpen)return;isOpen=true;nbSeen=nbLat;nbDraw();chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
+let lkT=0;const lockUI=()=>box.classList.toggle('lk',!AF.user);
+function open(byClick){if(isOpen)return;if(!AF.user){const n=Date.now();if(n-lkT>4000){lkT=n;sys('로그인 후에 이용할 수 있는 기능이에요. (타이틀 화면에서 로그인)','#ff9a8a')}return}isOpen=true;nbSeen=nbLat;nbDraw();chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
 function close(){if(!isOpen)return;isOpen=false;nbSeen=nbLat;nbDraw();chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
 /* 키보드가 올라오면(visualViewport) 채팅창을 키보드 바로 위로 올리고, 화면이 낮으면 로그 높이를 줄여요 */
 function place(){const h=vv?vv.height:innerHeight,top=vv?vv.offsetTop:0;
@@ -1269,7 +1271,7 @@ function goNet(){const sb=AF.sb,u=AF.user;if(!sb||!u)return;if(chCh&&ME.id===u.i
       return go({text:m.text,name:ME.name}).then(r=>r.error?go({text:m.text}):r).then(r=>{if(r.error)throw r.error;recv(row(r.data))})},
     history(ch,n){return sb.from('chat_messages').select().eq('ch',ch).order('id',{ascending:false}).limit(n).then(r=>{if(r.error)throw r.error;return(r.data||[]).map(row)})}};
   if(isOpen)chWake()}
-window.addEventListener('af-user',goNet);window.addEventListener('af-nick',()=>{if(AF.user&&AF.nk){ME.name=String(AF.nk).slice(0,12);saveMe()}});goNet();
+window.addEventListener('af-user',()=>{goNet();lockUI()});lockUI();window.addEventListener('af-nick',()=>{if(AF.user&&AF.nk){ME.name=String(AF.nk).slice(0,12);saveMe()}});goNet();
 /* 로그 절약: 탭이 1분 넘게 숨겨지면 실시간 연결을 끊고, 돌아오면 다시 연결해요 */
 let hidT=0,slT=0;
 function chWake(){clearTimeout(slT);if(!chCh&&CHAT.net.mode==='supabase')CHAT.start()}
