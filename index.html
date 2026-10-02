@@ -936,7 +936,7 @@ function buildTitle(){
   onShow();
 }
 pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><p class="gn" id="pgn" style="display:none"></p><div class="mb">
-  <button class="pri" data-a="resume">계속하기</button><button data-a="rank">랭킹</button><button data-a="opt">설정</button>${fsBtn()}<button data-a="title">타이틀로</button></div></div>`;
+  <button class="pri" data-a="resume">계속하기</button><button data-a="rank">랭킹</button><button data-a="opt">설정</button>${fsBtn()}<button class="kk" data-a="login" id="pml" style="display:none">카카오로 로그인<small>지금까지의 진행이 서버에 안전하게 저장돼요</small></button><button data-a="title">타이틀로</button></div></div>`;
 
 const sl=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><input type="range" min="0" max="100" step="5" id="${id}" aria-label="${label}"><b id="${id}v"></b></div>`;
 const tg=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><button class="tg" id="${id}" data-a="${id}"></button></div>`;
@@ -982,7 +982,7 @@ AF.pauseOn=function(){
   if(AF.st!=1||pm.classList.contains('on')||AF.chrOpen||AF.shopOpen)return;
   AF.pz=false;pm.querySelector('#pht').textContent='메뉴';for(const k in AF.K)AF.K[k]=0;
   pm.querySelector('#pst').textContent=`STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}`;
-  {const g=pm.querySelector('#pgn');if(g){g.style.display=AF.user?'none':'';g.innerHTML=AF.user?'':'⚠️ 로그인 없이 플레이 중 — 진행은 이 기기에만 저장돼요<br>일부 기능은 로그인 후에 이용할 수 있어요'}const rb=pm.querySelector('button[data-a="rank"]');if(rb){rb.disabled=!AF.user;rb.innerHTML=AF.user?'랭킹':'랭킹<small>로그인 필요</small>'}}sync();pm.classList.add('on');focusFirst(pm);
+  {const g=pm.querySelector('#pgn');if(g){g.style.display=AF.user?'none':'';g.innerHTML=AF.user?'':'⚠️ 로그인 없이 플레이 중 — 진행은 이 기기에만 저장돼요<br>일부 기능은 로그인 후에 이용할 수 있어요'}const rb=pm.querySelector('button[data-a="rank"]');if(rb){rb.disabled=!AF.user;rb.innerHTML=AF.user?'랭킹':'랭킹<small>로그인 필요</small>'}const lb=pm.querySelector('#pml');if(lb)lb.style.display=AF.guest()&&sb?'':'none'}sync();pm.classList.add('on');focusFirst(pm);
 };
 AF.pauseOff=function(){AF.pz=false;pm.classList.remove('on');om.classList.remove('on');if(document.activeElement)document.activeElement.blur()};
 
@@ -1228,7 +1228,7 @@ async function nbPoll(){const sb=AF.sb;if(nbOff||nbBusy||isOpen||document.hidden
 /* 서버 함수가 아직 없으면(chat_latest 미생성) 조용히 꺼져요 */
 setInterval(nbPoll,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(nbPoll,500)});
 let lkT=0;const lockUI=()=>box.classList.toggle('lk',!AF.user);
-function open(byClick){if(isOpen)return;if(!AF.user){const n=Date.now();if(n-lkT>4000){lkT=n;sys('로그인 후에 이용할 수 있는 기능이에요. (타이틀 화면에서 로그인)','#ff9a8a')}return}isOpen=true;nbSeen=nbLat;nbDraw();chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
+function open(byClick){if(isOpen)return;if(!AF.user){const n=Date.now();if(n-lkT>4000){lkT=n;sys('로그인 후에 이용할 수 있는 기능이에요. (메뉴 → 카카오로 로그인)','#ff9a8a')}return}isOpen=true;nbSeen=nbLat;nbDraw();chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
 function close(){if(!isOpen)return;isOpen=false;nbSeen=nbLat;nbDraw();chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
 /* 키보드가 올라오면(visualViewport) 채팅창을 키보드 바로 위로 올리고, 화면이 낮으면 로그 높이를 줄여요 */
 function place(){const h=vv?vv.height:innerHeight,top=vv?vv.offsetTop:0;
