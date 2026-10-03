@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610011200">
+<meta name="build" content="202610031630">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -259,7 +259,7 @@ const ENH={k:18,st:.12,fl:.2,auto:5},EN={w:0,a:0,h:0,r:0,n:0,f:0};
    아이템은 그 드롭 수만큼 등급 확률대로 만들어서 자동 처리해요(더 좋으면 장착, 아니면 판매). minw초 미만 플레이한 저장 데이터는 예전 방식(골드만)으로 계산해요.
    eff 를 올리면 방치가 후해지고, 내리면 짜져요. */
 /* xe: 방치 경험치에만 추가로 곱하는 배율(골드·아이템은 eff만 적용). 방치로 레벨이 너무 빨리 오르면 낮추세요 */
-const OFF={max:43200,eff:.8,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0,chrIt=null,chrLv=0,shT=0,shG=-1,ptrT=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
+const OFF={max:43200,eff:.7,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0,chrIt=null,chrLv=0,shT=0,shG=-1,ptrT=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
 /* 후퇴: 같은 스테이지에서 d번 연속 죽으면 한 단계 아래에서 반복 사냥 → 전투력이 후퇴 시점의 up배가 되거나 max번 클리어하면 원래 스테이지로 복귀 */
 const RT={d:2,up:1.1,max:6,cap:48};
 /* 보스 제한시간(초): 컷신이 끝난 뒤부터 세요. 넘기면 쓰러진 것과 같이 처리돼서 연속 실패 2번이면(RT.d) 후퇴해요. mini 는 5의 배수가 아닌 중간 보스, last 는 5/5 보스 */
