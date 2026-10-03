@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610031630">
+<meta name="build" content="202610031745">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -259,7 +259,7 @@ const ENH={k:18,st:.12,fl:.2,auto:5},EN={w:0,a:0,h:0,r:0,n:0,f:0};
    아이템은 그 드롭 수만큼 등급 확률대로 만들어서 자동 처리해요(더 좋으면 장착, 아니면 판매). minw초 미만 플레이한 저장 데이터는 예전 방식(골드만)으로 계산해요.
    eff 를 올리면 방치가 후해지고, 내리면 짜져요. */
 /* xe: 방치 경험치에만 추가로 곱하는 배율(골드·아이템은 eff만 적용). 방치로 레벨이 너무 빨리 오르면 낮추세요 */
-const OFF={max:43200,eff:.7,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0,chrIt=null,chrLv=0,shT=0,shG=-1,ptrT=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
+const OFF={max:43200,eff:.7,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0,k:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0,chrIt=null,chrLv=0,shT=0,shG=-1,ptrT=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
 /* 후퇴: 같은 스테이지에서 d번 연속 죽으면 한 단계 아래에서 반복 사냥 → 전투력이 후퇴 시점의 up배가 되거나 max번 클리어하면 원래 스테이지로 복귀 */
 const RT={d:2,up:1.1,max:6,cap:48};
 /* 보스 제한시간(초): 컷신이 끝난 뒤부터 세요. 넘기면 쓰러진 것과 같이 처리돼서 연속 실패 2번이면(RT.d) 후퇴해요. mini 는 5의 배수가 아닌 중간 보스, last 는 5/5 보스 */
@@ -329,8 +329,10 @@ function skGain(id){const s=SKT.find(z=>z.id==id);if(!s)return;try{toast('스킬
 if(!o){SKS.own[id]={lv:1,c:0};for(let i=0;i<3;i++)if(!SKS.eq[i]&&P.lv>=SKL[i]){SKS.eq[i]=id;break}TX.push({x:P.x,y:P.y-150,t:'새 스킬 '+s.n+'!',l:2.2,c:'#c9a0ff'});csys('새 스킬북: '+s.n+' — '+skd(s,1),'#c9a0ff')}
 else{o.c++;let up=0;while(o.lv<5&&o.c>=SKN[o.lv-1]){o.c-=SKN[o.lv-1];o.lv++;up=1}if(up){TX.push({x:P.x,y:P.y-150,t:s.n+' Lv.'+o.lv+'!',l:2.2,c:'#c9a0ff'});csys('스킬 강화: '+s.n+' Lv.'+o.lv,'#c9a0ff')}else{TX.push({x:P.x,y:P.y-150,t:s.n+' 조각 +1',l:1.6,c:'#c9a0ff'});csys('스킬 조각: '+s.n+' ('+o.c+'/'+SKN[o.lv-1]+')','#c9a0ff')}}
 sfx(784,.3,'triangle',.06,1.6);save();if(chrOpen)buildChr()}
+function skGainQ(id){let o=SKS.own[id];if(!o){SKS.own[id]={lv:1,c:0};for(let i=0;i<3;i++)if(!SKS.eq[i]&&P.lv>=SKL[i]){SKS.eq[i]=id;break}}else{o.c++;while(o.lv<5&&o.c>=SKN[o.lv-1]){o.c-=SKN[o.lv-1];o.lv++}}}
+function skPick(){const w=SKT.map(s=>{const o=SKS.own[s.id];return !o?3:o.lv<5?1:0}),tot=w.reduce((a,b)=>a+b,0);if(!tot)return null;let r=R()*tot,i=0;for(;i<w.length-1;i++){r-=w[i];if(r<0)break}return SKT[i].id}
 const SKMIN=80;/* 스킬북은 이 스테이지부터만 떨어져요 */
-function skDrop(e){if(stage<SKMIN)return;const bs=e.t=='g',pr=bs?(e.mini?.01:.03):e.el?.003:0;if(!pr||R()>=pr)return;const w=SKT.map(s=>{const o=SKS.own[s.id];return !o?3:o.lv<5?1:0}),tot=w.reduce((a,b)=>a+b,0);if(!tot)return;let r=R()*tot,i=0;for(;i<w.length-1;i++){r-=w[i];if(r<0)break}skGain(SKT[i].id)}
+function skDrop(e){if(stage<SKMIN)return;const bs=e.t=='g',pr=bs?(e.mini?.01:.03):e.el?.003:0;if(pr)IR.k+=pr;if(!pr||R()>=pr)return;const w=SKT.map(s=>{const o=SKS.own[s.id];return !o?3:o.lv<5?1:0}),tot=w.reduce((a,b)=>a+b,0);if(!tot)return;let r=R()*tot,i=0;for(;i<w.length-1;i++){r-=w[i];if(r<0)break}skGain(SKT[i].id)}
 function skEq(id){if(P.lv<SKL[chrSK]||!SKS.own[id])return;const c=SKS.eq.indexOf(id);if(c==chrSK)SKS.eq[chrSK]=null;else{if(c>=0)SKS.eq[c]=null;SKS.eq[chrSK]=id}}
 const SKB=[...document.querySelectorAll('#sks .sl')];let skg=['','',''];
 function sksUp(){for(let i=0;i<3;i++){const b=SKB[i],id=SKS.eq[i],s=id&&SKT.find(z=>z.id==id),o=s&&SKS.own[id],lk=P.lv<SKL[i],key=lk?'L'+SKL[i]:s?id+o.lv:'E';
@@ -504,10 +506,10 @@ function save(){if(resetting)return;try{localStorage.setItem('ashen1',JSON.strin
 function load(){try{const d=JSON.parse(localStorage.getItem('ashen1'));if(d){if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null})}PUB=!(d.pv&&d.pv.sh===0);P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;EQ=Object.assign(EQ,d.EQ);if(!(d.tv>=3)){const mp=d.tv==2?[0,1,2,3,4,4]:[0,2,3,4,4];for(const k in EQ){const x=EQ[k];if(x&&mp[x.ri]!=null)x.ri=mp[x.ri]}}if(d.en)Object.assign(EN,d.en);if(!(d.tv>=4))for(const k in EQ){const x=EQ[k];if(x&&x.e){EN[k]=M.max(EN[k]|0,x.e|0);delete x.e}}if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});else{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);offCalc();P.hp=mhp();P.mp=mmp()}}catch(e){}}
 function offCalc(){if(ot<60)return;const w=IR.w;
 if(!(w>=OFF.minw)){og=M.round(ot*(.2+stage*.05));return}
-const t=ot*OFF.eff,cg=M.round(IR.g/w*t),xp=M.round(IR.x/w*t*OFF.xe),cnt=x=>M.floor(x)+(R()<x%1?1:0),items=[],pw=3+stage*4+P.lv*1.2;
+const t=ot*OFF.eff,cg=M.round(IR.g/w*t),xp=M.round(IR.x/w*t*OFF.xe),cnt=x=>M.floor(x)+(R()<x%1?1:0),items=[],pw=3+stage*4+P.lv*1.2,sk=stage>=SKMIN?cnt((IR.k||0)/w*t):0;
 for(let i=M.min(20000,cnt(IR.n/w*t));i>0;i--)items.push(mk(SK[rn(0,SK.length)|0],rr(0),pw));
 for(let i=M.min(20000,cnt(IR.b/w*t));i>0;i--)items.push(mk(SK[rn(0,SK.length)|0],rr(.08),pw));
-OR={g:cg,x:xp,items,h:ot/3600};og=cg;ogs='+'+cg.toLocaleString()+'G · 경험치 +'+xp.toLocaleString()+' · 아이템 '+items.length.toLocaleString()+'개'}
+OR={g:cg,x:xp,items,sk,h:ot/3600};og=cg;ogs='+'+cg.toLocaleString()+'G · 경험치 +'+xp.toLocaleString()+' · 아이템 '+items.length.toLocaleString()+'개'}
 let ADP=null;
 function adiag(){if(ADP)return;const d=document.createElement('div');ADP=d;
 d.style.cssText="position:fixed;left:0;right:0;bottom:0;max-height:78vh;z-index:10001;background:#0b1218;border-top:2px solid #ffb84a;color:#e8f1ee;font:14px/1.5 'Do Hyeon',sans-serif;display:flex;flex-direction:column;touch-action:pan-y";
@@ -532,17 +534,19 @@ function tdiag(){try{const L=11025,a=new Float32Array(L);for(let i=0;i<L;i++)a[i
 let OPOP=null;
 function offPop(o){try{if(OPOP)OPOP.remove();const d=document.createElement('div');OPOP=d;d.style.cssText="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#050a0ecc;font-family:'Do Hyeon',sans-serif;touch-action:manipulation";
 const row=(a,b,c)=>'<div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #ffffff18;font-size:18px"><span style="color:#9fb5b0">'+a+'</span><b style="font-weight:400;color:'+(c||'#e8f1ee')+';text-align:right">'+b+'</b></div>';
-d.innerHTML='<div style="width:min(86vw,380px);max-height:86vh;overflow:auto;padding:20px 22px 18px;border-radius:16px;background:#0f1d24;border:2px solid #ffb84a;box-shadow:0 0 30px #ffb84a55"><div style="text-align:center;color:#ffb84a;font-size:26px">방치 보상</div><div style="text-align:center;color:#9fb5b0;font-size:15px;margin:4px 0 10px">자리를 비운 시간 '+o.h+'</div>'+row('골드','+'+o.g.toLocaleString()+' G','#ffcf4a')+(o.x!=null?row('경험치','+'+o.x.toLocaleString()+(o.l?'<br>Lv.'+o.l[0]+' → Lv.'+o.l[1]:''),'#7dffe0'):'')+(o.n!=null?row('획득 아이템',o.n.toLocaleString()+'개<br><small style="color:#9fb5b0">장착 교체 '+o.e+'회 · 나머지는 자동 판매</small>'):'')+(o.t?row('최고 드랍',o.t,o.tc):'')+'<button id="opk" style="display:block;width:100%;height:52px;margin:16px 0 0;border-radius:12px;font-size:20px">받기</button></div>';
+d.innerHTML='<div style="width:min(86vw,380px);max-height:86vh;overflow:auto;padding:20px 22px 18px;border-radius:16px;background:#0f1d24;border:2px solid #ffb84a;box-shadow:0 0 30px #ffb84a55"><div style="text-align:center;color:#ffb84a;font-size:26px">방치 보상</div><div style="text-align:center;color:#9fb5b0;font-size:15px;margin:4px 0 10px">자리를 비운 시간 '+o.h+'</div>'+row('골드','+'+o.g.toLocaleString()+' G','#ffcf4a')+(o.x!=null?row('경험치','+'+o.x.toLocaleString()+(o.l?'<br>Lv.'+o.l[0]+' → Lv.'+o.l[1]:''),'#7dffe0'):'')+(o.n!=null?row('획득 아이템',o.n.toLocaleString()+'개<br><small style="color:#9fb5b0">장착 교체 '+o.e+'회 · 나머지는 자동 판매</small>'):'')+(o.s?row('스킬북',o.s,'#c9a0ff'):'')+(o.t?row('최고 드랍',o.t,o.tc):'')+'<button id="opk" style="display:block;width:100%;height:52px;margin:16px 0 0;border-radius:12px;font-size:20px">받기</button></div>';
 document.body.appendChild(d);pz=true;for(const k in K)K[k]=0;
 const cl=()=>{if(!OPOP)return;OPOP.remove();OPOP=null;pz=false};d.querySelector('#opk').addEventListener('click',cl);d.addEventListener('pointerdown',e=>e.stopPropagation())}catch(e){pz=false}}
 function offApply(){const R=OR;OR=null;og=0;ogs='';if(!R)return;
 const sv=x=>M.round(x.v*SL[x.sl][4]*(1+sq(x)));let sold=0,eq=0,top=null;
 for(const it of R.items){const c=EQ[it.sl];if(better(it,c)){EQ[it.sl]=it;if(c)sold+=sv(c);eq++}else sold+=sv(it);if(!top||it.ri>top.ri||(it.ri==top.ri&&scr(it)>scr(top)))top=it}
 gold+=R.g+sold;P.xp+=R.x;const l0=P.lv;while(P.xp>=need()){P.xp-=need();P.lv++;gainPts(3)}P.hp=mhp();P.mp=mmp();
+let skn=0;const skl={};for(let i=0;i<(R.sk|0);i++){const id=skPick();if(!id)break;skGainQ(id);skn++;skl[id]=(skl[id]|0)+1}
+const sks=skn?skn+'개 ('+Object.entries(skl).map(([id,c])=>SKT.find(z=>z.id==id).n+(c>1?'×'+c:'')).join(', ')+')':'';
 const hh=R.h<1?M.round(R.h*60)+'분':M.round(R.h*10)/10+'시간';
-csys('방치 보상 ('+hh+') 골드 +'+(R.g+sold).toLocaleString()+' · 경험치 +'+R.x.toLocaleString()+(P.lv>l0?' · Lv.'+l0+'→'+P.lv:'')+' · 아이템 '+R.items.length.toLocaleString()+'개(장착 교체 '+eq+'회)'+(top&&top.ri>=2?' · 최고 '+TIERS[top.ri].n+(top.u!=null?' 유니크 ':' ')+top.n:''),'#ffcf4a');
+csys('방치 보상 ('+hh+') 골드 +'+(R.g+sold).toLocaleString()+' · 경험치 +'+R.x.toLocaleString()+(P.lv>l0?' · Lv.'+l0+'→'+P.lv:'')+' · 아이템 '+R.items.length.toLocaleString()+'개(장착 교체 '+eq+'회)'+(sks?' · 스킬북 '+sks:'')+(top&&top.ri>=2?' · 최고 '+TIERS[top.ri].n+(top.u!=null?' 유니크 ':' ')+top.n:''),'#ffcf4a');
 TX.push({x:P.x,y:P.y-130,t:'방치 보상 ('+hh+')  골드 +'+(R.g+sold).toLocaleString(),l:3.2,c:'#ffcf4a'});
-offPop({h:hh,g:R.g+sold,x:R.x,l:P.lv>l0?[l0,P.lv]:null,n:R.items.length,e:eq,t:top&&top.ri>=2?TIERS[top.ri].n+(top.u!=null?' 유니크 ':' ')+top.n:'',tc:top&&top.ri>=2?icol(top):''});
+offPop({h:hh,g:R.g+sold,x:R.x,l:P.lv>l0?[l0,P.lv]:null,n:R.items.length,e:eq,s:sks,t:top&&top.ri>=2?TIERS[top.ri].n+(top.u!=null?' 유니크 ':' ')+top.n:'',tc:top&&top.ri>=2?icol(top):''});
 TX.push({x:P.x,y:P.y-95,t:'경험치 +'+R.x.toLocaleString()+(P.lv>l0?'  Lv.'+l0+'→'+P.lv:'')+'  아이템 '+R.items.length.toLocaleString()+'개',l:3.2,c:'#7dffe0'});save()}
 const AE=ENH.auto,er=n=>n<2?1:M.max(ENH.fl,1-(n-1)*.1),ec=n=>M.round(ENH.k*(n+1)*(n+2)+40);
 const rc=x=>M.round(150+x.v*SL[x.sl][5]*3);
@@ -633,7 +637,7 @@ if(e.hp<=0){sfx(700,.12,'sine',.05,1.8);e.dead=1;if(e.t=='d')splitD(e);{const xg
 for(let i=0;i<n;i++)OB.push({x:e.x,y:e.y-e.h/2,vx:rn(-120,120),vy:rn(-350,-150),t:R()<HO?'h':'c'});
 while(P.xp>=need()){P.xp-=need();P.lv++;gainPts(3);csys('레벨 '+P.lv+' 달성!','#7dffe0');if(PSL.includes(P.lv))TX.push({x:P.x,y:P.y-130,t:'패시브 슬롯 해금! (I 키)',l:2.5,c:'#ffd84a'});if(SKL.includes(P.lv))TX.push({x:P.x,y:P.y-160,t:'스킬 슬롯 해금! (I 키)',l:2.5,c:'#c9a0ff'});P.hp=mhp();P.mp=mmp();TX.push({x:P.x,y:P.y-100,t:'LEVEL UP!',l:1.6,c:'#7dffe0'});[523,659,784,1046].forEach((f,i)=>setTimeout(()=>sfx(f,.2,'triangle',.06),i*90));burst(P.x,P.y-40,40,'#7dffe0')}
 if(e.t=='g'){slw=.8;slf=.2;zm=1.14;shake=16;burst(e.x,e.y-e.h/2,70,th.gl);burst(e.x,e.y-e.h/2,40,th.bs);clr=3.2;[392,494,587,784,988].forEach((f,i)=>setTimeout(()=>sfx(f,.5,'triangle',.07),i*140));TX.push({x:P.x,y:P.y-120,t:'보스 격파!',l:1.6,c:'#ffb84a'});csys('STAGE '+stage+' 보스를 처치했어요.','#ffb84a');pgrant(stage);gnudge()}}}
-function upd(dt){T+=dt;{const k=M.exp(-dt/OFF.win);IR.g*=k;IR.x*=k;IR.n*=k;IR.b*=k;IR.w=IR.w*k+dt}
+function upd(dt){T+=dt;{const k=M.exp(-dt/OFF.win);IR.g*=k;IR.x*=k;IR.n*=k;IR.b*=k;IR.k*=k;IR.w=IR.w*k+dt}
 if(clr>0){clr-=dt;if(clr<=0){if(DG){dgEnd(1);return}LT.slice().forEach(o=>pick(o.it));dc=0;let ret=0;if(bk){bk.n++;if(cp()>=bk.c*RT.up||bk.n>=bk.m){stage=bk.s;bk=null;ret=1;frm=true}}else if(!farm&&!frm)stage++;clr=0;spawn();P.hp=mhp();P.mp=mmp();if(ret)TX.push({x:P.x,y:P.y-130,t:'STAGE '+stage+' 복귀! 보스 재도전 버튼으로 도전하세요',l:2.5,c:'#7dffe0'});return}}
 if(frm){if(frt>0){frt-=dt;if(frt<=0){LT.slice().forEach(o=>pick(o.it));dc=0;spawn(0,1);P.hp=mhp();P.mp=mmp();return}}else if(ci<=0){const al=E.reduce((a,e)=>a+(e.dead?0:1),0);if(!al)frt=1.2;else if(al!=fal){fal=al;fft=0}else if((fft+=dt)>40)frt=.1}}
 bn-=dt;
@@ -835,7 +839,7 @@ function pfClose(){pfTok++;cancelAnimationFrame(pfRaf);if(pfEl)pfEl.classList.re
 function pfShow(title,body,sub){if(!pfEl){pfEl=document.createElement('div');pfEl.id='pf';document.body.appendChild(pfEl);pfEl.addEventListener('click',e=>{if(e.target===pfEl||e.target.closest('.px'))pfClose()});['keydown','keyup'].forEach(t=>pfEl.addEventListener(t,e=>e.stopPropagation()));addEventListener('keydown',e=>{if(e.key==='Escape'&&pfEl.classList.contains('on')){e.preventDefault();e.stopPropagation();pfClose()}},true)}
 cancelAnimationFrame(pfRaf);pfEl.innerHTML=`<div class="pc"><div class="pt"><h2>${pfx(title)}</h2>${sub?`<small>${pfx(sub)}</small>`:''}<button class="px" aria-label="닫기">✕</button></div><div class="pb">${body}</div></div>`;pfEl.classList.add('on')}
 function pfView(d,name,me){const nm=String(d.nk||name||'모험가').slice(0,12),eq={},en=d.en&&typeof d.en=='object'?d.en:{};for(const k of['w','a','h','r','n','f'])eq[k]=PCL(d.eq&&d.eq[k],k);
-const row=k=>{const x=eq[k];if(!x)return `<div class="pi em"><div class="l"><span>${SL[k][0]}</span><span>비어 있음</span></div></div>`;const e=M.max(0,M.min(30,en[k]|0)),v=M.round(x.v*(1+ENH.st*e));
+const row=k=>{const x=eq[k];if(!x)return `<div class="pi em"><div class="l"><span>${SL[k][0]}</span><span>비어 있음</span></div></div>`;const e=M.max(0,M.min(999,en[k]|0)),v=M.round(x.v*(1+ENH.st*e));
 return `<div class="pi"><div class="l"><span style="color:${icol(x)}">${e?'+'+e+' ':''}${pfx(x.n)}</span><b style="font-weight:400;color:#ffe7a8">${SL[k][1]} +${v}</b></div><small>${iname(x)} ${SL[k][0]}${sn(x)?' · '+pfx(sn(x))+' 세트':''}</small>${x.o.length?`<small>${pfx(ots(x))}</small>`:''}</div>`};
 pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas><div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${(+d.cp||0).toLocaleString()}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>`,me?'내 정보':'');
 const c2=pfEl.querySelector('canvas'),t0=++pfTok;(function lp(){if(t0!==pfTok||!pfEl.classList.contains('on'))return;drawDoll(c2,eq);pfRaf=requestAnimationFrame(lp)})()}
