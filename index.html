@@ -1421,10 +1421,20 @@ const SLN={w:'무기',a:'갑옷',h:'투구',r:'반지',n:'목걸이',f:'장화'}
 /* ※ 지금은 브라우저에 저장하는 '가짜 서버'예요. 나중에 Supabase RPC로 같은 함수 4개(get/hit/settle/claim)만 바꾸면 돼요 */
 const NOST={hp:HP0,hp0:HP0,my:0,att:0,n:0,buys:{},pend:null,d:''},S={get(){return ST||NOST}},
 ok=()=>!!(AF.sb&&AF.user),rpc=async(f,a)=>{const r=await AF.sb.rpc(f,a);if(r.error)throw r.error;return r.data},
-setST=d=>{if(d&&typeof d=='object'){ST=d;DO.v=(+d.t||Date.now())-Date.now()}};/* 서버가 정답: 보스 HP·도전 횟수·구매 한도·정산은 전부 서버(wb_server.sql) 값이고 서버 시계 기준이에요 */
+setST=d=>{if(d&&typeof d=='object'){ST=d;DO.v=(+d.t||Date.now())-Date.now()}try{upd()}catch(e){}};/* 서버가 정답: 보스 HP·도전 횟수·구매 한도·정산은 전부 서버(wb_server.sql) 값이고 서버 시계 기준이에요 */
 let rfBusy=0;async function refresh(){if(!ok()||rfBusy)return;rfBusy=1;try{let f=null;try{f=JSON.parse(localStorage.getItem('wbfin'))}catch(e){}
 if(f&&f.d>=0&&!AF.wbBusy()){setST(await rpc('wb_finish',{p_dmg:f.d}));localStorage.removeItem('wbfin')}else setST(await rpc('wb_state'));err=''}catch(e){err='서버에 연결하지 못했어요'}finally{rfBusy=0}if(p.style.display=='block')draw()}
-const css=document.createElement('style');css.textContent=`#wbb{position:fixed;left:8px;top:84px;z-index:7;padding:6px 10px;border-radius:8px;border:1px solid #c99a4a;background:#0b1218e6;color:#ffd98a;font:14px "Do Hyeon",sans-serif}
+const css=document.createElement('style');css.textContent=`#wbb{position:fixed;left:10px;top:84px;z-index:7;width:60px;height:66px;padding:0;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:12px;cursor:pointer;color:#ffe2a0;font:13px/1 "Do Hyeon",sans-serif;background:radial-gradient(circle at 50% 28%,#5a2a1a 0,#241109 60%,#0c0706 100%);box-shadow:inset 0 0 0 1px #d7a550,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #8a6428,inset 0 8px 10px #ffb06a1f,0 5px 12px #000b,0 0 16px #ff5a2a30;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;transition:transform .12s,filter .15s,box-shadow .2s}
+#wbb svg{width:32px;height:32px;display:block;filter:drop-shadow(0 0 5px #ff6a2acc)}
+#wbb .wl{letter-spacing:-.5px;text-shadow:0 1px 2px #000,0 0 6px #ff7a3a66}
+#wbb .wn{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 4px;box-sizing:border-box;border-radius:10px;font:12px/18px "Do Hyeon",sans-serif;text-align:center;color:#fff;border:1px solid #ffe0cc;box-shadow:0 2px 5px #000b;display:none}
+#wbb.al .wn{display:block;background:linear-gradient(#ff6a5a,#b3201a)}
+#wbb.rm .wn{display:block;color:#3a2200;background:linear-gradient(#ffe08a,#d39a2e);border-color:#fff0c0}
+#wbb.al{animation:wbpulse 1.5s ease-in-out infinite}
+@keyframes wbpulse{50%{box-shadow:inset 0 0 0 1px #ffd27a,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #c99a4a,inset 0 8px 10px #ffb06a30,0 5px 12px #000b,0 0 26px #ff7a3acc}}
+@media(hover:hover){#wbb:hover{transform:translateY(-2px);filter:brightness(1.22);box-shadow:inset 0 0 0 1px #ffd27a,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #c99a4a,inset 0 8px 10px #ffb06a30,0 7px 14px #000c,0 0 22px #ff7a3a99}}
+#wbb:active{transform:scale(.93);filter:brightness(.9)}
+@media(pointer:coarse),(max-width:640px){#wbb{left:8px;top:80px;width:54px;height:60px;border-radius:11px;font-size:12px}#wbb svg{width:28px;height:28px}}
 #wbp{position:fixed;inset:0;z-index:9000;background:#02060af2;color:#e8f1ee;overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 10px calc(env(safe-area-inset-bottom,0px) + 24px);font:15px/1.5 "Do Hyeon",sans-serif;display:none}
 #wbp .wc{max-width:440px;margin:0 auto;border:2px solid #8a6a30;border-radius:12px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000;overflow:hidden}
 #wbp .wt{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 16px;border-bottom:1px solid #3a2c12;background:linear-gradient(#2a2110,#120d05)}
@@ -1441,11 +1451,11 @@ const css=document.createElement('style');css.textContent=`#wbb{position:fixed;l
 #wbp .r{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:#ffffff09;border:1px solid #ffffff12}
 #wbp .r small{display:block;color:#9fb5b0;font-size:13px}#wbp .sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
 #wbp .rs{margin-top:-4px;text-align:right;color:#9fb5b0;font-size:13px}#wbp .gd{border:1px solid #ffffff18;border-radius:8px;background:#ffffff07;padding:0 10px}#wbp .gd summary{padding:8px 0;color:#ffd98a;cursor:pointer}#wbp .gd ul{margin:0 0 10px;padding-left:18px;color:#c9d6d2;font-size:14px;line-height:1.6}#wbp .gd li{margin-bottom:4px}#wbp .gd b{font-weight:400;color:#ffe7a8}#wbp .ts{padding-top:8px;border-top:1px dashed #3a2c12;color:#9fb5b0;font-size:13px}`;css.textContent+=`#wbq .qc{max-width:380px;margin:0 auto;border:2px solid #8a6a30;border-radius:12px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000;padding:14px;display:flex;flex-direction:column;gap:10px}#wbq .qt{font-size:20px;color:#ffd98a;text-align:center}#wbq .qi{padding:10px 12px;border:1px solid;border-radius:10px;background:#ffffff09}#wbq .qi b{font-weight:400;font-size:18px}#wbq .qs{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#9fb5b0}#wbq .qs b{font-weight:400;color:#e8f1ee}#wbq .qb{font:inherit;height:auto;padding:10px 12px;border-radius:8px;border:1px solid #5a4423;background:#1b2730;color:#e8f1ee;display:flex;justify-content:space-between;align-items:center;width:100%}#wbq .qp{border-color:#c99a4a;background:linear-gradient(#a8742a,#6b4515);color:#fff4d6}#wbq small{color:#9fb5b0;font-size:13px}#wbq .qp small{color:#ffe7a8}#wbq .qr{padding-top:8px;border-top:1px dashed #3a2c12}#wbq .qr div{display:flex;gap:6px;margin-top:6px}#wbq .qr .qb{justify-content:center}`;css.textContent+=`body.ttl #wbb{display:none}#wbp,#wbq{touch-action:pan-y}#nkm{z-index:9600}#upd{z-index:9600}`;document.head.appendChild(css);
-const b=document.createElement('button');b.id='wbb';b.textContent='월보';document.body.appendChild(b);const p=document.createElement('div');p.id='wbp';document.body.appendChild(p);let msg='',res='',resD='',sl='w',pit=null,gopen=false;addEventListener('pagehide',()=>{try{if(AF.wbBusy())AF.wbEnd()}catch(e){}});/* 도전 중 새로고침·종료해도 낸 피해는 저장 */
+const b=document.createElement('button');b.id='wbb';b.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="wbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset=".5" stop-color="#ff8a2a"/><stop offset="1" stop-color="#d8281a"/></linearGradient></defs><path d="M16 1.5c.8 5 6.5 8 8.5 13.5 2 5.5-1 12.5-8.5 15.5C8.5 27.500 5.500 20.500 7.500 15c1.200-3.200 3.300-4.700 4.200-8 1.200 1.800 2.300 2.800 3.300 3.800 1-3 1.300-5.800 1-9.300z" fill="url(#wbg)" stroke="#5a1408" stroke-width="1"/><path d="M16 15c1 3.200 4 5 4 9 0 3-1.800 4.800-4 5.800-2.200-1-4-2.800-4-5.800 0-3.800 3-5.800 4-9z" fill="#ffe9a8" opacity=".9"/><circle cx="13.200" cy="20.500" r="1" fill="#7a1a0a"/><circle cx="18.800" cy="20.500" r="1" fill="#7a1a0a"/></svg><span class="wl">월드보스</span><i class="wn"></i>';b.setAttribute('aria-label','월드보스');document.body.appendChild(b);const p=document.createElement('div');p.id='wbp';document.body.appendChild(p);let msg='',res='',resD='',sl='w',pit=null,gopen=false;function upd(){try{const o=S.get(),pe=!!(ST&&o.pend),l=ok()&&ST?3-(o.n|0):0,n=b.querySelector('.wn');b.classList.toggle('al',pe);b.classList.toggle('rm',!pe&&l>0);n.textContent=pe?'!':(l>0?l:'')}catch(e){}}addEventListener('pagehide',()=>{try{if(AF.wbBusy())AF.wbEnd()}catch(e){}});/* 도전 중 새로고침·종료해도 낸 피해는 저장 */
 const q=document.createElement('div');q.id='wbq';q.style.cssText='position:fixed;inset:0;z-index:9100;background:#02060af7;color:#e8f1ee;padding:calc(env(safe-area-inset-top,0px) + 14px) 10px calc(env(safe-area-inset-bottom,0px) + 14px);font:15px/1.5 "Do Hyeon",sans-serif;display:none;overflow:auto';q.style.cssText='position:fixed;inset:0;z-index:9100;background:#02060af7;color:#e8f1ee;padding:calc(env(safe-area-inset-top,0px) + 20px) 16px;font:15px/1.7 "Do Hyeon",sans-serif;display:none;overflow:auto';document.body.appendChild(q);
 const rp=document.createElement('div');rp.id='wbr';rp.style.cssText='position:fixed;inset:0;z-index:9500;background:#02060acc;display:none;align-items:center;justify-content:center;padding:16px;font:16px/1.6 "Do Hyeon",sans-serif;color:#e8f1ee';document.body.appendChild(rp);
 const rb='width:auto;height:auto;flex:1;padding:10px 0;border-radius:8px;border:1px solid #5a4423;background:#1b2730;color:#e8f1ee;font:inherit';
-rp.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-r]');if(!a)return;rp.style.display='none';if(a.dataset.r=='open'){msg='';draw();p.style.display='block'}});
+rp.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-r]');if(!a)return;rp.style.display='none';if(a.dataset.r=='open'){msg='';RK=null;draw();p.style.display='block'}});
 function showR(d){const o=S.get(),n=(o.n|0),hp=Math.max(0,o.hp/(o.hp0||HP0)*100);rp.innerHTML='<div style="max-width:340px;width:100%;border:2px solid #8a6a30;border-radius:12px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000;padding:18px;text-align:center"><div style="font-size:20px;color:#ffd98a">월드보스 도전 결과</div><div style="font-size:32px;color:#ff9a5a;margin:8px 0 0">'+kf(d)+'</div><div style="color:#9fb5b0">이번 도전 피해</div><div style="margin:12px 0 14px;color:#c9d6d2">오늘 누적 <b style="font-weight:400;color:#ffe7a8">'+kf(o.my)+'</b> · 남은 도전 <b style="font-weight:400;color:#ffe7a8">'+(3-n)+'/3</b><br>보스 남은 HP '+hp.toFixed(1)+'%</div><div style="display:flex;gap:8px"><button data-r="x" style="'+rb+'">닫기</button><button data-r="open" style="'+rb+';border-color:#c99a4a;background:linear-gradient(#a8742a,#6b4515);color:#fff4d6">월드보스 열기</button></div></div>';rp.style.display='flex'}
 const sv2=()=>{try{pit?localStorage.setItem('wbpend',JSON.stringify(pit)):localStorage.removeItem('wbpend')}catch(e){}};
 function open(it){pit=it;sv2();const f=AF.wbInfo(it),c=AF.WB.rr,rc=AF.wbRc(it),dl=f.d==null?'':'<span style="color:'+(f.d>=0?'#8fe3a0':'#ff9a7a')+'">전투력 '+(f.d>=0?'+':'')+f.d+'%</span>';
@@ -1460,14 +1470,34 @@ return '<div class="rs">다음 보스까지 '+hh+'시간 '+mm+'분</div><details
 +'<li><b>초기화</b>: 매일 <b>0시(한국 시간)</b>에 새 보스가 나와요. 보스 HP, 내 누적 피해, 도전 횟수가 모두 초기화돼요.</li>'
 +'<li><b>도전</b>: 하루 <b>3번</b>, 한 번에 최대 <b>60초</b>예요. 도중에 끝내거나 나가도 그때까지 낸 피해는 인정돼요.</li>'
 +'<li><b>함께 쓰러뜨려요</b>: 모든 모험가가 같은 보스의 HP를 함께 깎아요. 보스가 쓰러진 뒤에도 도전할 수 있고, 피해·순위·보상은 똑같이 인정돼요.</li>'
++'<li><b>순위</b>: 위쪽 <b>순위</b> 버튼을 누르면 오늘·어제 피해 순위 상위 30명과 내 순위를 볼 수 있어요.</li>'
 +'<li><b>보상</b>은 <b>0시에 정산</b>돼서 \'보스 보상\'으로 나타나요. 피해를 낸 사람만 받아요.<br>· 도전 1회당 <b>3코인</b><br>· 보스 HP 진행 보상: '+MS.map(m=>m[1]+' +'+m[2]).join(', ')+' 코인 (참여자 모두)<br>· 피해 순위: 상위 50% +8, 10% +20, 1% +40<br>· 1~3등: 추가 +80 / +60 / +40, 그리고 <b>전설 상자 1개</b></li>'
 +'<li><b>받기</b>: 안 받아도 보상은 사라지지 않고 계속 쌓여 있어요.</li>'
 +'<li><b>교환소</b>: 상자·쿠폰 구매 한도는 매주 <b>월요일 0시</b>에 초기화돼요. 골드가 아니라 월보 코인으로 사요.</li>'
 +'<li><b>꾸미기</b>: 망토와 프로필 테두리는 <b>갖고만 있어도</b> 효과가 적용돼요. 어떤 걸 입을지는 모양만 바뀌어요.</li>'
 +'<li><b>도전 중에는</b> 보스전·던전·컷신 중에는 시작할 수 없어요.</li></ul></details>'};
+
+/* 월드보스 순위: '순위' 버튼을 눌렀을 때만 wb_rank 를 한 번 불러요 (주기 요청·실시간 연결 없음) */
+const hx=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let RK=null;
+async function loadRank(prev){if(!ok())return;const R=RK={prev:prev?1:0,d:null,ld:1,e:''};draw();try{R.d=await rpc('wb_rank',{p_prev:!!prev})}catch(x){R.e='순위를 불러오지 못했어요'}R.ld=0;if(RK===R&&p.style.display=='block')draw()}
+function drawRank(){const R=RK,d=R.d,me=AF.user&&AF.user.id,MC=['#ffd84a','#cfd8dc','#d08a4a'];
+let h='<div class="wc"><div class="wt"><h2>월드보스 순위</h2><button data-a="rkb">뒤로</button><button class="px" data-a="x" aria-label="닫기">✕</button></div><div class="wb">';
+h+='<div class="ms">'+[['오늘 (진행 중)',0],['어제 (확정)',1]].map(t=>'<span data-a="rk'+t[1]+'" style="cursor:pointer;padding:6px 0;font-size:15px"'+((R.prev?1:0)==t[1]?' class="on"':'')+'>'+t[0]+'</span>').join('')+'</div>';
+if(R.ld)h+='<div class="nt">불러오는 중…</div>';
+else if(R.e)h+='<div class="nt"><span>'+R.e+'</span><button data-a="rk'+R.prev+'">다시 시도</button></div>';
+else if(d){
+h+='<div class="rs" style="margin:0;text-align:left">'+hx(d.d)+' · 피해를 낸 모험가 '+(d.n|0).toLocaleString()+'명'+(R.prev?' · 0시에 확정돼 보상 기준이 된 순위예요':' · 0시에 확정돼요')+'</div>';
+h+=d.me?'<div class="nt ok"><span>내 순위 <b style="font-weight:400;font-size:18px">'+d.me.r+'등</b></span><span>피해 '+kf(d.me.v)+'</span></div>':'<div class="nt"><span>이 날 낸 피해가 없어요</span></div>';
+if(!d.rows.length)h+='<div class="nt">아직 피해를 낸 사람이 없어요</div>';
+d.rows.forEach(r=>{const mine=!!(me&&r.u===me),nm=r.u?hx(r.n||'모험가')+(mine?' (나)':''):'비공개',rk=r.r|0,col=rk<=3?MC[rk-1]:'#e8f1ee',
+sub=r.u?((r.l!=null?'Lv.'+r.l:'')+(r.c!=null?(r.l!=null?' · ':'')+'전투력 '+kf(r.c):'')):'';
+h+='<div class="r"'+(r.u?' data-a="pf" data-u="'+hx(r.u)+'" data-n="'+hx(r.n||'모험가')+'"':'')+' style="'+(r.u?'cursor:pointer;':'')+(mine?'border-color:#8fe3a0aa;background:#8fe3a014':'')+'"><span><b style="font-weight:400;color:'+col+'">'+rk+'등</b> '+nm+(sub?'<small>'+sub+'</small>':'')+'</span><span style="color:#ffe7a8">'+kf(r.v)+'</span></div>'});
+h+='<div class="rs" style="margin:0;text-align:left">상위 30명까지 보여요 · 내 정보 공개를 끈 사람은 이름이 가려져요 · 이름을 누르면 프로필을 볼 수 있어요</div>'}
+return h+'</div></div>'}
 const eff=b=>b?'<small>'+AF.OP[b[0]][0]+' +'+b[1]+AF.OP[b[0]][3]+' · 보유 시 적용</small>':'';
-function draw(){const o=S.get(),pend=o.pend,n=(o.n|0),pc=Math.max(0,o.hp/(o.hp0||HP0)*100),done=n>=3,pc2=100-pc,TC={2:'#6aa8ff',3:'#ffd84a',4:'#ff8a2a'};
-let h='<div class="wc"><div class="wt"><h2>월드보스</h2><span class="co">● '+W.c+' 코인</span><button data-a="me">내 정보</button><button class="px" data-a="x" aria-label="닫기">✕</button></div><div class="wb">';
+function draw(){if(RK){p.innerHTML=drawRank();return}const o=S.get(),pend=o.pend,n=(o.n|0),pc=Math.max(0,o.hp/(o.hp0||HP0)*100),done=n>=3,pc2=100-pc,TC={2:'#6aa8ff',3:'#ffd84a',4:'#ff8a2a'};
+let h='<div class="wc"><div class="wt"><h2>월드보스</h2><span class="co">● '+W.c+' 코인</span><button data-a="rk">순위</button><button data-a="me">내 정보</button><button class="px" data-a="x" aria-label="닫기">✕</button></div><div class="wb">';
 h+='<div><div class="hp"><i style="width:'+pc+'%"></i><b>'+(o.hp<=0?'처치 완료':kf(o.hp)+' / '+kf(o.hp0||HP0))+'</b></div><div class="ms">'+MS.map(m=>'<span'+(pc2>=m[0]*100-1e-9?' class="on"':'')+'>'+m[1]+' +'+m[2]+'</span>').join('')+'</div><div class="ps"><span>내 누적 피해 <b>'+kf(o.my)+'</b></span><span>남은 도전 <b>'+(3-n)+'/3</b></span></div><button class="pr big" data-a="hit"'+(done||!ok()?' disabled':'')+'>보스 도전</button></div>'+(res&&resD===dy()?'<div class="nt ok"><span>'+res+'</span></div>':'')+guide();
 if(pend)h+='<div class="nt ok"><span>보스 보상'+(pend.days>1?' · '+pend.days+'일치 · 최고 ':' · ')+pend.rank+'등'+(pend.kill?' · 처치 성공':'')+'<br><small>받지 않아도 계속 쌓여 있어요</small><br>코인 '+pend.c+(pend.box?' · 전설 상자 '+pend.box:'')+'</span><button class="pr" data-a="claim">받기</button></div>';
 if(o.hp<=0)h+='<div class="nt ok">보스가 쓰러졌어요! 지금 도전해도 피해·순위·처치 보상이 똑같이 인정돼요</div>';
@@ -1481,7 +1511,8 @@ if(W.cape)h+='<div class="r"><span><i class="sw" style="background:#c2452d"></i>
 AF.BORDERS.forEach((c,i)=>{if(!c)return;const has=W.bds.includes(i);h+='<div class="r"><span><i class="sw" style="background:'+c[1]+'"></i>프로필 테두리 '+c[0]+(W.bd==i?' <small style="display:inline;color:#8fe3a0">착용중</small>':'')+eff(c[3])+'</span><button data-a="d'+i+'"'+(!has&&W.c<c[2]?' disabled':'')+'>'+(has?(W.bd==i?'벗기':'착용'):c[2]+' 코인')+'</button></div>'});
 if(TEST)h+='<div class="ts">테스트 · 기준일 '+dy()+(DO.v?' (+'+Math.round(DO.v/864e5)+'일)':'')+' · 내 평균 피해/회 '+(o.att?Math.round(o.my/o.att).toLocaleString():'-')+' <button data-a="t1">코인+500</button><button data-a="t2">다른 유저 피해 +10%</button><button data-a="t3">하루 넘기기(정산)</button><button data-a="t4">도전·구매 횟수 초기화</button></div>';
 p.innerHTML=h+'</div></div>'}
-p.addEventListener('click',async e=>{const bt=e.target.closest&&e.target.closest('[data-a]'),a=bt&&bt.dataset.a;if(!a||a=='sl')return;if(a=='x'){p.style.display='none';return}if(a=='me'){AF.showProfile('me','내 정보');return}
+p.addEventListener('click',async e=>{const bt=e.target.closest&&e.target.closest('[data-a]'),a=bt&&bt.dataset.a;if(!a||a=='sl')return;if(a=='x'){RK=null;p.style.display='none';return}if(a=='me'){AF.showProfile('me','내 정보');return}
+if(a=='rk'){loadRank(0);return}if(RK){if(a=='rkb'){RK=null;draw();return}if(a=='rk0'||a=='rk1'){loadRank(+a[2]);return}if(a=='pf'){const u=bt.dataset.u;if(u)AF.showProfile(u,bt.dataset.n||'');return}return}
 if(busy)return;busy=1;msg='';
 try{if(!ok())msg='로그인하면 월드보스에 참여할 수 있어요';
 else if(a=='hit'){res='';if((S.get().n|0)>=3)msg='오늘 도전 횟수를 모두 썼어요';else{let ab=0;
@@ -1501,11 +1532,11 @@ else if(a[0]=='d'){const i=+a[1],c=AF.BORDERS[i];if(W.bds.includes(i))W.bd=W.bd=
 AF.save();draw()});
 p.addEventListener('toggle',e=>{if(e.target.className=='gd')gopen=e.target.open},true);
 p.addEventListener('change',e=>{if(e.target.dataset.a=='sl'){sl=e.target.value;draw()}});
-b.addEventListener('click',()=>{msg='';refresh();draw();p.style.display='block'});
+b.addEventListener('click',()=>{msg='';RK=null;refresh();draw();p.style.display='block'});
 /* 월보 창이 떠 있는 동안엔 게임 키(Esc·I·B·Enter…)가 뒤에서 반응하지 않게 막고, Esc 는 창 닫기 */
 addEventListener('keydown',e=>{const o=p.style.display=='block',r=rp.style.display=='flex',z=q.style.display=='block';if(!(o||r||z))return;if(e.target&&e.target.tagName=='SELECT')return;e.stopImmediatePropagation();if(e.code=='Escape'){e.preventDefault();if(r)rp.style.display='none';else if(o)p.style.display='none'}},true);
 setInterval(()=>{b.style.display=AF.wbBusy()?'none':'';if(p.style.display=='block'&&!document.hidden)refresh()},30000);setInterval(()=>{b.style.display=AF.wbBusy()?'none':''},500);
-addEventListener('af-user',()=>{ST=null;refresh()});setTimeout(refresh,1500);
+addEventListener('af-user',()=>{ST=null;upd();refresh()});setTimeout(refresh,1500);
 })();
 </script>
 </body></html>
