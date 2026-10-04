@@ -1435,6 +1435,7 @@ const css=document.createElement('style');css.textContent=`#wbb{position:fixed;l
 @media(hover:hover){#wbb:hover{transform:translateY(-2px);filter:brightness(1.22);box-shadow:inset 0 0 0 1px #ffd27a,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #c99a4a,inset 0 8px 10px #ffb06a30,0 7px 14px #000c,0 0 22px #ff7a3a99}}
 #wbb:active{transform:scale(.93);filter:brightness(.9)}
 @media(pointer:coarse),(max-width:640px){#wbb{left:8px;top:80px;width:54px;height:60px;border-radius:11px;font-size:12px}#wbb svg{width:28px;height:28px}}
+@media(max-width:640px){#wbb{left:auto;right:8px;top:200px}}@media(pointer:coarse) and (min-width:641px){#wbb{left:auto;right:8px;top:66px}}/* 폰 세로 화면: 왼쪽 위는 레벨·장비 패널이 차지해서 오른쪽 빈 곳으로 */
 #wbp{position:fixed;inset:0;z-index:9000;background:#02060af2;color:#e8f1ee;overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 10px calc(env(safe-area-inset-bottom,0px) + 24px);font:15px/1.5 "Do Hyeon",sans-serif;display:none}
 #wbp .wc{max-width:440px;margin:0 auto;border:2px solid #8a6a30;border-radius:12px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000;overflow:hidden}
 #wbp .wt{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 16px;border-bottom:1px solid #3a2c12;background:linear-gradient(#2a2110,#120d05)}
