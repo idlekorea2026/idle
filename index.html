@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610032200">
+<meta name="build" content="202610041320">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -592,14 +592,14 @@ const c=40+up*30;h+='<h3>단련</h3>'+row('공격 단련 +'+up,'공격력 +6 (�
 else if(shopTab==2){const n=dgNow(),T=DGT[n.w],u=DGD.d==n.k;h+='<h3>요일 던전</h3>'+row(T[0]+'요일 · '+T[1]+' 던전','STAGE '+dgStage()+' 난이도 · 클리어 시 '+T[2]+(u?' · 오늘 입장 완료':'')+'<br>죽거나 포기하면 보상이 없고 오늘은 다시 못 들어가요. 방치 보상에는 영향이 없어요.'+(AF.user?'':'<br>🔒 로그인 후에 이용할 수 있어요.'),AF.user?(u?'완료':'입장'):'로그인 필요',!AF.user||u||st!=1||DG||dgBusy,'dg')}
 else{
 h+='<h3>장비 자동 교체</h3>'+row('자동 교체 '+(ae?'ON':'OFF'),'전투력이 실제로 오를 때만 바꿔요 · 끄면 빈 슬롯만 채워요 (슬롯별 교체 방식은 캐릭터 창에서 바꿔요)',ae?'끄기':'켜기',0,'ae')+'<h3>자동 구매</h3>'+row('자동 구매 '+(ab?'ON':'OFF'),'골드가 모이면 슬롯 강화 +'+AE+'까지 자동으로 진행해요 (재굴림 골드를 모으려면 끄세요)',ab?'끄기':'켜기',0,'ab')
-+'<h3>사냥터</h3>'+row('STAGE '+stage+' · '+th.n+(bk?' · 후퇴 중':''),'최고 도달 STAGE '+best+' · 보스를 잡아도 이 스테이지에 머물기 '+(farm?'켜짐':'꺼짐'),'머물기 '+(farm?'끄기':'켜기'),0,'fm')+'<div class="row"><button data-b="sp" '+(stage<=1?'disabled':'')+'>◀ 이전</button><button data-b="sn" '+(stage>=best?'disabled':'')+'>다음 ▶</button></div>'
++'<h3>사냥터</h3>'+row('STAGE '+stage+' · '+th.n+(bk?' · 후퇴 중':''),'최고 도달 STAGE '+best+' · 보스를 잡아도 이 스테이지에 머물기 '+(farm?'켜짐':'꺼짐'),'머물기 '+(farm?'끄기':'켜기'),0,'fm')+'<div class="row"><button data-b="sp10" '+(stage<=1?'disabled':'')+'>◀◀ 10</button><button data-b="sp" '+(stage<=1?'disabled':'')+'>◀ 1</button><button data-b="sn" '+(stage>=best?'disabled':'')+'>1 ▶</button><button data-b="sn10" '+(stage>=best?'disabled':'')+'>10 ▶▶</button></div>'
 +'<h3>사운드</h3><div class="row"><div>볼륨 '+M.round(VOL*100)+'%'+(mute?' · 음소거 중':'')+'<br><small>화면 아래 소리 버튼으로 켜고 끌 수 있어요</small></div><div><button data-b="vd">－</button> <button data-b="vu">＋</button> <button data-b="tst">테스트</button></div></div>'
 +'<h3>데이터</h3><div class="row"><div>저장 데이터<br><small>진행 상황은 자동으로 저장돼요</small></div><button data-b="reset">초기화</button></div>'}
 document.getElementById('shop').innerHTML=h}
 document.getElementById('shop').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const id=b.dataset.b;
 if(id=='close')return toggleShop();
 if(id=='reset'){if(confirm('저장 데이터를 지우고 처음부터 시작할까요?')){resetting=true;try{localStorage.removeItem('ashen1')}catch(x){}(AF.cloudDel?AF.cloudDel():Promise.resolve()).then(()=>location.reload(),()=>{alert('서버에 저장된 데이터를 지우지 못했어요. 잠시 후 다시 시도해 주세요.');resetting=false})}return}
-if(id=='fm')farm=!farm;else if(id=='dg'){dgEnter();return}else if(id[0]=='t'&&id.length==2){shopTab=+id[1];document.getElementById('shop').scrollTop=0}else if(id=='ab')ab=!ab;else if(id=='ae')ae=!ae;else if(id=='atr')atr=!atr;else if(id=='tst'){adiag();unlock();audio();sfx(660,.3,'sine',.3);setTimeout(()=>sfx(880,.3,'sine',.3),400);setTimeout(()=>sfx(1100,.4,'sine',.3),800)}else if(id=='vd'||id=='vu')VOL=M.max(0,M.min(1,M.round((VOL+(id=='vu'?.1:-.1))*10)/10));else if(id=='sp'||id=='sn'){stage+=id=='sp'?-1:1;bk=null;dc=0;frm=false;spawn();save();toggleShop();return}else if(id=='up'){const c=40+up*30;if(gold>=c){gold-=c;up++}}else if(id=='hu'){const c=40+hu*30;if(gold>=c){gold-=c;hu++}}else{const t=id[0]=='w'?SW:SA,x=t[+id.slice(1)];if(gold>=x[2]){gold-=x[2];EQ[id[0]]={sl:id[0],ri:0,v:x[1],n:x[0]}}}
+if(id=='fm')farm=!farm;else if(id=='dg'){dgEnter();return}else if(id[0]=='t'&&id.length==2){shopTab=+id[1];document.getElementById('shop').scrollTop=0}else if(id=='ab')ab=!ab;else if(id=='ae')ae=!ae;else if(id=='atr')atr=!atr;else if(id=='tst'){adiag();unlock();audio();sfx(660,.3,'sine',.3);setTimeout(()=>sfx(880,.3,'sine',.3),400);setTimeout(()=>sfx(1100,.4,'sine',.3),800)}else if(id=='vd'||id=='vu')VOL=M.max(0,M.min(1,M.round((VOL+(id=='vu'?.1:-.1))*10)/10));else if(id=='sp'||id=='sn'||id=='sp10'||id=='sn10'){stage=M.max(1,M.min(best,stage+(id[1]=='p'?-1:1)*(id.length>2?10:1)));bk=null;dc=0;frm=false;spawn();save();toggleShop();return}else if(id=='up'){const c=40+up*30;if(gold>=c){gold-=c;up++}}else if(id=='hu'){const c=40+hu*30;if(gold>=c){gold-=c;hu++}}else{const t=id[0]=='w'?SW:SA,x=t[+id.slice(1)];if(gold>=x[2]){gold-=x[2];EQ[id[0]]={sl:id[0],ri:0,v:x[1],n:x[0]}}}
 sfx(880,.08,'square',.05);save();buildShop()});
 function drawLT(){let li=0;const cur=Object.assign({},EQ);for(const o of LT){const ly=(li++%3)*72,x=o.x-cam,y=o.y,ri=o.it.ri,c=icol(o.it),c0=cur[o.it.sl],eqp=better(o.it,c0,cur);if(eqp)cur[o.it.sl]=o.it;
 if(ri>0){g.globalCompositeOperation='lighter';const tq=sq(o.it),bw=8+tq*7,bh=120+tq*90,q=g.createLinearGradient(0,y,0,y-bh);q.addColorStop(0,c);q.addColorStop(1,'rgba(0,0,0,0)');g.globalAlpha=o.l?.55+M.sin(T*4)*.15:.3;g.fillStyle=q;g.fillRect(x-bw/2,y-bh,bw,bh);g.globalAlpha=1;glow(x,GY-6,50+tq*20,c,.6);g.globalCompositeOperation='source-over'}
@@ -893,7 +893,7 @@ function bgStep(dt){if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else if(st==2
 function bgTick(){const n=performance.now();if(!document.hidden||st==0){bgLast=n;bgAcc=0;return}
   bgAcc+=M.min(n-bgLast,600000)/1000;bgLast=n;
   if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:M.round(ot/60)+'분',g:og});og=0}ot=0}}/* 너무 오래 밀리면 방치 보상으로 정산 */
-  let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}if(st==1){save();try{AF.cloudUp&&AF.cloudUp(170000)}catch(e){}}}
+  let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}if(st==1){save();try{AF.cloudUp&&AF.cloudUp(300000)}catch(e){}}}
 try{const wk=new Worker(URL.createObjectURL(new Blob(['setInterval(()=>postMessage(0),250)'],{type:'text/javascript'})));wk.onmessage=bgTick}catch(e){setInterval(bgTick,1000)}
 document.addEventListener('visibilitychange',()=>{bgLast=performance.now();if(!document.hidden){last=0;const a=bgAcc;if(a>=.05&&st==1){let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}}bgAcc=0}});
 
@@ -1174,7 +1174,7 @@ async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;co
 async function cloudDel(){const u=AF.user;if(!sb||!u)return;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp=''}
 AF.pubFlush=()=>{lastUpT=0;cloudUp(true).catch(()=>{})};
 AF.cloudUp=g=>cloudUp(false,g).catch(()=>{});AF.cloudDel=cloudDel;
-setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(170000)},20000);/* 서버 자동 저장: 켜져 있으면 약 1분마다 */
+setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(300000)},20000);/* 서버 자동 저장: 켜져 있으면 약 1분마다 */
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&AF.st==1){try{AF.save()}catch(e){}cloudUp(true).catch(()=>{})}});
 addEventListener('pagehide',()=>{if(AF.st==1)cloudUp(true).catch(()=>{})});
 function setUser(ses){const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:u.id,name:m.nickname||m.name||m.full_name||m.preferred_username||'모험가',avatar:m.avatar_url||m.picture||''}:null,prev=AF.user,ch=(prev&&prev.id)!==(nu&&nu.id)||!AF.authReady;
@@ -1275,7 +1275,7 @@ async function nbPoll(){const sb=AF.sb;if(nbOff||nbBusy||isOpen||document.hidden
   try{const r=await sb.rpc('chat_latest');if(r.error)throw r.error;const n=+r.data;if(isFinite(n)){if(nbSeen==null)nbSeen=n;if(n>nbLat)nbLat=n;nbDraw()}}
   catch(e){if(e&&(e.code==='PGRST202'||e.code==='42883'||e.code==='42501'))nbOff=1}finally{nbBusy=0}}
 /* 서버 함수가 아직 없으면(chat_latest 미생성) 조용히 꺼져요 */
-setInterval(nbPoll,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(nbPoll,500)});
+/* 뱃지 폴링(chat_latest) 중단: Supabase 로그 절약 */
 let lkT=0;const lockUI=()=>box.classList.toggle('lk',!AF.user);
 function open(byClick){if(isOpen)return;if(!AF.user){const n=Date.now();if(n-lkT>4000){lkT=n;sys('로그인 후에 이용할 수 있는 기능이에요. (메뉴 → 카카오로 로그인)','#ff9a8a')}return}isOpen=true;nbSeen=nbLat;nbDraw();chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
 function close(){if(!isOpen)return;isOpen=false;nbSeen=nbLat;nbDraw();chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
