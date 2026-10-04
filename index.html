@@ -1421,7 +1421,7 @@ const SLN={w:'무기',a:'갑옷',h:'투구',r:'반지',n:'목걸이',f:'장화'}
 /* ※ 지금은 브라우저에 저장하는 '가짜 서버'예요. 나중에 Supabase RPC로 같은 함수 4개(get/hit/settle/claim)만 바꾸면 돼요 */
 const NOST={hp:HP0,hp0:HP0,my:0,att:0,n:0,buys:{},pend:null,d:''},S={get(){return ST||NOST}},
 ok=()=>!!(AF.sb&&AF.user),rpc=async(f,a)=>{const r=await AF.sb.rpc(f,a);if(r.error)throw r.error;return r.data},
-setST=d=>{if(d&&typeof d=='object'){ST=d;DO.v=(+d.t||Date.now())-Date.now()}try{upd()}catch(e){}};/* 서버가 정답: 보스 HP·도전 횟수·구매 한도·정산은 전부 서버(wb_server.sql) 값이고 서버 시계 기준이에요 */
+setST=d=>{if(d&&typeof d=='object'){try{if(ST&&d.my!==ST.my)RKC[0]=null}catch(e){}ST=d;DO.v=(+d.t||Date.now())-Date.now()}try{upd()}catch(e){}};/* 서버가 정답: 보스 HP·도전 횟수·구매 한도·정산은 전부 서버(wb_server.sql) 값이고 서버 시계 기준이에요 */
 let rfBusy=0;async function refresh(){if(!ok()||rfBusy)return;rfBusy=1;try{let f=null;try{f=JSON.parse(localStorage.getItem('wbfin'))}catch(e){}
 if(f&&f.d>=0&&!AF.wbBusy()){setST(await rpc('wb_finish',{p_dmg:f.d}));localStorage.removeItem('wbfin')}else setST(await rpc('wb_state'));err=''}catch(e){err='서버에 연결하지 못했어요'}finally{rfBusy=0}if(p.style.display=='block')draw()}
 const css=document.createElement('style');css.textContent=`#wbb{position:fixed;left:10px;top:84px;z-index:7;width:60px;height:66px;padding:0;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:12px;cursor:pointer;color:#ffe2a0;font:13px/1 "Do Hyeon",sans-serif;background:radial-gradient(circle at 50% 28%,#5a2a1a 0,#241109 60%,#0c0706 100%);box-shadow:inset 0 0 0 1px #d7a550,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #8a6428,inset 0 8px 10px #ffb06a1f,0 5px 12px #000b,0 0 16px #ff5a2a30;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;transition:transform .12s,filter .15s,box-shadow .2s}
@@ -1480,8 +1480,11 @@ return '<div class="rs">다음 보스까지 '+hh+'시간 '+mm+'분</div><details
 
 /* 월드보스 순위: '순위' 버튼을 눌렀을 때만 wb_rank 를 한 번 불러요 (주기 요청·실시간 연결 없음) */
 const hx=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let RK=null;
-async function loadRank(prev){if(!ok())return;const R=RK={prev:prev?1:0,d:null,ld:1,e:''};draw();try{R.d=await rpc('wb_rank',{p_prev:!!prev})}catch(x){R.e='순위를 불러오지 못했어요'}R.ld=0;if(RK===R&&p.style.display=='block')draw()}
+let RK=null;const RKC={0:null,1:null};
+async function loadRank(prev){prev=prev?1:0;if(!ok()){msg='로그인하면 순위를 볼 수 있어요';RK=null;draw();return}
+const c=RKC[prev];if(c&&Date.now()-c.t<6e4){RK={prev,d:c.d,ld:0,e:''};draw();p.scrollTop=0;return}
+if(RK&&RK.ld&&RK.prev==prev)return;
+const R=RK={prev,d:null,ld:1,e:''};draw();p.scrollTop=0;try{R.d=await rpc('wb_rank',{p_prev:!!prev});RKC[prev]={t:Date.now(),d:R.d}}catch(x){R.e='순위를 불러오지 못했어요'}R.ld=0;if(RK===R&&p.style.display=='block')draw()}
 function drawRank(){const R=RK,d=R.d,me=AF.user&&AF.user.id,MC=['#ffd84a','#cfd8dc','#d08a4a'];
 let h='<div class="wc"><div class="wt"><h2>월드보스 순위</h2><button data-a="rkb">뒤로</button><button class="px" data-a="x" aria-label="닫기">✕</button></div><div class="wb">';
 h+='<div class="ms">'+[['오늘 (진행 중)',0],['어제 (확정)',1]].map(t=>'<span data-a="rk'+t[1]+'" style="cursor:pointer;padding:6px 0;font-size:15px"'+((R.prev?1:0)==t[1]?' class="on"':'')+'>'+t[0]+'</span>').join('')+'</div>';
@@ -1513,7 +1516,7 @@ AF.BORDERS.forEach((c,i)=>{if(!c)return;const has=W.bds.includes(i);h+='<div cla
 if(TEST)h+='<div class="ts">테스트 · 기준일 '+dy()+(DO.v?' (+'+Math.round(DO.v/864e5)+'일)':'')+' · 내 평균 피해/회 '+(o.att?Math.round(o.my/o.att).toLocaleString():'-')+' <button data-a="t1">코인+500</button><button data-a="t2">다른 유저 피해 +10%</button><button data-a="t3">하루 넘기기(정산)</button><button data-a="t4">도전·구매 횟수 초기화</button></div>';
 p.innerHTML=h+'</div></div>'}
 p.addEventListener('click',async e=>{const bt=e.target.closest&&e.target.closest('[data-a]'),a=bt&&bt.dataset.a;if(!a||a=='sl')return;if(a=='x'){RK=null;p.style.display='none';return}if(a=='me'){AF.showProfile('me','내 정보');return}
-if(a=='rk'){loadRank(0);return}if(RK){if(a=='rkb'){RK=null;draw();return}if(a=='rk0'||a=='rk1'){loadRank(+a[2]);return}if(a=='pf'){const u=bt.dataset.u;if(u)AF.showProfile(u,bt.dataset.n||'');return}return}
+if(a=='rk'){loadRank(0);return}if(RK){if(a=='rkb'){RK=null;draw();p.scrollTop=0;return}if(a=='rk0'||a=='rk1'){loadRank(+a[2]);return}if(a=='pf'){const u=bt.dataset.u;if(u)AF.showProfile(u,bt.dataset.n||'');return}return}
 if(busy)return;busy=1;msg='';
 try{if(!ok())msg='로그인하면 월드보스에 참여할 수 있어요';
 else if(a=='hit'){res='';if((S.get().n|0)>=3)msg='오늘 도전 횟수를 모두 썼어요';else{let ab=0;
@@ -1535,9 +1538,9 @@ p.addEventListener('toggle',e=>{if(e.target.className=='gd')gopen=e.target.open}
 p.addEventListener('change',e=>{if(e.target.dataset.a=='sl'){sl=e.target.value;draw()}});
 b.addEventListener('click',()=>{msg='';RK=null;refresh();draw();p.style.display='block'});
 /* 월보 창이 떠 있는 동안엔 게임 키(Esc·I·B·Enter…)가 뒤에서 반응하지 않게 막고, Esc 는 창 닫기 */
-addEventListener('keydown',e=>{const o=p.style.display=='block',r=rp.style.display=='flex',z=q.style.display=='block';if(!(o||r||z))return;if(e.target&&e.target.tagName=='SELECT')return;e.stopImmediatePropagation();if(e.code=='Escape'){e.preventDefault();if(r)rp.style.display='none';else if(o)p.style.display='none'}},true);
-setInterval(()=>{b.style.display=AF.wbBusy()?'none':'';if(p.style.display=='block'&&!document.hidden)refresh()},30000);setInterval(()=>{b.style.display=AF.wbBusy()?'none':''},500);
-addEventListener('af-user',()=>{ST=null;upd();refresh()});setTimeout(refresh,1500);
+addEventListener('keydown',e=>{const o=p.style.display=='block',r=rp.style.display=='flex',z=q.style.display=='block';if(!(o||r||z))return;if(e.target&&e.target.tagName=='SELECT')return;e.stopImmediatePropagation();if(e.code=='Escape'){e.preventDefault();if(r)rp.style.display='none';else if(o){if(RK){RK=null;draw();p.scrollTop=0}else p.style.display='none'}}},true);
+setInterval(()=>{b.style.display=AF.wbBusy()?'none':'';if(p.style.display=='block'&&!document.hidden&&!RK)refresh()},30000);setInterval(()=>{b.style.display=AF.wbBusy()?'none':''},500);
+addEventListener('af-user',()=>{ST=null;RK=null;RKC[0]=RKC[1]=null;upd();refresh()});setTimeout(refresh,1500);
 })();
 </script>
 </body></html>
