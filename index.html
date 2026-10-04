@@ -637,7 +637,7 @@ let WBM=null,WBI=0;
 function wbStart(hp,cb){if(WBM||DG||st!=1||ci>0||bossLock())return 0;spawn();th=Object.assign({},th,{n:'재의 심연',sky:['#12040a','#3a0f1a','#5a1a22'],moon:'#ffb0c0',gr:'#2a1218',g1:'#8a2a3a',g2:'#c8506a',gl:'#ff6a2a',b:'적염룡 이그니스'});
 const b={t:'g',wb:1,x:WORLD-450,y:GY,vy:0,hp,mh:hp,w:190,h:230,ph:0,fl:0,xp:0,tm:2,pat:tix(stage),mini:false,sh:2,sc:1.8};E=[b];P.x=WORLD-450-700;cam=M.max(0,M.min(WORLD-W,P.x-W*.42));P.hp=mhp();P.mp=mmp();P.inv=2;WBM={b,hp0:hp,cb};clearInterval(WBI);WBI=setInterval(()=>{if(!WBM){clearInterval(WBI);return}try{localStorage.setItem('wbrun',JSON.stringify({d:M.max(0,M.round(hp-M.max(0,b.hp))),k:Date.now()}))}catch(e){}},3000);BB.innerHTML='도전 종료 <small>R</small>';TX.push({x:P.x,y:P.y-150,t:'월드보스 · 적염룡 이그니스',l:3,c:'#ff4d7d'});return 1}
 const wbSv=x=>M.round(x.v*SL[x.sl][4]*(1+sq(x)));
-function wbEnd(){if(!WBM)return;clearInterval(WBI);try{localStorage.removeItem('wbrun')}catch(e){}LT.slice().forEach(o=>pick(o.it));const w=WBM,d=M.max(0,M.round(w.hp0-M.max(0,w.b.hp)));WBM=null;BB.innerHTML='보스 재도전 <small>R</small>';spawn();P.hp=mhp();P.mp=mmp();P.inv=2;dtm=0;st=1;try{w.cb(d)}catch(e){console.error('월보 결과 처리 오류',e)}csys('월드보스 피해 '+d.toLocaleString(),'#ff4d7d');toast('월드보스 피해 '+d.toLocaleString(),'#ff4d7d');save()}
+function wbEnd(){if(!WBM)return;clearInterval(WBI);try{localStorage.removeItem('wbrun')}catch(e){}try{LT.slice().forEach(o=>pick(o.it))}catch(e){console.error(e)}const w=WBM,d=M.max(0,M.round(w.hp0-M.max(0,w.b.hp)));WBM=null;BB.innerHTML='보스 재도전 <small>R</small>';spawn();P.hp=mhp();P.mp=mmp();P.inv=2;dtm=0;st=1;try{w.cb(d)}catch(e){console.error('월보 결과 처리 오류',e)}csys('월드보스 피해 '+d.toLocaleString(),'#ff4d7d');toast('월드보스 피해 '+d.toLocaleString(),'#ff4d7d');save()}
 function capeD(sp,w,i,k){k=k||g;const c=CAPES[i];if(!c){k.fillStyle='#c2452d';k.beginPath();k.moveTo(-8,-62);k.quadraticCurveTo(-34-sp*14,-40+w,-22-sp*18,-14);k.lineTo(-6,-26);k.fill();return}
 const x=-34-sp*14,y=-40+w;k.fillStyle=c[1];k.beginPath();k.moveTo(-8,-62);k.quadraticCurveTo(x,y,-30-sp*18,-6);k.lineTo(-24-sp*15,-16);k.lineTo(-20-sp*12,-4);k.lineTo(-13-sp*7,-18);k.lineTo(-9-sp*4,-8);k.lineTo(-6,-26);k.fill();
 k.fillStyle=c[2];k.beginPath();k.moveTo(-8,-62);k.quadraticCurveTo(x*.7-2,y*.8-8,-22-sp*13,-18);k.lineTo(-6,-26);k.fill()}
@@ -948,7 +948,7 @@ sfx(880,.08,'square',.05);save();buildChr()});
 function fxu(dt){FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{t.y-=40*dt;t.l-=dt;return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;
 /* 한 프레임(또는 백그라운드 한 틱)의 진행. loop 와 bgStep 이 같이 써요 */
-function simStep(dt){if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if(auto&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}}
+function simStep(dt){if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if((auto||WBM)&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}}
 function loop(t){const rd=M.min(.033,(t-last)/1000||0);let dt=rd;last=t;if(!OPT.sh)shake=0;if(!OPT.fx){slw=0;zm=1}if(slw>0){slw-=rd;dt*=slf}zm+=(1-zm)*M.min(1,rd*7);if(ci>0)ci-=rd;
 simStep(dt);
 uiRef();render();hudUp();requestAnimationFrame(loop)}
