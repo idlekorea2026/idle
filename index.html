@@ -1495,9 +1495,9 @@ h+='<div class="rs" style="margin:0;text-align:left">'+hx(d.d)+' · 피해를 �
 h+=d.me?'<div class="nt ok"><span>내 순위 <b style="font-weight:400;font-size:18px">'+d.me.r+'등</b></span><span>피해 '+kf(d.me.v)+'</span></div>':'<div class="nt"><span>이 날 낸 피해가 없어요</span></div>';
 if(!d.rows.length)h+='<div class="nt">아직 피해를 낸 사람이 없어요</div>';
 d.rows.forEach(r=>{const mine=!!(me&&r.u===me),nm=r.u?hx(r.n||'모험가')+(mine?' (나)':''):'비공개',rk=r.r|0,col=rk<=3?MC[rk-1]:'#e8f1ee',
-sub=r.u?((r.l!=null?'Lv.'+r.l:'')+(r.c!=null?(r.l!=null?' · ':'')+'전투력 '+kf(r.c):'')):'';
+sub=r.u?(r.h?'정보 비공개':(r.l!=null?'Lv.'+r.l:'')+(r.c!=null?(r.l!=null?' · ':'')+'전투력 '+kf(r.c):'')):'';
 h+='<div class="r"'+(r.u?' data-a="pf" data-u="'+hx(r.u)+'" data-n="'+hx(r.n||'모험가')+'"':'')+' style="'+(r.u?'cursor:pointer;':'')+(mine?'border-color:#8fe3a0aa;background:#8fe3a014':'')+'"><span><b style="font-weight:400;color:'+col+'">'+rk+'등</b> '+nm+(sub?'<small>'+sub+'</small>':'')+'</span><span style="color:#ffe7a8">'+kf(r.v)+'</span></div>'});
-h+='<div class="rs" style="margin:0;text-align:left">상위 30명까지 보여요 · 내 정보 공개를 끈 사람은 이름이 가려져요 · 이름을 누르면 프로필을 볼 수 있어요</div>'}
+h+='<div class="rs" style="margin:0;text-align:left">상위 30명까지 보여요 · 내 정보 공개를 끈 사람은 레벨·전투력이 가려져요 · 이름을 누르면 프로필을 볼 수 있어요</div>'}
 return h+'</div></div>'}
 const eff=b=>b?'<small>'+AF.OP[b[0]][0]+' +'+b[1]+AF.OP[b[0]][3]+' · 보유 시 적용</small>':'';
 function draw(){if(RK){p.innerHTML=drawRank();return}const o=S.get(),pend=o.pend,n=(o.n|0),pc=Math.max(0,o.hp/(o.hp0||HP0)*100),done=n>=3,pc2=100-pc,TC={2:'#6aa8ff',3:'#ffd84a',4:'#ff8a2a'};
