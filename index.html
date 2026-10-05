@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610051630">
+<meta name="build" content="202610042000">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -101,18 +101,16 @@ button.on{background:#ffb84a;color:#0b1218}
 .mb button small{display:block;color:#9fb5b0;font-size:13px;letter-spacing:.02em}
 .mb button small.g{color:#ffcf4a}
 .mb button.pri{border-color:#c99a4a;background:linear-gradient(#3a2c12,#170f04);color:#ffe7a8}
-.mb button.rw{border-color:#2f8f7d;color:#a8f3e2}
 .mb button:hover,.mb button:focus-visible{outline:0;border-color:#ffd27a;color:#fff2c4;background:linear-gradient(#2c3a42,#10181d);box-shadow:inset 0 1px 0 #ffe2a844,0 0 18px #ffb84a44;transform:translateX(4px)}
 .mb button.pri:hover,.mb button.pri:focus-visible{background:linear-gradient(#5a4319,#231806)}
 .mb button:active{transform:translateX(4px) scale(.985);background:#ffb84a;color:#0b1218}
-.mb .mr{display:flex;gap:9px}.mb .mr button{flex:1 1 0;width:auto;min-width:0;padding:6px 8px}.mb .mr button:hover,.mb .mr button:focus-visible{transform:none}.mb .mr button:active{transform:scale(.985)}
 .mb button.dg{border-color:#c2452d;color:#ffb0a0}
 .mb button.dg:hover,.mb button.dg:focus-visible{border-color:#ff7a5a;color:#ffd0c4;box-shadow:0 0 18px #c2452d66}
 .ofh{margin:14px auto 0;max-width:min(420px,86vw);padding:8px 14px;border:1px solid #ffb84a55;border-radius:10px;background:#ffb84a14;color:#ffd98a;font-size:15px;line-height:1.5;text-align:center}.ofh b{font-weight:400;color:#7dffe0}
 .tf{margin:clamp(14px,3vh,30px) 0 0;color:#6f8580;font-size:14px;letter-spacing:.06em;text-align:center}
 @media(pointer:coarse){.tf{display:none}}
-#pm,#om,#rf{align-items:center;justify-content:center;padding:12px;background:#02060ab8;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-#om,#rf{z-index:21;background:#02060acc}
+#pm,#om{align-items:center;justify-content:center;padding:12px;background:#02060ab8;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#om{z-index:21;background:#02060acc}
 .pn{box-sizing:border-box;max-height:100%;overflow:auto;padding:22px 26px 24px;border:2px solid #8a6a30;border-radius:12px;background:repeating-linear-gradient(135deg,#ffffff05 0 2px,transparent 2px 5px),linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000,0 0 0 1px #000,inset 0 1px 0 #ffe2a833;animation:pnin .18s ease both}
 @keyframes pnin{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
 .pn h2{margin:0 0 4px;text-align:center;font-weight:400;font-size:28px;letter-spacing:.1em;color:#ffd98a}
@@ -240,8 +238,7 @@ const K={};
 const CAPES=[null,['달빛','#2e2d78','#6a5acd',150,['ms',3]],['심해','#134d5a','#2db5a3',150,['mr',5]],['황혼','#8a4510','#e0a030',150,['gd',3]]],BORDERS=[null,['재의 테두리','#9fb5b0',120,['xp',3]],['불꽃 테두리','#ff7a3a',120,['gd',2]]],WB={c:0,rr:0,pb:0,cape:0,capes:[0],bd:0,bds:[0]};
 const P={x:200,y:GY,vx:0,vy:0,hp:120,mp:60,lv:1,xp:0,f:1,g:1,j:0,at:0,cd:0,sc:0,combo:0,ct:0,inv:0,jq:0};
 let pz=false,OPT={sh:1,fx:1},st=0,T=0,cam=0,shake=0,hs=0,gold=0,E=[],PR=[],EB=[],FX=[],TX=[],OB=[];
-/* 단련 곱연산: 단련 1회당 최종 공격력 a·최대 체력 h 만큼 곱해져요(기존 +6/+30 고정값은 그대로). 슬롯 강화와 균형을 맞추는 숫자예요 → 올리면 단련이 후하고, 내리면 강화가 유리해요 */
-const TR={a:.003,h:.002},mhp=q=>M.round((100+P.lv*20+hu*HU.v+bs('hp',q)+bon('hp',q))*(1+PT.vit*.015)*(1+hu*TR.h)),mmp=()=>M.round((40+P.lv*10)*(1+PT.wis*.02)),atk=q=>M.round((10+P.lv*4+up*6+bs('at',q)+bon('at',q))*(1+PT.str*.01)*(1+up*TR.a)),need=()=>20+P.lv*P.lv*8;
+const mhp=q=>M.round((100+P.lv*20+hu*HU.v+bs('hp',q)+bon('hp',q))*(1+PT.vit*.015)),mmp=()=>M.round((40+P.lv*10)*(1+PT.wis*.02)),atk=q=>M.round((10+P.lv*4+up*6+bs('at',q)+bon('at',q))*(1+PT.str*.01)),need=()=>20+P.lv*P.lv*8;
 /* 몬스터 체력 배율: k스테이지까지 완만(a씩) → 이후 직선(b씩). 난이도 조절은 여기 숫자만 바꾸면 돼요 */
 const SM={k:15,a:.12,b:.26},smf=n=>{const s=n-1;return 1+M.min(s,SM.k)*SM.a+M.max(0,s-SM.k)*SM.b};
 /* 난이도 벽: s0 스테이지부터 몬스터가 지수로 강해져요(체력은 th, 공격력은 td 스테이지마다 약 2.7배 = e배).
@@ -269,7 +266,7 @@ const BT={mini:25,last:40,sm:.1,sl:.2,cap:100},btf=(m,n)=>M.round((m?BT.mini+M.m
 /* 밸런스 패치: BD 보스 공격(접촉·탄·충격파)이 일반 몬스터 대비 주는 피해 배율 · HU 체력 단련(v 1회당 체력, r 자동 구매 시 공격 단련 대비 목표 비율) */
 /* 일반몹 위협도 튜닝값: c=접촉피해 배율, el=정예 접촉 배율, dash=돌진 중 배율, inv=피격 후 무적(초), rg=원거리탄, bx=폭탄, sw=정예 충격파, sim=시뮬 보정, a=몹 종류별 접촉 배율 */
 const MOBT={c:1.35,el:1.5,dash:1.5,inv:.8,rg:1.25,bx:1.3,sw:1,sim:1.4,a:{s:1,b:.9,w:1.2,x:1,r:1,k:1.1,h:.6,d:1,m:.8,u:1.1,o:1.4}};
-const BDCAP=100,BD=1.25,HU={v:30,r:.3};let bt=0,btl=0,frs=0,dc=0,bk=null,ind=0,rf={s:0,f:0};
+const BDCAP=100,BD=1.25,HU={v:30,r:.7};let bt=0,btl=0,frs=0,dc=0,bk=null,ind=0,rf={s:0,f:0};
 /* 패시브(슬롯 3개: PSL = Lv 30·120·300에 해금, 자유 교체 · 스킬 슬롯은 SKL = 20·100·300) · 획득은 스테이지 10마다 보스 처치 보상(PMS: [스테이지, PV 번호]) · · b는 장비 옵션과 같은 종류라 bon()에 그대로 합산돼요 */
 const PV=[
 {n:'피의 갈증',d:'흡혈 +3%',b:['ls',3]},
@@ -662,7 +659,7 @@ async function dgEnter(){if(!AF.user){toast('로그인 후에 이용할 수 있�
 dgBusy=1;let k=n.k;/* 서버가 하루 1번을 판정(KST 날짜·요일은 서버가 돌려준 값). 서버 함수가 아직 없으면 로컬 기록으로만 막아요 */
 try{if(AF.sb&&AF.user){const r=await AF.sb.rpc('dungeon_enter');if(r.error)throw r.error;const v=+r.data;if(!v){DGD={d:n.k};save();toast('오늘 던전은 이미 입장했어요','#ff7a7a');if(shopOpen)buildShop();return}k=v}}
 catch(e){const m=String((e&&e.message)||'');if(!(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))){toast('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요','#ff7a7a');return}}finally{dgBusy=0}
-if(DG||WBM||st!=1||ci>0||bossLock()){toast('지금은 시작할 수 없어요. 입장 기록은 남았어요','#ff7a7a');DGD={d:k};save();return}
+if(DG||st!=1){toast('지금은 시작할 수 없어요. 입장 기록은 남았어요','#ff7a7a');DGD={d:k};save();return}
 const w=dgWk(k);DGD={d:k};DGS={stage,farm,frm,bk,dc,w,ir:{...IR}};DG=1;stage=dgStage();farm=false;frm=false;bk=null;dc=0;if(shopOpen)toggleShop();
 spawn();P.hp=mhp();P.mp=mmp();P.inv=2;BB.innerHTML='던전 포기 <small>R</small>';TX.push({x:P.x,y:P.y-150,t:DGT[w][0]+'요일 던전 · STAGE '+stage,l:3,c:'#c9a0ff'});save()}
 function dgEnd(ok){if(!DG)return;LT.slice().forEach(o=>pick(o.it));const S=stage,w=DGS.w,r=[],pw=3+S*4+P.lv*1.2;
@@ -678,7 +675,7 @@ function buildShop(){const row=(t,sub,btn,dis,id)=>`<div class="row"><div>${t}<b
 const TB=['단련','설정','던전'];
 let h=`<div class="sh-h"><div class="sh-t"><h2>단련 <small>● ${gold}</small></h2><button class="sh-x" data-b="close" aria-label="닫기">✕</button></div><div class="tabs">${TB.map((n,i)=>`<button data-b="t${i}" class="${shopTab==i?'on':''}">${n}</button>`).join('')}</div></div>`;
 if(shopTab==0){
-const c=40+up*30;h+='<h3>단련</h3>'+row('공격 단련 +'+up,'공격력 +6 · 최종 공격력 +'+(TR.a*100).toFixed(1)+'% (누적, 지금 ×'+(1+up*TR.a).toFixed(2)+')',c+'G',gold<c,'up')+row('체력 단련 +'+hu,'체력 +'+HU.v+' · 최대 체력 +'+(TR.h*100).toFixed(1)+'% (누적, 지금 ×'+(1+hu*TR.h).toFixed(2)+')',(40+hu*30)+'G',gold<40+hu*30,'hu')+'<h3>자동 단련</h3>'+row('자동 단련 '+(atr?'ON':'OFF'),'골드가 모이면 공격·체력 단련을 자동으로 올려요 (기본 꺼짐 · 골드를 직접 쓰려면 끄세요)',atr?'끄기':'켜기',0,'atr')}
+const c=40+up*30;h+='<h3>단련</h3>'+row('공격 단련 +'+up,'공격력 +6 (누적)',c+'G',gold<c,'up')+row('체력 단련 +'+hu,'체력 +'+HU.v+' (누적)',(40+hu*30)+'G',gold<40+hu*30,'hu')+'<h3>자동 단련</h3>'+row('자동 단련 '+(atr?'ON':'OFF'),'골드가 모이면 공격·체력 단련을 자동으로 올려요 (기본 꺼짐 · 골드를 직접 쓰려면 끄세요)',atr?'끄기':'켜기',0,'atr')}
 else if(shopTab==2){const n=dgNow(),T=DGT[n.w],u=DGD.d==n.k;h+='<h3>요일 던전</h3>'+row(T[0]+'요일 · '+T[1]+' 던전','STAGE '+dgStage()+' 난이도 · 클리어 시 '+T[2]+(u?' · 오늘 입장 완료':'')+'<br>죽거나 포기하면 보상이 없고 오늘은 다시 못 들어가요. 방치 보상에는 영향이 없어요.'+(AF.user?'':'<br>🔒 로그인 후에 이용할 수 있어요.'),AF.user?(u?'완료':'입장'):'로그인 필요',!AF.user||u||st!=1||DG||dgBusy,'dg')}
 else{
 h+='<h3>장비 자동 교체</h3>'+row('자동 교체 '+(ae?'ON':'OFF'),'전투력이 실제로 오를 때만 바꿔요 · 끄면 빈 슬롯만 채워요 (슬롯별 교체 방식은 캐릭터 창에서 바꿔요)',ae?'끄기':'켜기',0,'ae')+'<h3>자동 구매</h3>'+row('자동 구매 '+(ab?'ON':'OFF'),'골드가 모이면 슬롯 강화 +'+AE+'까지 자동으로 진행해요 (재굴림 골드를 모으려면 끄세요)',ab?'끄기':'켜기',0,'ab')
@@ -978,13 +975,6 @@ o=document.createElement('div');o.id='simov';o.style.cssText='position:fixed;ins
 o.innerHTML='<b style="font-size:16px">난이도 시뮬레이터</b> <button onclick="this.parentNode.remove()" style="float:right;padding:4px 12px">닫기</button><p>내 캐릭터(공격력 '+atk()+' · 체력 '+mhp()+') 기준 추정이에요.<br>보스 처치 예상 시간이 제한시간(스테이지에 따라 중간 보스 '+btf(1,1)+'~'+btf(1,BT.cap)+'초 · 마지막 보스 '+btf(0,5)+'~'+btf(0,BT.cap)+'초)을 넘으면 = 막히는 구간: <b style="color:#ffb84a">'+(bl?'STAGE '+bl.n:'200까지 없음')+'</b> (현재 STAGE '+stage+')<br>증가율은 필요 DPS가 앞 스테이지의 몇 배인지예요. <span style="color:#ff8a7a">1.2배 이상 = 가파름</span>, <span style="color:#8dff9c">1배 미만 = 사냥터 진입 완화</span></p><table style="border-collapse:collapse;width:100%;text-align:right"><tr style="position:sticky;top:0;background:#101a20"><th>STAGE</th><th style="text-align:left">사냥터</th><th>필요 DPS</th><th>증가율</th><th>보스 예상(제한)</th><th>권장 체력</th></tr>'+r.map(x=>'<tr style="border-top:1px solid #ffffff14'+(x.n==stage?';background:#ffb84a26':'')+'"><td>'+x.n+'</td><td style="text-align:left">'+x.z+'</td><td>'+f(x.need)+'</td><td style="color:'+(x.r>=1.2?'#ff8a7a':x.r<1?'#8dff9c':'inherit')+'">×'+x.r.toFixed(2)+'</td><td style="color:'+(x.t>x.lim?'#ff8a7a':x.t>x.lim*.7?'#ffb84a':'inherit')+'">'+M.round(x.t)+'/'+x.lim+'초</td><td>'+f(x.hp)+'</td></tr>').join('')+'</table>';
 document.body.appendChild(o)}
 if(/[?&](sim|debug)\b/.test(location.search)){addEventListener('keydown',e=>{if(e.code=='F2'){e.preventDefault();simShow()}});if(/[?&]sim\b/.test(location.search))setTimeout(simShow,800)}
-/* 추천인 보상: 서버(referral_claim)가 '이번에 새로 수령 처리된 건수'만 알려 주면 여기서 지급해요. 지급 즉시 localStorage 에 저장해서 새로고침돼도 안 날아가요.
-   me = 내가 추천받은 보상(0/1) → 골드 + 고급 장비 1개 · n = 내가 초대한 사람 중 스테이지 5에 도달한 수 → 월드보스 코인 REF.c × n */
-const REF={c:3,gm:100};
-function refGrant(me,n){me=+me>0?1:0;n=M.max(0,M.min(10,+n|0));if(!me&&!n)return;const o=[];
-if(me){const gd=M.round((4+stage*2+(P.lv>>1))*REF.gm);gold+=gd;o.push('골드 +'+gd.toLocaleString());const it=mk(SK[rn(0,SK.length)|0],1,3+stage*4+P.lv*1.2);o.push(it.n);pick(it)}
-if(n){WB.c=(WB.c|0)+REF.c*n;o.push('월드보스 코인 +'+REF.c*n)}
-save();csys('추천인 보상: '+o.join(' · '),'#7dffe0');TX.push({x:P.x,y:P.y-170,t:'추천인 보상!',l:2.6,c:'#7dffe0'});sfx(784,.3,'triangle',.06,1.6);try{toast('추천인 보상 · '+o.join(' · '),'#7dffe0')}catch(e){}}
 /* ===== AF: 다른 스크립트와의 약속 ===== */
 Object.defineProperties(AF,{
   mute:{get:()=>mute,set:v=>{mute=v},enumerable:true},
@@ -1009,7 +999,7 @@ Object.defineProperties(AF,{
   nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true},
   pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true}
 });
-Object.assign(AF,{refGrant,toast,wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
+Object.assign(AF,{wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
 wbInfo:it=>{const c=EQ[it.sl],v=c?swapV(it,c):null,d=v&&v.a?M.round((v.b-v.a)/v.a*1000)/10:null;return{nm:iname(it)+' '+it.n,col:icol(it),op:ots(it),cur:c?iname(c)+' '+c.n+(c.o&&c.o.length?' · '+ots(c):''):'(비어 있음)',d,sv:wbSv(it),cv:c?wbSv(c):0}},
 wbEquip:it=>{const c=EQ[it.sl];EQ[it.sl]=it;if(c)gold+=wbSv(c);TX.push({x:P.x,y:P.y-100,t:'착용: '+it.n,l:1.3,c:icol(it)});save()},
 wbSell:it=>{gold+=wbSv(it);save()},wbReroll:(it,j)=>reroll(it,j),wbRc:it=>rc(it),BOOST,P:new Proxy(P,{set:()=>true,defineProperty:()=>false,deleteProperty:()=>false}),cp,sfx,K,go,save});
@@ -1062,19 +1052,18 @@ const om=$('div','ov');om.id='om';
 const fsBtn=()=>FSOK?`<button data-a="fs" data-fs>${isFS()?'전체화면 해제':'전체화면'}</button>`:'';
 
 function buildTitle(){
-  const soc=AF.user&&sb?'<div class="mr"><button data-a="rank">랭킹</button><button class="rw" data-a="ref">추천인</button></div>':AF.guest()?'<div class="mr"><button disabled>랭킹<small>로그인 필요</small></button><button disabled>추천인<small>로그인 필요</small></button></div>':'';
   const has=AF.P.lv>1||AF.P.xp>0||AF.stage>1||AF.gold>0||AF.up>0||AF.hu>0;
   tm.innerHTML=`<div class="tt"><small>ASHEN FOREST</small><h1>잿빛 숲의 검사</h1><hr><div id="onl2"></div></div>
   <div class="mb">${gated()?gateBtn():has
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
-  <button data-a="opt">설정</button>${soc}${gated()||AF.guest()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>${AF.guest()?'<p class="gn">⚠️ 로그인하지 않고 플레이 중이에요<br>진행은 <b>이 기기(브라우저)에만</b> 저장돼요 · 브라우저 데이터를 지우면 사라져요<br>일부 기능은 <b>로그인 후</b>에 이용할 수 있어요</p>':''}
+  <button data-a="opt">설정</button>${AF.user&&sb?'<button data-a="rank">랭킹</button>':AF.guest()?'<button disabled>랭킹<small>로그인 필요</small></button>':''}${gated()||AF.guest()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>${AF.guest()?'<p class="gn">⚠️ 로그인하지 않고 플레이 중이에요<br>진행은 <b>이 기기(브라우저)에만</b> 저장돼요 · 브라우저 데이터를 지우면 사라져요<br>일부 기능은 <b>로그인 후</b>에 이용할 수 있어요</p>':''}
   <p class="ofh">💤 <b>오프라인 사냥</b> — 게임을 꺼 둬도 사냥이 계속돼요!<br>최대 ${Math.round(AF.OFF.max/3600)}시간, 골드·경험치·아이템을 ${Math.round(AF.OFF.eff*100)}% 보상으로 받아요</p>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
   onShow();
 }
 pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><p class="gn" id="pgn" style="display:none"></p><div class="mb">
-  <button class="pri" data-a="resume">계속하기</button><div class="mr"><button data-a="rank">랭킹</button><button class="rw" data-a="ref">추천인</button></div><button data-a="opt">설정</button>${fsBtn()}<button class="kk" data-a="login" id="pml" style="display:none">카카오로 로그인<small>지금까지의 진행이 서버에 안전하게 저장돼요</small></button><button data-a="title">타이틀로</button></div></div>`;
+  <button class="pri" data-a="resume">계속하기</button><button data-a="rank">랭킹</button><button data-a="opt">설정</button>${fsBtn()}<button class="kk" data-a="login" id="pml" style="display:none">카카오로 로그인<small>지금까지의 진행이 서버에 안전하게 저장돼요</small></button><button data-a="title">타이틀로</button></div></div>`;
 
 const sl=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><input type="range" min="0" max="100" step="5" id="${id}" aria-label="${label}"><b id="${id}v"></b></div>`;
 const tg=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><button class="tg" id="${id}" data-a="${id}"></button></div>`;
@@ -1086,9 +1075,7 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
   <h3 class="kh">조작</h3>
   <div class="keys"><kbd>← →</kbd><span>이동</span><kbd>Space</kbd><span>점프</span><kbd>Z</kbd><span>베기</span><kbd>X</kbd><span>검기</span><kbd>C</kbd><span>폭발</span><kbd>Q</kbd><span>자동/수동</span><kbd>I</kbd><span>장비</span><kbd>B</kbd><span>단련</span><kbd>M</kbd><span>소리</span><kbd>Enter</kbd><span>채팅</span><kbd>F</kbd><span>전체화면</span><kbd>Esc</kbd><span>메뉴</span></div>
   <div class="mb bk"><button class="pri" data-a="back">돌아가기</button></div></div>`;
-const rf=$('div','ov');rf.id='rf';
-rf.innerHTML=`<div class="pn wide"><h2>추천인</h2><div class="st">친구를 초대하고 보상을 받아요</div><div id="o-ref"></div><div class="mb bk"><button class="pri" data-a="ref-back">돌아가기</button></div></div>`;
-const rk=$('div','ov');rk.id='rk';document.body.append(tm,pm,om,rf,rk);
+const rk=$('div','ov');rk.id='rk';document.body.append(tm,pm,om,rk);
 
 /* ---- 설정 UI 동기화 ---- */
 const q=id=>om.querySelector('#'+id);
@@ -1113,21 +1100,18 @@ document.addEventListener('fullscreenchange',sync);document.addEventListener('we
 const items=r=>[...r.querySelectorAll('button:not([disabled]),input[type=range]')].filter(x=>x.getClientRects().length);
 const focusFirst=r=>{const l=items(r);l.length&&l[0].focus({preventScroll:true})};
 const move=(r,d)=>{const l=items(r);if(!l.length)return;let i=l.indexOf(document.activeElement);i=i<0?(d>0?0:l.length-1):(i+d+l.length)%l.length;l[i].focus({preventScroll:true})};
-const topOv=()=>document.body.classList.contains('nk')?null:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
+const topOv=()=>document.body.classList.contains('nk')?null:rk.classList.contains('on')?rk:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
 
 let opener=null,confirmT=0;
 function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
-let rfOpener=null;
-function openRef(from){rfOpener=from;refOpen();rf.classList.add('on');focusFirst(rf)}
-function closeRef(){rf.classList.remove('on');const r=rfOpener&&rfOpener.closest('.ov');const b=rfOpener&&rfOpener.isConnected?rfOpener:null;b?b.focus({preventScroll:true}):r&&focusFirst(r)}
 function closeOpt(){om.classList.remove('on');const r=opener&&opener.closest('.ov');const b=opener&&opener.isConnected?opener:null;b?b.focus({preventScroll:true}):r&&focusFirst(r)}
 AF.pauseOn=function(){
   if(AF.st!=1||pm.classList.contains('on')||AF.chrOpen||AF.shopOpen)return;
   AF.pz=false;pm.querySelector('#pht').textContent='메뉴';for(const k in AF.K)AF.K[k]=0;
   pm.querySelector('#pst').textContent=`STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}`;
-  {const g=pm.querySelector('#pgn');if(g){g.style.display=AF.user?'none':'';g.innerHTML=AF.user?'':'⚠️ 로그인 없이 플레이 중 — 진행은 이 기기에만 저장돼요<br>일부 기능은 로그인 후에 이용할 수 있어요'}const rb=pm.querySelector('button[data-a="rank"]');if(rb){rb.disabled=!AF.user;rb.innerHTML=AF.user?'랭킹':'랭킹<small>로그인 필요</small>'}const fb=pm.querySelector('button[data-a="ref"]');if(fb){fb.disabled=!AF.user;fb.innerHTML=AF.user?'추천인':'추천인<small>로그인 필요</small>'}const lb=pm.querySelector('#pml');if(lb)lb.style.display=AF.guest()&&sb?'':'none'}sync();pm.classList.add('on');focusFirst(pm);
+  {const g=pm.querySelector('#pgn');if(g){g.style.display=AF.user?'none':'';g.innerHTML=AF.user?'':'⚠️ 로그인 없이 플레이 중 — 진행은 이 기기에만 저장돼요<br>일부 기능은 로그인 후에 이용할 수 있어요'}const rb=pm.querySelector('button[data-a="rank"]');if(rb){rb.disabled=!AF.user;rb.innerHTML=AF.user?'랭킹':'랭킹<small>로그인 필요</small>'}const lb=pm.querySelector('#pml');if(lb)lb.style.display=AF.guest()&&sb?'':'none'}sync();pm.classList.add('on');focusFirst(pm);
 };
-AF.pauseOff=function(){AF.pz=false;pm.classList.remove('on');om.classList.remove('on');rf.classList.remove('on');if(document.activeElement)document.activeElement.blur()};
+AF.pauseOff=function(){AF.pz=false;pm.classList.remove('on');om.classList.remove('on');if(document.activeElement)document.activeElement.blur()};
 
 function act(a,btn){
   if(gated()&&(a=='cont'||a=='new'||a=='new2'))return;if(a=='resync'){AF.syncErr=0;buildTitle();focusFirst(tm);cloudSync();return}
@@ -1139,7 +1123,7 @@ function act(a,btn){
   if(a=='new2'){AF.resetting=true;try{localStorage.removeItem('ashen1')}catch(e){}cloudDel().then(()=>location.reload(),()=>{alert('서버에 저장된 데이터를 지우지 못했어요. 잠시 후 다시 시도해 주세요.');AF.resetting=false});return}
   if(a=='nick'){nkOpen(0);return}
   if(a=='rank'){openRank(btn);return}if(a=='rk-x'){closeRank();return}
-  if(a=='ref'){openRef(btn);return}if(a=='ref-back'){closeRef();return}if(a=='ref-copy'){refCopy();return}if(a=='ref-link'){refCopy(1);return}if(a=='ref-use'){refUse();return}if(a=='opt'){openOpt(btn);return}
+  if(a=='opt'){openOpt(btn);return}
   if(a=='back'){closeOpt();return}
   if(a=='fs'||a=='o-fs'){AF.toggleFS();return}
   if(a=='resume'){AF.pauseOff();return}
@@ -1149,7 +1133,7 @@ function act(a,btn){
   if(a=='o-pub'){AF.pub=!AF.pub;try{AF.save()}catch(e){}AF.pubFlush();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
 }
-[tm,pm,om,rf,rk].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
+[tm,pm,om,rk].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
 /* ===== 랭킹 (최고 스테이지 기준) — 실시간 연결·주기 요청 없이, 창을 열 때 get_ranking 1번만 불러와요 (2분 캐시).
    · 순위 값은 서버가 저장 때 검증한 최고 스테이지예요 (ranking.sql) — 기기에서 올린 값 그대로가 아니에요
    · 같은 스테이지면 먼저 도달한 사람이 위 · 내 정보 공개를 끈 사람은 빠져요 ===== */
@@ -1192,9 +1176,9 @@ rk.addEventListener('focusin',e=>{const t=e.target;if(t.classList&&t.classList.c
 addEventListener('keydown',e=>{
   const on=topOv();if(!on||e.ctrlKey||e.metaKey||e.altKey)return;
   e.stopPropagation();
-  const k=e.code,t=e.target;if(t&&t.tagName=='INPUT'&&t.type=='text'){if(k=='Escape'){e.preventDefault();if(!e.repeat){if(on===om)closeOpt();else if(on===rf)closeRef()}}else if((k=='Enter'||k=='NumpadEnter')&&t.id=='o-refi'&&!e.isComposing){e.preventDefault();if(!e.repeat)refUse()}return}
+  const k=e.code,t=e.target;
   if(k=='KeyF'){e.preventDefault();if(!e.repeat)AF.toggleFS();return}
-  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===pm)AF.pauseOff();return}
+  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===pm)AF.pauseOff();return}
   if(k=='ArrowDown'||k=='ArrowUp'){e.preventDefault();move(on,k=='ArrowDown'?1:-1);return}
   if(k=='Tab'){e.preventDefault();move(on,e.shiftKey?-1:1);return}
   if(t&&t.type=='range'&&(k=='ArrowLeft'||k=='ArrowRight'))return;
@@ -1234,12 +1218,6 @@ function ovrAsk(local,cs,g){return new Promise(res=>{
   const fin=v=>{nkm.classList.remove('on');document.body.classList.remove('nk');nkm.innerHTML='';nkm.onclick=null;res(v)};
   nkm.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.n=='srv')fin(true);else if(b.dataset.n=='loc')fin(false)};
   setTimeout(()=>{try{nkm.querySelector('button').focus({preventScroll:true})}catch(e){}},30)})}
-
-/* ===== 추천 링크 (?ref=코드) — 친구가 초대 링크로 들어오면 코드를 이 기기에 잠깐 보관해요.
-   카카오 로그인으로 페이지가 한 번 이동해도 남아 있고, 로그인·저장 확인이 끝나면 자동으로 등록해요 (아래 refAuto). 주소창에서는 ref 만 지워요 ===== */
-const refPK='ashen_refp',refRes={ok:'등록됐어요! 스테이지 5에 도달하면 보상을 받아요',bad:'존재하지 않는 코드예요',self:'본인 코드는 쓸 수 없어요',used:'이미 추천인을 등록했어요',old:'가입 3일 이내 계정만 등록할 수 있어요'};
-const refPend=()=>{try{return localStorage.getItem(refPK)||''}catch(e){return ''}},refPendSet=v=>{try{v?localStorage.setItem(refPK,v):localStorage.removeItem(refPK)}catch(e){}};
-try{const u=new URL(location.href);if(u.searchParams.has('ref')){const v=(u.searchParams.get('ref')||'').trim().toUpperCase();u.searchParams.delete('ref');try{history.replaceState(history.state,'',u.pathname+u.search+u.hash)}catch(e){}if(/^[A-Z0-9]{4,12}$/.test(v))refPendSet(v)}}catch(e){}
 
 /* ===== 카카오 로그인 (Supabase) — 아래 두 값만 채우면 돼요 ===== */
 const SB_URL='https://ulhfkgokgxvwbxotamds.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsaGZrZ29rZ3h2d2J4b3RhbWRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3OTQ2OTIsImV4cCI6MjEwNjM3MDY5Mn0.1clWa2SQHFfDcjIg3iZu80uAvI1ld-Jy5qxUXY5g6ug';
@@ -1294,63 +1272,6 @@ async function beat(){onLast=Date.now();if(onOff||!sb||!AF.user)return;/* 게스
 function onLoop(){clearTimeout(onT);if(onOff||!AF.user)return;const base=(document.hidden?180000:120000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
 window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user){beat();onLoop()}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&!onOff&&Date.now()-onLast>40000){beat();onLoop()}});
-
-/* ===== 추천인 (서버 함수: referral_code · referral_use · referral_claim) =====
-   · 내 코드는 설정 메뉴에서 보고 복사해요 · 신규 계정(가입 3일 이내)만 코드를 입력할 수 있어요 (서버가 판정)
-   · 보상은 서버가 '이번에 새로 수령 처리한 건수'를 돌려줄 때만 AF.refGrant 로 지급해요 → 중복 수령은 서버에서 막혀요
-   · 서버는 저장된 game_saves 의 스테이지를 보고 판정하므로, 확인 전에 현재 진행을 먼저 저장·업로드해요 */
-let refCode=null,refMsg='',refBusy=0,refRun=0,refLast=0,refOff=0;
-const refUK=()=>'ashen_refu_'+(AF.user?AF.user.id:'');
-const refDone=()=>{try{return !!localStorage.getItem(refUK())}catch(e){return false}};
-const refCK=()=>'ashen_refc_'+(AF.user?AF.user.id:''),refCl=()=>{try{return !!localStorage.getItem(refCK())}catch(e){return false}};/* 추천받은 보상을 이미 받았는지(기기 기록) */
-const refMiss=e=>{const m=String((e&&e.message)||'');return !!(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))};
-function refPaint(){const c=rf.querySelector('#o-ref');if(!c)return;
-  if(!AF.user||!sb||refOff){c.innerHTML='<div class="or"><span>'+(refOff?'추천인 기능을 준비 중이에요':'로그인하면 이용할 수 있어요')+'</span></div>';return}
-  const keep=c.querySelector('#o-refi'),val=keep?keep.value:'',fa=document.activeElement,fk=fa&&c.contains(fa)?(fa.id?'#'+fa.id:fa.dataset.a?'[data-a="'+fa.dataset.a+'"]':''):'';
-  c.innerHTML=''
-   +'<div class="or"><span>내 추천 코드<small>친구가 가입 3일 안에 입력하고 스테이지 5에 도달하면 월드보스 코인 +3 (주 10명까지)</small></span><b style="min-width:92px;letter-spacing:.08em">'+esc(refCode||'…')+'</b><button class="tg on" data-a="ref-copy"'+(refCode?'':' disabled')+'>복사</button></div>'
-   +'<div class="or"><span>초대 링크<small>친구가 이 주소로 들어와 로그인하면 코드가 자동으로 등록돼요</small></span><button class="tg on" data-a="ref-link"'+(refCode?'':' disabled')+'>링크 복사</button></div>'
-   +(refDone()?'<div class="or"><span>추천인 등록 완료<small>스테이지 5에 도달하면 골드 + 고급 장비를 받아요</small></span></div>'
-     :'<div class="or"><span>추천인 코드 입력<small>가입 3일 이내 계정만 · 보상: 골드 + 고급 장비 1개</small></span><input id="o-refi" type="text" maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="코드" style="width:104px;height:32px;box-sizing:border-box;padding:0 8px;border:1px solid #6b5228;border-radius:6px;background:#070b0e;color:#fff2c4;font:16px \'Do Hyeon\',sans-serif;outline:0;text-transform:uppercase;-webkit-user-select:text;user-select:text"><button class="tg" data-a="ref-use"'+(refBusy?' disabled':'')+'>등록</button></div>')
-   +(refMsg?'<div class="or"><span style="color:#ffd98a">'+esc(refMsg)+'</span></div>':'');
-  const ni=c.querySelector('#o-refi');if(ni){const pv=val||refPend();if(pv)ni.value=pv}
-  if(fk){const n=c.querySelector(fk);if(n&&!n.disabled)n.focus({preventScroll:true})}}
-async function refOpen(){refMsg='';refPaint();if(!sb||!AF.user||refOff||refCode)return;
-  try{const r=await sb.rpc('referral_code');if(r.error)throw r.error;refCode=String(r.data||'')}catch(e){if(refMiss(e))refOff=1;else refMsg='코드를 불러오지 못했어요'}refPaint()}
-const refLink=()=>location.origin+location.pathname+'?ref='+encodeURIComponent(refCode);
-function refCopy(link){if(!refCode)return;const txt=link?refLink():refCode,ok=()=>{refMsg=link?'초대 링크를 복사했어요':'복사했어요';refPaint()};
-  try{navigator.clipboard.writeText(txt).then(ok,()=>{refMsg='복사하지 못했어요. 직접 선택해서 복사해 주세요';refPaint()})}catch(e){refMsg='복사하지 못했어요';refPaint()}}
-async function refUse(){if(refBusy||!sb||!AF.user)return;const i=rf.querySelector('#o-refi'),v=(i&&i.value||'').trim().toUpperCase();
-  if(!/^[A-Z0-9]{4,12}$/.test(v)){refMsg='코드는 영문·숫자예요. 한/영 키를 확인해 주세요';refPaint();return}
-  refBusy=1;refMsg='확인 중…';refPaint();
-  try{const r=await sb.rpc('referral_use',{p_code:v});if(r.error)throw r.error;const s=String(r.data);
-    refMsg=refRes[s]||'등록하지 못했어요';
-    if(s=='ok'||s=='used'){try{localStorage.setItem(refUK(),'1')}catch(e){}refLast=0}}
-  catch(e){refMsg=refMiss(e)?'추천인 기능을 준비 중이에요':'서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요'}
-  refBusy=0;refPaint()}
-/* 보상 확인: 게임 중에만, 2분마다 (등록·로그인 직후엔 바로) */
-async function refTick(){if(!sb||!AF.user||!AF.synced||refOff||refRun||AF.st!=1)return;refRun=1;refLast=Date.now();
-  try{if(refDone()&&!refCl()){try{AF.save()}catch(e){}try{await cloudUp(true)}catch(e){}}/* 내가 추천받아 보상 대기 중일 때만 먼저 서버 저장을 올려요 → 그 외 유저의 서버 저장 횟수는 그대로예요 */
-    const r=await sb.rpc('referral_claim');if(r.error)throw r.error;const d=r.data||{};
-    if((d.me|0)>0||(d.n|0)>0){if((d.me|0)>0){try{localStorage.setItem(refCK(),'1')}catch(e){}}AF.refGrant(d.me,d.n);setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}}
-  catch(e){if(refMiss(e))refOff=1}
-  finally{refRun=0}}
-setInterval(()=>{if(AF.st==1&&!document.hidden&&Date.now()-refLast>=120000)refTick()},15000);
-/* 초대 링크로 들어온 코드 자동 등록: 로그인 + 서버 저장 확인이 끝난 뒤에 해요. 실패(네트워크)하면 15초 뒤 다시, 한 번 접속에 최대 3번까지만 */
-let refAutoRun=0,refAutoN=0;
-async function refAuto(){const v=refPend();if(!v||refAutoRun||refAutoN>=3||!sb||!AF.user||!AF.synced||refOff)return;
-  if(refDone()){refPendSet('');return}
-  refAutoRun=1;refAutoN++;
-  try{const r=await sb.rpc('referral_use',{p_code:v});if(r.error)throw r.error;const s=String(r.data);
-    refPendSet('');
-    if(s=='ok'||s=='used'){try{localStorage.setItem(refUK(),'1')}catch(e){}refLast=0}
-    if(s!='used'){try{AF.toast('추천인 · '+(refRes[s]||'등록하지 못했어요'),s=='ok'?'#7dffe0':'#ff7a7a')}catch(e){}}
-    if(rf.classList.contains('on'))refPaint()}
-  catch(e){if(refMiss(e))refOff=1}
-  finally{refAutoRun=0}}
-window.addEventListener('af-nick',()=>{refAuto()});
-setInterval(refAuto,15000);
-window.addEventListener('af-user',()=>{refCode=null;refMsg='';refLast=0;refAutoN=0;refPaint()});
 buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirst(tm);
 })();
 </script>
