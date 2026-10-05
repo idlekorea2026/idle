@@ -240,12 +240,13 @@ const K={};
 const CAPES=[null,['달빛','#2e2d78','#6a5acd',150,['ms',3]],['심해','#134d5a','#2db5a3',150,['mr',5]],['황혼','#8a4510','#e0a030',150,['gd',3]]],BORDERS=[null,['재의 테두리','#9fb5b0',120,['xp',3]],['불꽃 테두리','#ff7a3a',120,['gd',2]]],WB={c:0,rr:0,pb:0,cape:0,capes:[0],bd:0,bds:[0]};
 const P={x:200,y:GY,vx:0,vy:0,hp:120,mp:60,lv:1,xp:0,f:1,g:1,j:0,at:0,cd:0,sc:0,combo:0,ct:0,inv:0,jq:0};
 let pz=false,OPT={sh:1,fx:1},st=0,T=0,cam=0,shake=0,hs=0,gold=0,E=[],PR=[],EB=[],FX=[],TX=[],OB=[];
-const mhp=q=>M.round((100+P.lv*20+hu*HU.v+bs('hp',q)+bon('hp',q))*(1+PT.vit*.015)),mmp=()=>M.round((40+P.lv*10)*(1+PT.wis*.02)),atk=q=>M.round((10+P.lv*4+up*6+bs('at',q)+bon('at',q))*(1+PT.str*.01)),need=()=>20+P.lv*P.lv*8;
+/* 단련 곱연산(약하게): 단련 1회당 최종 공격력 a·최대 체력 h 만큼 곱해져요(기존 +6/+30 고정값은 그대로). 전투력은 √(공격×체력)이라 단련 4000/3000일 때 약 ×1.15. 올리면 후하고 0으로 두면 곱연산 없음 */
+const TR={a:.00005,h:.000035},mhp=q=>M.round((100+P.lv*20+hu*HU.v+bs('hp',q)+bon('hp',q))*(1+PT.vit*.015)*(1+hu*TR.h)),mmp=()=>M.round((40+P.lv*10)*(1+PT.wis*.02)),atk=q=>M.round((10+P.lv*4+up*6+bs('at',q)+bon('at',q))*(1+PT.str*.01)*(1+up*TR.a)),need=()=>20+P.lv*P.lv*8;
 /* 몬스터 체력 배율: k스테이지까지 완만(a씩) → 이후 직선(b씩). 난이도 조절은 여기 숫자만 바꾸면 돼요 */
 const SM={k:15,a:.12,b:.26},smf=n=>{const s=n-1;return 1+M.min(s,SM.k)*SM.a+M.max(0,s-SM.k)*SM.b};
 /* 난이도 벽: s0 스테이지부터 몬스터가 지수로 강해져요(체력은 th, 공격력은 td 스테이지마다 약 2.7배 = e배).
    숫자가 작을수록 벽이 빨리·가파르게 와요. 경험치·골드는 벽의 영향을 안 받아서 벽에서 사냥해도 계속 성장해요. */
-const WALL={s0:70,th:35,td:70},wallf=(n,t)=>M.exp(M.min(40,M.max(0,n-WALL.s0)/t));
+const WALL={s0:70,th:35,td:65},wallf=(n,t)=>M.exp(M.min(40,M.max(0,n-WALL.s0)/t));
 /* 몹 공격력 보정: 스테이지가 올라갈수록 장비·단련으로 체력이 훨씬 빨리 커져서 몹 공격이 체력바에 티가 안 났어요.
    g 스테이지당 추가 배율(+1.2%p) · cap 최대 추가 배율(+60% = 최대 ×1.6, 약 STAGE 51부터). 초반은 거의 그대로고 갈수록 따끔해져요.
    접촉·탄·폭탄·충격파·보스 공격 전부에 적용돼요. 더 세게 하려면 g·cap을 올리세요. 경험치·골드·몹 체력은 그대로예요. */
@@ -677,7 +678,7 @@ function buildShop(){const row=(t,sub,btn,dis,id)=>`<div class="row"><div>${t}<b
 const TB=['단련','설정','던전'];
 let h=`<div class="sh-h"><div class="sh-t"><h2>단련 <small>● ${gold}</small></h2><button class="sh-x" data-b="close" aria-label="닫기">✕</button></div><div class="tabs">${TB.map((n,i)=>`<button data-b="t${i}" class="${shopTab==i?'on':''}">${n}</button>`).join('')}</div></div>`;
 if(shopTab==0){
-const c=40+up*30;h+='<h3>단련</h3>'+row('공격 단련 +'+up,'공격력 +6 (누적)',c+'G',gold<c,'up')+row('체력 단련 +'+hu,'체력 +'+HU.v+' (누적)',(40+hu*30)+'G',gold<40+hu*30,'hu')+'<h3>자동 단련</h3>'+row('자동 단련 '+(atr?'ON':'OFF'),'골드가 모이면 공격·체력 단련을 자동으로 올려요 (기본 꺼짐 · 골드를 직접 쓰려면 끄세요)',atr?'끄기':'켜기',0,'atr')}
+const c=40+up*30;h+='<h3>단련</h3>'+row('공격 단련 +'+up,'공격력 +6 · 최종 공격력 ×'+(1+up*TR.a).toFixed(2)+' (누적)',c+'G',gold<c,'up')+row('체력 단련 +'+hu,'체력 +'+HU.v+' · 최대 체력 ×'+(1+hu*TR.h).toFixed(2)+' (누적)',(40+hu*30)+'G',gold<40+hu*30,'hu')+'<h3>자동 단련</h3>'+row('자동 단련 '+(atr?'ON':'OFF'),'골드가 모이면 공격·체력 단련을 자동으로 올려요 (기본 꺼짐 · 골드를 직접 쓰려면 끄세요)',atr?'끄기':'켜기',0,'atr')}
 else if(shopTab==2){const n=dgNow(),T=DGT[n.w],u=DGD.d==n.k;h+='<h3>요일 던전</h3>'+row(T[0]+'요일 · '+T[1]+' 던전','STAGE '+dgStage()+' 난이도 · 클리어 시 '+T[2]+(u?' · 오늘 입장 완료':'')+'<br>죽거나 포기하면 보상이 없고 오늘은 다시 못 들어가요. 방치 보상에는 영향이 없어요.'+(AF.user?'':'<br>🔒 로그인 후에 이용할 수 있어요.'),AF.user?(u?'완료':'입장'):'로그인 필요',!AF.user||u||st!=1||DG||dgBusy,'dg')}
 else{
 h+='<h3>장비 자동 교체</h3>'+row('자동 교체 '+(ae?'ON':'OFF'),'전투력이 실제로 오를 때만 바꿔요 · 끄면 빈 슬롯만 채워요 (슬롯별 교체 방식은 캐릭터 창에서 바꿔요)',ae?'끄기':'켜기',0,'ae')+'<h3>자동 구매</h3>'+row('자동 구매 '+(ab?'ON':'OFF'),'골드가 모이면 슬롯 강화 +'+AE+'까지 자동으로 진행해요 (재굴림 골드를 모으려면 끄세요)',ab?'끄기':'켜기',0,'ab')
