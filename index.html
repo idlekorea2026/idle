@@ -1317,7 +1317,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&
    · 내 코드는 설정 메뉴에서 보고 복사해요 · 신규 계정(가입 3일 이내)만 코드를 입력할 수 있어요 (서버가 판정)
    · 보상은 서버가 '이번에 새로 수령 처리한 건수'를 돌려줄 때만 AF.refGrant 로 지급해요 → 중복 수령은 서버에서 막혀요
    · 서버는 저장된 game_saves 의 스테이지를 보고 판정하므로, 확인 전에 현재 진행을 먼저 저장·업로드해요 */
-let refCode=null,refMsg='',refBusy=0,refRun=0,refLast=0,refOff=0;
+let refCode=null,refCnt=null,refMsg='',refBusy=0,refRun=0,refLast=0,refOff=0;
 const refUK=()=>'ashen_refu_'+(AF.user?AF.user.id:'');
 const refDone=()=>{try{return !!localStorage.getItem(refUK())}catch(e){return false}};
 const refCK=()=>'ashen_refc_'+(AF.user?AF.user.id:''),refCl=()=>{try{return !!localStorage.getItem(refCK())}catch(e){return false}};/* 추천받은 보상을 이미 받았는지(기기 기록) */
@@ -1327,13 +1327,16 @@ function refPaint(){const c=rf.querySelector('#o-ref');if(!c)return;
   const keep=c.querySelector('#o-refi'),val=keep?keep.value:'',fa=document.activeElement,fk=fa&&c.contains(fa)?(fa.id?'#'+fa.id:fa.dataset.a?'[data-a="'+fa.dataset.a+'"]':''):'';
   c.innerHTML=''
    +'<div class="or"><span>내 추천 코드<small>친구가 가입 3일 안에 입력하고 스테이지 5에 도달하면 월드보스 코인 +10 (주 10명까지)</small></span><b style="min-width:92px;letter-spacing:.08em">'+esc(refCode||'…')+'</b><button class="tg on" data-a="ref-copy"'+(refCode?'':' disabled')+'>복사</button></div>'
-   +'<div class="or"><span>초대 링크<small>친구가 이 주소로 들어와 로그인하면 코드가 자동으로 등록돼요</small></span><button class="tg on" data-a="ref-link"'+(refCode?'':' disabled')+'>링크 복사</button></div>'
+   +(refCnt?'<div class="or"><span>누적 추천<small>내 코드로 등록한 사람 · 스테이지 5 달성 '+refCnt.d.toLocaleString('ko-KR')+'명</small></span><b style="min-width:92px">'+refCnt.t.toLocaleString('ko-KR')+'명</b></div>':'')
+    +'<div class="or"><span>초대 링크<small>친구가 이 주소로 들어와 로그인하면 코드가 자동으로 등록돼요</small></span><button class="tg on" data-a="ref-link"'+(refCode?'':' disabled')+'>링크 복사</button></div>'
    +(refDone()?'<div class="or"><span>추천인 등록 완료<small>스테이지 5에 도달하면 골드 + 고급 장비를 받아요</small></span></div>'
      :'<div class="or"><span>추천인 코드 입력<small>가입 3일 이내 계정만 · 보상: 골드 + 고급 장비 1개</small></span><input id="o-refi" type="text" maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="코드" style="width:104px;height:32px;box-sizing:border-box;padding:0 8px;border:1px solid #6b5228;border-radius:6px;background:#070b0e;color:#fff2c4;font:16px \'Do Hyeon\',sans-serif;outline:0;text-transform:uppercase;-webkit-user-select:text;user-select:text"><button class="tg" data-a="ref-use"'+(refBusy?' disabled':'')+'>등록</button></div>')
    +(refMsg?'<div class="or"><span style="color:#ffd98a">'+esc(refMsg)+'</span></div>':'');
   const ni=c.querySelector('#o-refi');if(ni){const pv=val||refPend();if(pv)ni.value=pv}
   if(fk){const n=c.querySelector(fk);if(n&&!n.disabled)n.focus({preventScroll:true})}}
-async function refOpen(){refMsg='';refPaint();if(!sb||!AF.user||refOff||refCode)return;
+async function refCount(){if(!sb||!AF.user||refOff)return;try{const r=await sb.rpc('referral_count');if(!r.error&&r.data){refCnt={t:r.data.total|0,d:r.data.done|0};if(rf.classList.contains('on'))refPaint()}}catch(e){}}
+window.addEventListener('af-user',()=>{refCnt=null});
+async function refOpen(){refMsg='';refPaint();if(!sb||!AF.user||refOff)return;refCount();if(refCode)return;
   try{const r=await sb.rpc('referral_code');if(r.error)throw r.error;refCode=String(r.data||'')}catch(e){if(refMiss(e))refOff=1;else refMsg='코드를 불러오지 못했어요'}refPaint()}
 const refLink=()=>location.origin+location.pathname+'?ref='+encodeURIComponent(refCode);
 function refCopy(link){if(!refCode)return;const txt=link?refLink():refCode,ok=()=>{refMsg=link?'초대 링크를 복사했어요':'복사했어요';refPaint()};
@@ -1350,7 +1353,7 @@ async function refUse(){if(refBusy||!sb||!AF.user)return;const i=rf.querySelecto
 async function refTick(){if(!sb||!AF.user||!AF.synced||refOff||refRun||AF.st!=1)return;refRun=1;refLast=Date.now();
   try{if(refDone()&&!refCl()){try{AF.save()}catch(e){}try{await cloudUp(true)}catch(e){}}/* 내가 추천받아 보상 대기 중일 때만 먼저 서버 저장을 올려요 → 그 외 유저의 서버 저장 횟수는 그대로예요 */
     const r=await sb.rpc('referral_claim');if(r.error)throw r.error;const d=r.data||{};
-    if((d.me|0)>0||(d.n|0)>0){if((d.me|0)>0){try{localStorage.setItem(refCK(),'1')}catch(e){}}AF.refGrant(d.me,d.n);setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}}
+    if((d.me|0)>0||(d.n|0)>0){if((d.me|0)>0){try{localStorage.setItem(refCK(),'1')}catch(e){}}AF.refGrant(d.me,d.n);refCount();setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}}
   catch(e){if(refMiss(e))refOff=1}
   finally{refRun=0}}
 setInterval(()=>{if(AF.st==1&&!document.hidden&&Date.now()-refLast>=120000)refTick()},15000);
