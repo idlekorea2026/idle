@@ -980,7 +980,7 @@ document.body.appendChild(o)}
 if(/[?&](sim|debug)\b/.test(location.search)){addEventListener('keydown',e=>{if(e.code=='F2'){e.preventDefault();simShow()}});if(/[?&]sim\b/.test(location.search))setTimeout(simShow,800)}
 /* 추천인 보상: 서버(referral_claim)가 '이번에 새로 수령 처리된 건수'만 알려 주면 여기서 지급해요. 지급 즉시 localStorage 에 저장해서 새로고침돼도 안 날아가요.
    me = 내가 추천받은 보상(0/1) → 골드 + 고급 장비 1개 · n = 내가 초대한 사람 중 스테이지 5에 도달한 수 → 월드보스 코인 REF.c × n */
-const REF={c:3,gm:100};
+const REF={c:5,gm:100};
 function refGrant(me,n){me=+me>0?1:0;n=M.max(0,M.min(10,+n|0));if(!me&&!n)return;const o=[];
 if(me){const gd=M.round((4+stage*2+(P.lv>>1))*REF.gm);gold+=gd;o.push('골드 +'+gd.toLocaleString());const it=mk(SK[rn(0,SK.length)|0],1,3+stage*4+P.lv*1.2);o.push(it.n);pick(it)}
 if(n){WB.c=(WB.c|0)+REF.c*n;o.push('월드보스 코인 +'+REF.c*n)}
@@ -1308,7 +1308,7 @@ function refPaint(){const c=rf.querySelector('#o-ref');if(!c)return;
   if(!AF.user||!sb||refOff){c.innerHTML='<div class="or"><span>'+(refOff?'추천인 기능을 준비 중이에요':'로그인하면 이용할 수 있어요')+'</span></div>';return}
   const keep=c.querySelector('#o-refi'),val=keep?keep.value:'',fa=document.activeElement,fk=fa&&c.contains(fa)?(fa.id?'#'+fa.id:fa.dataset.a?'[data-a="'+fa.dataset.a+'"]':''):'';
   c.innerHTML=''
-   +'<div class="or"><span>내 추천 코드<small>친구가 가입 3일 안에 입력하고 스테이지 5에 도달하면 월드보스 코인 +3 (주 10명까지)</small></span><b style="min-width:92px;letter-spacing:.08em">'+esc(refCode||'…')+'</b><button class="tg on" data-a="ref-copy"'+(refCode?'':' disabled')+'>복사</button></div>'
+   +'<div class="or"><span>내 추천 코드<small>친구가 가입 3일 안에 입력하고 스테이지 5에 도달하면 월드보스 코인 +5 (주 10명까지)</small></span><b style="min-width:92px;letter-spacing:.08em">'+esc(refCode||'…')+'</b><button class="tg on" data-a="ref-copy"'+(refCode?'':' disabled')+'>복사</button></div>'
    +'<div class="or"><span>초대 링크<small>친구가 이 주소로 들어와 로그인하면 코드가 자동으로 등록돼요</small></span><button class="tg on" data-a="ref-link"'+(refCode?'':' disabled')+'>링크 복사</button></div>'
    +(refDone()?'<div class="or"><span>추천인 등록 완료<small>스테이지 5에 도달하면 골드 + 고급 장비를 받아요</small></span></div>'
      :'<div class="or"><span>추천인 코드 입력<small>가입 3일 이내 계정만 · 보상: 골드 + 고급 장비 1개</small></span><input id="o-refi" type="text" maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="코드" style="width:104px;height:32px;box-sizing:border-box;padding:0 8px;border:1px solid #6b5228;border-radius:6px;background:#070b0e;color:#fff2c4;font:16px \'Do Hyeon\',sans-serif;outline:0;text-transform:uppercase;-webkit-user-select:text;user-select:text"><button class="tg" data-a="ref-use"'+(refBusy?' disabled':'')+'>등록</button></div>')
