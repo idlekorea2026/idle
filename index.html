@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610061700">
+<meta name="build" content="202610062030">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -769,7 +769,7 @@ const w=big?140:105,x0=P.f>0?P.x:P.x-w;
 for(const e of E)if(!e.dead&&e.x+e.w/2>x0&&e.x-e.w/2<x0+w&&e.y>P.y-130&&e.y-e.h<P.y+10)hit(e,atk()*(big?1.8:1),P.f)}
 if(fs&&P.sc<=0&&P.mp>=20){P.mp-=20;P.sc=.5;P.at=.2;sfx(500,.3,'sawtooth',.04,2.5);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*760,l:.9,d:P.f,h:new Set()})}
 uc-=dt;if(uc<=0&&P.mp>=40&&(K.u||(auto&&(E.filter(e=>!e.dead&&M.abs(e.x-P.x)<230&&e.y>P.y-160).length>=3||E.some(e=>e.t=='g'&&!e.dead&&M.abs(e.x-P.x)<230))))){uc=9;P.mp-=40;shake=12;sfx(90,.5,'sawtooth',.1,3);RG.push({x:P.x,t:0});nz(.7,1800,50,'lowpass',.3,.7);for(const e of E)if(!e.dead&&M.abs(e.x-P.x)<260&&e.y>P.y-180)hit(e,atk()*3,e.x>=P.x?1:-1,1)}
-SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=WBM?60:btf(b0.mini,stage);ci=2.4;sbT=0;sdT=0;if(chrOpen)closeChr();if(shopOpen)toggleShop();slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
+SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=WBM?60:btf(b0.mini,stage);ci=2.4;sbT=0;sdT=0;if(WBM||DG){if(chrOpen)closeChr();if(shopOpen)toggleShop()}slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
 {const bb=E.find(e=>e.t=='g'&&!e.dead&&e.intro);if(bb&&bt>0&&ci<=0&&st==1){bt-=dt;if(bt<=5&&bt>0&&M.ceil(bt)!=btl){btl=M.ceil(bt);sfx(880,.08,'square',.05)}if(bt<=0){const rp=M.ceil(bb.hp/bb.mh*100);bt=0;P.hp=0;st=2;csys('시간 초과! 보스 체력 '+rp+'% 남음','#ff7a7a');TX.push({x:P.x,y:P.y-100,t:'시간 초과! 보스 '+rp+'% 남음',l:1.8,c:'#ff7a7a'});slw=.7;slf=.25;zm=1.1;sfx(240,1,'sawtooth',.08,.15)}}}
 if((ab||atr)&&(abt-=dt)<=0){abt=2;buyAll()}
 PR=PR.filter(p=>{p.x+=p.vx*dt;p.l-=dt;FX.push({x:p.x,y:p.y+rn(-25,25),vx:0,vy:rn(-40,40),l:.3,c:'#7dffe0'});
