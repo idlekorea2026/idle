@@ -544,8 +544,8 @@ function land(o){const r=o.it.ri;if(r>=3)csys(TIERS[r].n+(o.it.u!=null?' 유니�
 /* 자동 장착 판정: 세트 부위는 같은 세트를 이미 낀 개수(자기 포함)만큼 종합 점수를 SETW씩 가산해요. 세트를 맞추려는 장비가 점수 조금 낮다고 팔리거나 밀려나지 않게 해요 (SETW 를 올리면 세트를 더 우선해요) */
 const SETW=.15,sscr=(x,e)=>{let m=1;if(x.u!=null&&UQ[x.u][2]>=0){const si=UQ[x.u][2],q=e||EQ;let n=1;for(const k of SK){const y=q[k];if(y&&k!=x.sl&&y.u!=null&&UQ[y.u][2]==si)n++}m=1+SETW*n}return scr(x)*m};
 /* 자동 교체 판정: 기본 수치×옵션 개수가 아니라 '실제 전투력(cp)'으로 비교해요. 흡혈·치명타·체력 같은 옵션이 빠져서 오히려 약해지는 교체는 하지 않아요.
-   슬롯 모드 LK: 0 전투력만 오르면 교체 · 1 상위 등급이면서 전투력도 오를 때만 교체(기본) · 2 고정. 자동 교체 OFF(ae)면 빈 슬롯만 채워요 */
-const LKN=['전투력 기준','상위 등급만','고정','같은 등급 이상'],LKO=[0,1,3,2];
+   슬롯 모드 LK: 0 전투력만 오르면 교체 · 1 상위 등급이면서 전투력도 오를 때만 교체(기본) · 2 고정(빈 슬롯만 채움) · 3 같은 등급 이상이면서 전투력도 오를 때만 교체. 자동 교체 OFF(ae)면 빈 슬롯만 채워요 */
+const LKN=['전투력 기준','상위 등급만','고정','같은 등급 이상'],LKO=[0,3,1,2];
 /* swapV: it 로 c 를 바꾸면 전투력이 어떻게 되는지. 전역 EQ 는 건드리지 않고 복사본으로만 계산해요.
    바닥 아이템이 매 프레임 판정되므로 (아이템·교체 대상·나머지 슬롯·스탯 상태)가 같으면 결과를 재사용해요 */
 const SWM=new WeakMap();
@@ -658,7 +658,7 @@ function toggleShop(){if(DG&&!shopOpen){toast('던전 중에는 열 수 없어�
 /* ===== 요일 던전: 하루 1번, 요일마다 보상이 달라요. 던전 중엔 stage·farm·frm·bk·dc·IR 을 DGS 에 백업해 두고(저장도 백업값으로), 끝나면 그대로 되돌려요 → 방치 보상·후퇴 로직에 영향 없음 ===== */
 const DGT=[['일','전 부문','골드·경험치·장비·스킬북 소량'],['월','골드','골드 대량'],['화','골드','골드 대량'],['수','경험치','경험치 대량'],['목','경험치','경험치 대량'],['금','장비','장비 3개 (등급 상승 확률 ↑)'],['토','스킬북','스킬북 1개']];
 const dgNow=()=>{const d=new Date(tnow()+324e5);return{k:d.getUTCFullYear()*1e4+(d.getUTCMonth()+1)*100+d.getUTCDate(),w:d.getUTCDay()}},dgWk=k=>new Date(Date.UTC(k/1e4|0,(k/100|0)%100-1,k%100)).getUTCDay(),dgStage=()=>M.max(1,M.round(best*.8));
-async function dgEnter(){if(!AF.user){toast('로그인 후에 이용할 수 있는 기능이에요','#ff7a7a');return}if(DG||dgBusy||st!=1||ci>0||bossLock())return;const n=dgNow();if(DGD.d==n.k){toast('오늘 던전은 이미 입장했어요','#ff7a7a');return}
+async function dgEnter(){if(!AF.user){toast('로그인 후에 이용할 수 있는 기능이에요','#ff7a7a');return}if(WBM){toast('월드보스 도전 중에는 입장할 수 없어요','#ff7a7a');return}if(DG||dgBusy||st!=1||ci>0||bossLock())return;const n=dgNow();if(DGD.d==n.k){toast('오늘 던전은 이미 입장했어요','#ff7a7a');return}
 dgBusy=1;let k=n.k;/* 서버가 하루 1번을 판정(KST 날짜·요일은 서버가 돌려준 값). 서버 함수가 아직 없으면 로컬 기록으로만 막아요 */
 try{if(AF.sb&&AF.user){const r=await AF.sb.rpc('dungeon_enter');if(r.error)throw r.error;const v=+r.data;if(!v){DGD={d:n.k};save();toast('오늘 던전은 이미 입장했어요','#ff7a7a');if(shopOpen)buildShop();return}k=v}}
 catch(e){const m=String((e&&e.message)||'');if(!(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))){toast('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요','#ff7a7a');return}}finally{dgBusy=0}
@@ -930,7 +930,7 @@ let d;if(!x)d=`<div class="cw-nm">${SL[k][0]}</div><small>착용한 장비가 �
 else{const q=rc(x);d=`<div class="cw-nm" style="color:${icol(x)}">${e?'+'+e+' ':''}${x.n}</div><small>${x.u!=null?'<span style="color:'+UC+'">'+iname(x)+'</span>':iname(x)} ${SL[k][0]}${sn(x)?' · '+sn(x)+' 세트':''}</small><div class="cw-ln"><span>${SL[k][1]}</span><b>+${iv(x)}${e?` <small>(기본 ${x.v})</small>`:''}${x.p?` <small>· 롤 ${M.max(0,M.min(100,M.round(((x.v/(x.p*TM[x.ri]*SL[x.sl][2])-.9)/.2)*100)))}%</small>`:''}</b></div>`
 +(x.o||[]).map((o,j)=>`<div class="cw-ln"><span>${OP[o[0]][0]}</span><b>+${o[1]}${OP[o[0]][3]} <small>(최대 ${omx(o,x)}${OP[o[0]][3]})</small></b><button class="ac" data-c="r${j}" ${gold<q&&!WB.rr?'disabled':''}>재굴림 ${WB.rr?'쿠폰':q+'G'}</button></div>`).join('')
 
-+`<div class="cw-ln"><span>자동 교체 방식 <small>${['전투력이 오르면 같은 등급이어도 교체','상위 등급이면서 전투력도 오를 때만 교체','어떤 장비가 나와도 유지 (세팅 고정)','같은 등급 이상이면서 전투력도 오를 때만 교체'][LK[k]]}</small></span><button class="ac" data-c="lk">${LKN[LK[k]]}</button></div>`+enr}
++`<div class="cw-ln"><span>자동 교체 방식 <small>${['등급과 상관없이 전투력이 오르면 교체','상위 등급이면서 전투력도 오를 때만 교체','빈 슬롯만 채우고, 이후엔 어떤 장비가 나와도 유지 (세팅 고정)','같은 등급 이상이면서 전투력도 오를 때만 교체'][LK[k]]+(ae?'':' · 자동 교체가 꺼져 있어서 지금은 빈 슬롯만 채워요')}</small></span><button class="ac" data-c="lk">${LKN[LK[k]]}</button></div>`+enr}
 const sets=ST.map((z,i)=>{const n=cn[i]|0;return `<div class="cw-set"><div>${z[0]} <small>${n}/4</small></div>${z[1].map(b=>`<small class="${n>=b[0]?'act':''}">${b[0]}세트 · ${b[1].map(o=>OP[o[0]][0]+' +'+o[1]+OP[o[0]][3]).join(', ')}</small>`).join('')}</div>`}).join('');
 const SNM=[['str','힘','공격력',1],['vit','활력','최대 체력',1.5],['dex','민첩','치명타 확률',.1],['wis','지혜','최대 마나·회복',2]];
 const stt=`<div class="cw-sets"><h3>스탯 포인트 <small>남은 ${PT.free}점</small></h3><div class="cw-set">${SNM.map(([k,n,dd,u])=>`<div class="cw-ln"><span>${n} ${PT[k]} <small>${dd} +${(PT[k]*u).toFixed(1)}%</small></span><button class="ac" data-c="p:${k}:1" ${PT.free?'':'disabled'}>+1</button><button class="ac" data-c="p:${k}:5" ${PT.free?'':'disabled'}>+5</button></div>`).join('')}<div class="cw-ln"><span>자동 분배 <small>${PT.auto?'힘·활력·민첩·지혜 3:3:2:2':'직접 분배'}</small></span><button class="ac" data-c="pauto">${PT.auto?'끄기':'켜기'}</button><button class="ac" data-c="prst" ${!frs&&gold<P.lv*100?'disabled':''}>재분배 ${frs?'무료 1회':P.lv*100+'G'}</button></div></div></div>`;
