@@ -763,7 +763,7 @@ const py=P.y;P.x+=P.vx*dt;P.y+=P.vy*dt;P.g=0;
 if(P.y>=GY){P.y=GY;P.vy=0;P.g=1;P.j=0}else if(P.vy>=0)for(const p of PL)if(P.x>p.x-8&&P.x<p.x+p.w+8&&py<=p.y&&P.y>=p.y){P.y=p.y;P.vy=0;P.g=1;P.j=0}
 P.x=M.max(30,M.min(WORLD-30,P.x));
 P.cd-=dt;P.at-=dt;P.ct-=dt;P.sc-=dt;P.inv-=dt;P.mp=M.min(mmp(),P.mp+dt*(6+P.lv)*(1+PT.wis*.015)*(1+bon('mr')/100));
-if(fa&&P.cd<=0){if(P.ct<=0)P.combo=0;P.combo=P.combo%3+1;const big=P.combo==3;nz(big?.2:.11,big?700:1300,big?3200:4200,'bandpass',.05,.7);if(big)sfx(150,.14,'sine',.08,.5);P.at=.22;P.cd=(big?.42:.26)/(1+M.min(50,bon('as'))/100);P.ct=.7;P.vx+=P.f*(big?260:120);
+if(fa&&P.cd<=0){if(P.ct<=0)P.combo=0;P.combo=P.combo%3+1;const big=P.combo==3;nz(big?.2:.11,big?700:1300,big?3200:4200,'bandpass',.05,.7);if(big)sfx(150,.14,'sine',.08,.5);P.at=.22;P.cd=M.max(P.cd,-.034)+(big?.42:.26)/(1+M.min(50,bon('as'))/100);P.ct=.7;P.vx+=P.f*(big?260:120);
 const w=big?140:105,x0=P.f>0?P.x:P.x-w;
 for(const e of E)if(!e.dead&&e.x+e.w/2>x0&&e.x-e.w/2<x0+w&&e.y>P.y-130&&e.y-e.h<P.y+10)hit(e,atk()*(big?1.8:1),P.f)}
 if(fs&&P.sc<=0&&P.mp>=20){P.mp-=20;P.sc=.5;P.at=.2;sfx(500,.3,'sawtooth',.04,2.5);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*760,l:.9,d:P.f,h:new Set()})}
@@ -966,7 +966,7 @@ sfx(880,.08,'square',.05);save();buildChr()});
 function fxu(dt){FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{t.y-=40*dt;t.l-=dt;return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;
 /* 한 프레임(또는 백그라운드 한 틱)의 진행. loop 와 bgStep 이 같이 써요 */
-function simStep(dt){if(st==1){if(!pz){if(hs>0)hs-=dt;else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if((auto||WBM)&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}}
+function simStep(dt){if(st==1){if(!pz){if(hs>0){hs-=dt;if(hs<=0){const r=-hs;hs=0;if(r>0)upd(r)}}else upd(dt)}}else{T+=dt;if(st==2){fxu(dt);dtm+=dt;if((auto||WBM)&&dtm>2.5)go()}else{cam+=dt*30;cam%=2000}}}
 function loop(t){const rd=M.min(.033,(t-last)/1000||0);let dt=rd;last=t;if(!OPT.sh)shake=0;if(!OPT.fx){slw=0;zm=1}if(slw>0){slw-=rd;dt*=slf}zm+=(1-zm)*M.min(1,rd*7);if(ci>0)ci-=rd;
 simStep(dt);
 uiRef();render();hudUp();requestAnimationFrame(loop)}
