@@ -573,8 +573,9 @@ const better=(it,c,e)=>{if(!c)return true;if(!ae)return false;const m=LK[it.sl];
 function swapMsg(it,c,v,did){try{const d=v.a?(v.b-v.a)/v.a*100:0,ds=(d>=0?'+':'')+(M.round(d*10)/10)+'%',ls=v.l0!=v.l1?' · 흡혈 '+v.l0+'→'+v.l1+'%':'',nm=SL[it.sl][0];
 if(did)csys(nm+' 교체: '+it.n+' · 전투력 '+ds+ls,d>=0?'#8fe3a0':'#ffb36b');
 else{const t=Date.now();if(t-(HT[it.sl]||0)<10000)return;HT[it.sl]=t;csys(nm+' 유지('+LKN[LK[it.sl]]+'): '+it.n+'이(가) 나왔지만 바꾸지 않았어요 · 전투력 '+ds+ls,'#9fb5b0')}}catch(x){}}
+let bigAt=-1e9;/* 큰 상승 소리는 0.5초에 한 번만 (스테이지 끝 일괄 습득 때 겹치지 않게) */
 function pick(it){try{toast(iname(it)+' · '+it.n,icol(it))}catch(e){}try{if(it.ri==TIERS.length-1&&AF.announce)AF.announce(it)}catch(e){}const c=EQ[it.sl],sv=x=>M.round(x.v*SL[x.sl][4]*(1+sq(x)));sfx(700,.1,'triangle',.06,1.6);
-if(better(it,c)){const v=c?swapV(it,c):null;EQ[it.sl]=it;if(c){gold+=sv(c);swapMsg(it,c,v,1)}TX.push({x:P.x,y:P.y-100,t:'착용: '+it.n,l:1.3,c:icol(it)})}else{if(c&&ae&&LK[it.sl]!=0){const v=swapV(it,c);if(v.b>v.a*1.002)swapMsg(it,c,v,0)}const m=sv(it);gold+=m;TX.push({x:P.x,y:P.y-100,t:'판매 +'+m,l:.9,c:'#ffcf4a'})}save()}
+if(better(it,c)){const v=c?swapV(it,c):null;EQ[it.sl]=it;if(c){gold+=sv(c);swapMsg(it,c,v,1)}TX.push({x:P.x,y:P.y-100,t:'착용: '+it.n,l:1.3,c:icol(it)});if(c&&v&&v.a>0&&TX.length<12){const d=(v.b-v.a)/v.a*100,big=d>=20;TX.push({x:P.x,y:P.y-128,t:'▲ 전투력 +'+(M.round(d*10)/10)+'%',l:big?1.8:1.3,c:big?'#ffe27a':'#8fe3a0',s:big?34:24});if(big&&performance.now()-bigAt>500){bigAt=performance.now();sfx(1047,.18,'triangle',.06,1.4)}}}else{if(c&&ae&&LK[it.sl]!=0){const v=swapV(it,c);if(v.b>v.a*1.002)swapMsg(it,c,v,0)}const m=sv(it);gold+=m;TX.push({x:P.x,y:P.y-100,t:'판매 +'+m,l:.9,c:'#ffcf4a'})}save()}
 let resetting=false,svAt=-1e9;
 /* 자동 저장은 마지막 저장 후 2.5초가 지났을 때만 (백그라운드 틱·타이머가 겹쳐도 한 번만) */
 function autoSave(){if(performance.now()-svAt>=2500)save()}
