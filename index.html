@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610051630">
+<meta name="build" content="202610061700">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -111,8 +111,8 @@ button.on{background:#ffb84a;color:#0b1218}
 .ofh{margin:14px auto 0;max-width:min(420px,86vw);padding:8px 14px;border:1px solid #ffb84a55;border-radius:10px;background:#ffb84a14;color:#ffd98a;font-size:15px;line-height:1.5;text-align:center}.ofh b{font-weight:400;color:#7dffe0}
 .tf{margin:clamp(14px,3vh,30px) 0 0;color:#6f8580;font-size:14px;letter-spacing:.06em;text-align:center}
 @media(pointer:coarse){.tf{display:none}}
-#pm,#om,#rf{align-items:center;justify-content:center;padding:12px;background:#02060ab8;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-#om,#rf{z-index:21;background:#02060acc}
+#pm,#om,#rf,#iq{align-items:center;justify-content:center;padding:12px;background:#02060ab8;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#om,#rf,#iq{z-index:21;background:#02060acc}
 .pn{box-sizing:border-box;max-height:100%;overflow:auto;padding:22px 26px 24px;border:2px solid #8a6a30;border-radius:12px;background:repeating-linear-gradient(135deg,#ffffff05 0 2px,transparent 2px 5px),linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000,0 0 0 1px #000,inset 0 1px 0 #ffe2a833;animation:pnin .18s ease both}
 @keyframes pnin{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
 .pn h2{margin:0 0 4px;text-align:center;font-weight:400;font-size:28px;letter-spacing:.1em;color:#ffd98a}
@@ -215,6 +215,21 @@ body.ttl #cht{display:none}
 #rk .em{padding:34px 10px;text-align:center;color:#9fb5b0;line-height:1.6}
 #rk .mine{margin-top:8px;padding:8px 10px;border:1px solid #7dffe055;border-radius:6px;background:#7dffe00d;color:#7dffe0;font-size:15px;text-align:center}
 #rk .ft{margin-top:8px;color:#9fb5b0;font-size:12px;text-align:center;line-height:1.5}
+
+/* 문의하기 */
+@media(pointer:coarse){#iq{align-items:flex-start;padding-top:calc(env(safe-area-inset-top,0px) + 10px)}}
+#iq .pn{width:min(540px,100%)}
+#iq .mb button:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+#iq textarea{display:block;box-sizing:border-box;width:100%;min-height:110px;margin:6px 0 4px;padding:9px 10px;border:1px solid #6b5228;border-radius:6px;background:#070b0e;color:#fff2c4;font:16px/1.5 'Do Hyeon',sans-serif;outline:0;resize:vertical;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
+#iq textarea:focus{border-color:#ffd27a;box-shadow:0 0 12px #ffb84a44}
+#iq .iqi{padding:8px 0;border-top:1px solid #ffffff12;font-size:15px}
+#iq .iqi.nw{background:#7dffe00a}
+#iq .iqi .h{display:flex;justify-content:space-between;gap:8px;color:#9fb5b0;font-size:13px}
+#iq .iqi .h i{font-style:normal;color:#7dffe0}
+#iq .iqi p{margin:4px 0 0;color:#e8f1ee;white-space:pre-wrap;word-break:break-all;line-height:1.5}
+#iq .iqi .rp{margin-top:6px;padding:7px 10px;border-left:3px solid #7dffe0;border-radius:4px;background:#7dffe00f;color:#c9f5ec;white-space:pre-wrap;word-break:break-all;line-height:1.5}
+#iq .iqi .rp b{display:block;font-weight:400;color:#7dffe0;font-size:13px}
+#iq .em{padding:14px 0;text-align:center;color:#9fb5b0;font-size:15px}
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="hud"><div class="orb hp" id="ohp"><i></i><b></b></div><div class="xp"><span id="lv">Lv.1</span><span id="cp"></span><div class="xb"><i id="xpf"></i></div><span id="xpt">0%</span></div><div class="hb"><div class="grp mv"><button class="sl" data-k="l"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="sl" data-k="r"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button></div><div class="grp"><button class="sl" data-k="a"><svg viewBox="0 0 24 24"><path d="M5 19 19 5M14 5h5v5M8 16l-3 3"/></svg><span>베기</span><kbd>Z</kbd></button><button class="sl" data-k="s"><svg viewBox="0 0 24 24"><path d="M6 5Q19 12 6 19 12 12 6 5z"/></svg><span>검기</span><kbd>X</kbd></button><button class="sl" data-k="u"><svg viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg><span>폭발</span><kbd>C</kbd></button><button class="sl" data-k="j"><svg viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6"/></svg><span>점프</span><kbd>Spc</kbd></button></div></div><div class="grp mn"><button class="sl sm on" data-k="auto"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2-5M19 4v4h-4"/></svg><span>자동</span><kbd>Q</kbd></button><button class="sl sm on" data-k="mute"><svg viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4zM16 9q3 3 0 6"/></svg><span>소리</span><kbd>M</kbd></button><button class="sl sm" data-k="chr"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg><span>장비</span><kbd>I</kbd></button><button class="sl sm" data-k="shop"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5zM9 8a3 3 0 0 1 6 0"/></svg><span>단련</span><kbd>B</kbd></button><button class="sl sm" data-k="esc"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span><kbd>Esc</kbd></button></div><div class="orb mp" id="omp"><i></i><b></b></div><div id="sks"><button class="sl" data-k="k1"></button><button class="sl" data-k="k2"></button><button class="sl" data-k="k3"></button></div></div><button id="bossb" data-k="boss" style="display:none">보스 재도전 <small>R</small></button>
@@ -980,7 +995,7 @@ document.body.appendChild(o)}
 if(/[?&](sim|debug)\b/.test(location.search)){addEventListener('keydown',e=>{if(e.code=='F2'){e.preventDefault();simShow()}});if(/[?&]sim\b/.test(location.search))setTimeout(simShow,800)}
 /* 추천인 보상: 서버(referral_claim)가 '이번에 새로 수령 처리된 건수'만 알려 주면 여기서 지급해요. 지급 즉시 localStorage 에 저장해서 새로고침돼도 안 날아가요.
    me = 내가 추천받은 보상(0/1) → 골드 + 고급 장비 1개 · n = 내가 초대한 사람 중 스테이지 5에 도달한 수 → 월드보스 코인 REF.c × n */
-const REF={c:5,gm:100};
+const REF={c:10,gm:100};
 function refGrant(me,n){me=+me>0?1:0;n=M.max(0,M.min(10,+n|0));if(!me&&!n)return;const o=[];
 if(me){const gd=M.round((4+stage*2+(P.lv>>1))*REF.gm);gold+=gd;o.push('골드 +'+gd.toLocaleString());const it=mk(SK[rn(0,SK.length)|0],1,3+stage*4+P.lv*1.2);o.push(it.n);pick(it)}
 if(n){WB.c=(WB.c|0)+REF.c*n;o.push('월드보스 코인 +'+REF.c*n)}
@@ -1083,12 +1098,13 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
   <h3>화면</h3>${FSOK?tg('o-fs','전체화면','F 키로도 전환해요'):''}${tg('o-sh','화면 흔들림')}${tg('o-fx','전투 연출','슬로모션 · 확대')}
   <h3>공개</h3>${tg('o-pub','내 정보 공개','채팅에서 내 닉네임을 누르면 레벨·전투력·장비가 보여요 (로그인 시 서버에 반영)')}
   
+  <h3>고객지원</h3><div class="or"><span>문의하기<small>버그 제보·건의 · 답변도 여기서 확인해요</small></span><button class="tg on" data-a="inq">열기</button></div>
   <h3 class="kh">조작</h3>
   <div class="keys"><kbd>← →</kbd><span>이동</span><kbd>Space</kbd><span>점프</span><kbd>Z</kbd><span>베기</span><kbd>X</kbd><span>검기</span><kbd>C</kbd><span>폭발</span><kbd>Q</kbd><span>자동/수동</span><kbd>I</kbd><span>장비</span><kbd>B</kbd><span>단련</span><kbd>M</kbd><span>소리</span><kbd>Enter</kbd><span>채팅</span><kbd>F</kbd><span>전체화면</span><kbd>Esc</kbd><span>메뉴</span></div>
   <div class="mb bk"><button class="pri" data-a="back">돌아가기</button></div></div>`;
 const rf=$('div','ov');rf.id='rf';
 rf.innerHTML=`<div class="pn wide"><h2>추천인</h2><div class="st">친구를 초대하고 보상을 받아요</div><div id="o-ref"></div><div class="mb bk"><button class="pri" data-a="ref-back">돌아가기</button></div></div>`;
-const rk=$('div','ov');rk.id='rk';document.body.append(tm,pm,om,rf,rk);
+const rk=$('div','ov');rk.id='rk';const iq=$('div','ov');iq.id='iq';document.body.append(tm,pm,om,rf,rk,iq);
 
 /* ---- 설정 UI 동기화 ---- */
 const q=id=>om.querySelector('#'+id);
@@ -1110,10 +1126,10 @@ sync();
 document.addEventListener('fullscreenchange',sync);document.addEventListener('webkitfullscreenchange',sync);
 
 /* ---- 표시 · 이동 ---- */
-const items=r=>[...r.querySelectorAll('button:not([disabled]),input[type=range]')].filter(x=>x.getClientRects().length);
+const items=r=>[...r.querySelectorAll('button:not([disabled]),input[type=range],textarea')].filter(x=>x.getClientRects().length);
 const focusFirst=r=>{const l=items(r);l.length&&l[0].focus({preventScroll:true})};
 const move=(r,d)=>{const l=items(r);if(!l.length)return;let i=l.indexOf(document.activeElement);i=i<0?(d>0?0:l.length-1):(i+d+l.length)%l.length;l[i].focus({preventScroll:true})};
-const topOv=()=>document.body.classList.contains('nk')?null:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
+const topOv=()=>document.body.classList.contains('nk')?null:iq.classList.contains('on')?iq:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
 
 let opener=null,confirmT=0;
 function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
@@ -1141,6 +1157,8 @@ function act(a,btn){
   if(a=='rank'){openRank(btn);return}if(a=='rk-x'){closeRank();return}
   if(a=='ref'){openRef(btn);return}if(a=='ref-back'){closeRef();return}if(a=='ref-copy'){refCopy();return}if(a=='ref-link'){refCopy(1);return}if(a=='ref-use'){refUse();return}if(a=='opt'){openOpt(btn);return}
   if(a=='back'){closeOpt();return}
+  if(a=='inq'){openInq(btn);return}if(a=='iq-x'){closeInq();return}if(a=='iq-send'){iqSend();return}
+  if(a.indexOf('iq-c')==0){iqCat=+a.slice(4)||0;iq.querySelectorAll('#iq-cs button').forEach((x,i)=>x.classList.toggle('on',i==iqCat));return}
   if(a=='fs'||a=='o-fs'){AF.toggleFS();return}
   if(a=='resume'){AF.pauseOff();return}
   if(a=='title'){AF.save();location.reload();return}
@@ -1149,7 +1167,7 @@ function act(a,btn){
   if(a=='o-pub'){AF.pub=!AF.pub;try{AF.save()}catch(e){}AF.pubFlush();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
 }
-[tm,pm,om,rf,rk].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
+[tm,pm,om,rf,rk,iq].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
 /* ===== 랭킹 (최고 스테이지 기준) — 실시간 연결·주기 요청 없이, 창을 열 때 get_ranking 1번만 불러와요 (2분 캐시).
    · 순위 값은 서버가 저장 때 검증한 최고 스테이지예요 (ranking.sql) — 기기에서 올린 값 그대로가 아니에요
    · 같은 스테이지면 먼저 도달한 사람이 위 · 내 정보 공개를 끈 사람은 빠져요 ===== */
@@ -1192,9 +1210,9 @@ rk.addEventListener('focusin',e=>{const t=e.target;if(t.classList&&t.classList.c
 addEventListener('keydown',e=>{
   const on=topOv();if(!on||e.ctrlKey||e.metaKey||e.altKey)return;
   e.stopPropagation();
-  const k=e.code,t=e.target;if(t&&t.tagName=='INPUT'&&t.type=='text'){if(k=='Escape'){e.preventDefault();if(!e.repeat){if(on===om)closeOpt();else if(on===rf)closeRef()}}else if((k=='Enter'||k=='NumpadEnter')&&t.id=='o-refi'&&!e.isComposing){e.preventDefault();if(!e.repeat)refUse()}return}
+  const k=e.code,t=e.target;if(t&&((t.tagName=='INPUT'&&t.type=='text')||t.tagName=='TEXTAREA')){if(k=='Escape'){e.preventDefault();if(!e.repeat){if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq()}}else if((k=='Enter'||k=='NumpadEnter')&&t.id=='o-refi'&&!e.isComposing){e.preventDefault();if(!e.repeat)refUse()}return}
   if(k=='KeyF'){e.preventDefault();if(!e.repeat)AF.toggleFS();return}
-  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===pm)AF.pauseOff();return}
+  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pm)AF.pauseOff();return}
   if(k=='ArrowDown'||k=='ArrowUp'){e.preventDefault();move(on,k=='ArrowDown'?1:-1);return}
   if(k=='Tab'){e.preventDefault();move(on,e.shiftKey?-1:1);return}
   if(t&&t.type=='range'&&(k=='ArrowLeft'||k=='ArrowRight'))return;
@@ -1308,7 +1326,7 @@ function refPaint(){const c=rf.querySelector('#o-ref');if(!c)return;
   if(!AF.user||!sb||refOff){c.innerHTML='<div class="or"><span>'+(refOff?'추천인 기능을 준비 중이에요':'로그인하면 이용할 수 있어요')+'</span></div>';return}
   const keep=c.querySelector('#o-refi'),val=keep?keep.value:'',fa=document.activeElement,fk=fa&&c.contains(fa)?(fa.id?'#'+fa.id:fa.dataset.a?'[data-a="'+fa.dataset.a+'"]':''):'';
   c.innerHTML=''
-   +'<div class="or"><span>내 추천 코드<small>친구가 가입 3일 안에 입력하고 스테이지 5에 도달하면 월드보스 코인 +5 (주 10명까지)</small></span><b style="min-width:92px;letter-spacing:.08em">'+esc(refCode||'…')+'</b><button class="tg on" data-a="ref-copy"'+(refCode?'':' disabled')+'>복사</button></div>'
+   +'<div class="or"><span>내 추천 코드<small>친구가 가입 3일 안에 입력하고 스테이지 5에 도달하면 월드보스 코인 +10 (주 10명까지)</small></span><b style="min-width:92px;letter-spacing:.08em">'+esc(refCode||'…')+'</b><button class="tg on" data-a="ref-copy"'+(refCode?'':' disabled')+'>복사</button></div>'
    +'<div class="or"><span>초대 링크<small>친구가 이 주소로 들어와 로그인하면 코드가 자동으로 등록돼요</small></span><button class="tg on" data-a="ref-link"'+(refCode?'':' disabled')+'>링크 복사</button></div>'
    +(refDone()?'<div class="or"><span>추천인 등록 완료<small>스테이지 5에 도달하면 골드 + 고급 장비를 받아요</small></span></div>'
      :'<div class="or"><span>추천인 코드 입력<small>가입 3일 이내 계정만 · 보상: 골드 + 고급 장비 1개</small></span><input id="o-refi" type="text" maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="코드" style="width:104px;height:32px;box-sizing:border-box;padding:0 8px;border:1px solid #6b5228;border-radius:6px;background:#070b0e;color:#fff2c4;font:16px \'Do Hyeon\',sans-serif;outline:0;text-transform:uppercase;-webkit-user-select:text;user-select:text"><button class="tg" data-a="ref-use"'+(refBusy?' disabled':'')+'>등록</button></div>')
@@ -1351,6 +1369,63 @@ async function refAuto(){const v=refPend();if(!v||refAutoRun||refAutoN>=3||!sb||
 window.addEventListener('af-nick',()=>{refAuto()});
 setInterval(refAuto,15000);
 window.addEventListener('af-user',()=>{refCode=null;refMsg='';refLast=0;refAutoN=0;refPaint()});
+/* ===== 문의하기 (서버: inquiry.sql 의 submit_inquiry · my_inquiries · inquiry_seen) =====
+   · 로그인한 사람만 · 보내는 간격·하루 횟수는 서버가 판정해요(화면의 카운트다운은 표시용)
+   · 답변은 Supabase 표(inquiries)의 reply 칸에 적으면 돼요
+   · 문의를 한 번이라도 보낸 사람만, 접속할 때 1번 답변 도착 여부를 확인해요(나머지 유저는 요청 0) */
+const IQC=['버그','건의','기타'],IQK=['bug','idea','etc'];
+let iqCat=0,iqBusy=0,iqReady=0,iqLeft=0,iqMax=3,iqRows=null,iqAt=0,iqErr='',iqT=0,iqOp=null,iqDraft='',iqOff=0,iqMk=0,iqChk=0;
+const iqUK=()=>'ashen_inq_'+(AF.user?AF.user.id:'');
+async function iqRpc(f,a){const r=await sb.rpc(f,a);if(r.error)throw r.error;return r.data}
+function iqApply(d){d=d||{};iqRows=Array.isArray(d.rows)?d.rows:[];iqLeft=d.left|0;iqMax=(d.max|0)||3;iqReady=Date.now()+(d.wait|0)*1000;iqAt=Date.now();iqMk=0;iqErr=''}
+const iqD=s=>{const d=new Date(s);if(isNaN(d))return '';return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+function iqMsg(t,bad){const m=iq.querySelector('#iq-m');if(m){m.textContent=t||'';m.style.color=bad?'#ff9a8a':'#7dffe0'}}
+function iqCnt(){const t=iq.querySelector('#iq-t'),n=iq.querySelector('#iq-n');if(t&&n)n.textContent=t.value.length+'/500'}
+function iqSt(){const s=iq.querySelector('#iq-st'),b=iq.querySelector('#iq-b');if(!s||!b)return;const w=Math.max(0,Math.ceil((iqReady-Date.now())/1000));let t,ok=1;
+  if(iqRows===null&&!iqErr){t='확인 중…';ok=0}
+  else if(iqRows===null)t=iqErr;
+  else if(iqLeft<=0){t='오늘은 더 보낼 수 없어요 · 내일 0시에 초기화돼요';ok=0}
+  else if(w>0){t='다음 문의까지 '+Math.floor(w/60)+'분 '+(w%60)+'초 · 오늘 '+iqLeft+'/'+iqMax+' 남음';ok=0}
+  else t='오늘 '+iqLeft+'/'+iqMax+' 남음';
+  s.textContent=t;b.disabled=!ok||!!iqBusy;b.textContent=iqBusy?'보내는 중…':'보내기'}
+function iqLs(){const c=iq.querySelector('#iq-ls');if(!c)return;
+  if(iqRows===null){c.innerHTML='<div class="em">'+esc(iqErr||'불러오는 중…')+'</div>';return}
+  if(!iqRows.length){c.innerHTML='<div class="em">아직 보낸 문의가 없어요</div>';return}
+  c.innerHTML=iqRows.map(r=>{const rp=r.r&&String(r.r).trim();return '<div class="iqi'+(r.n?' nw':'')+'"><div class="h"><span>'+esc(IQC[IQK.indexOf(r.c)]||'기타')+' · '+iqD(r.t)+'</span>'+(rp?'<i>'+(r.n?'새 답변':'답변 완료')+'</i>':'<span>답변 대기</span>')+'</div><p>'+esc(r.b)+'</p>'+(rp?'<div class="rp"><b>운영자 답변'+(r.rt?' · '+iqD(r.rt):'')+'</b>'+esc(rp)+'</div>':'')+'</div>'}).join('')}
+function iqMark(){if(iqMk||!iqRows||!iqRows.some(r=>r.n))return;iqMk=1;iqRpc('inquiry_seen').catch(()=>{})}
+function iqBuild(){const on=!!(sb&&AF.user)&&!iqOff;let h='<div class="pn wide"><h2>문의하기</h2><div class="st">버그 제보나 건의를 남겨 주세요</div>';
+  if(!on)h+='<div class="or"><span>'+(iqOff?'문의 기능을 준비 중이에요':'로그인하면 이용할 수 있어요')+'<small>'+(iqOff?'잠시 후 다시 확인해 주세요':'악용을 막기 위해 로그인한 계정만 보낼 수 있어요')+'</small></span></div>';
+  else h+='<div class="or" id="iq-cs" style="gap:6px;border-top:0">'+IQC.map((n,i)=>'<button class="tg'+(i==iqCat?' on':'')+'" data-a="iq-c'+i+'" style="flex:1;min-width:0">'+n+'</button>').join('')+'</div>'
+    +'<textarea id="iq-t" maxlength="500" rows="5" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="내용을 적어 주세요 (5~500자)&#10;버그라면 어떤 상황에서 생겼는지 알려 주세요"></textarea>'
+    +'<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#9fb5b0"><span id="iq-st"></span><span id="iq-n">0/500</span></div>'
+    +'<div id="iq-m" style="min-height:18px;margin-top:4px;font-size:14px;color:#ffd98a"></div>'
+    +'<div class="mb" style="margin:6px auto 0;width:100%"><button class="rw" data-a="iq-send" id="iq-b">보내기</button></div><h3>내 문의</h3><div id="iq-ls"></div>';
+  h+='<div class="mb bk"><button class="pri" data-a="iq-x">돌아가기</button></div></div>';iq.innerHTML=h;
+  const t=iq.querySelector('#iq-t');if(t){t.value=iqDraft;iqCnt()}iqSt();iqLs()}
+async function iqLoad(force){if(!sb||!AF.user||iqOff)return;
+  if(!force&&iqRows&&Date.now()-iqAt<20000){iqSt();iqLs();iqMark();return}
+  try{iqApply(await iqRpc('my_inquiries'))}catch(e){if(refMiss(e)){iqOff=1;iqBuild();return}iqErr='불러오지 못했어요'}
+  iqSt();iqLs();iqMark()}
+function openInq(from){iqOp=from;iqBuild();iq.classList.add('on');focusFirst(iq);clearInterval(iqT);iqT=setInterval(iqSt,1000);iqLoad()}
+function closeInq(){iq.classList.remove('on');clearInterval(iqT);const b=iqOp&&iqOp.isConnected?iqOp:null;b?b.focus({preventScroll:true}):focusFirst(om)}
+iq.addEventListener('input',e=>{if(e.target.id=='iq-t'){iqDraft=e.target.value;iqCnt()}});
+async function iqSend(){if(iqBusy||!sb||!AF.user)return;const t=iq.querySelector('#iq-t');if(!t)return;const v=t.value.replace(/\r/g,'').trim();
+  if(v.length<5){iqMsg('5자 이상 적어 주세요',1);return}
+  iqBusy=1;iqMsg('');iqSt();
+  try{const d=await iqRpc('submit_inquiry',{p_cat:IQK[iqCat],p_body:v,p_info:{stage:AF.stage,lv:AF.P.lv,cp:AF.cp(),build:(document.querySelector('meta[name=build]')||{}).content||'',ua:navigator.userAgent}});
+    iqApply(d);iqDraft='';t.value='';iqCnt();try{localStorage.setItem(iqUK(),'1')}catch(e){}iqMsg('문의를 보냈어요! 답변이 달리면 접속할 때 알려 드려요')}
+  catch(e){const m=String((e&&e.message)||'');
+    if(m.indexOf('cooldown:')==0){iqReady=Date.now()+(+m.slice(9)||0)*1000;iqMsg('아직 보낼 수 없어요. 잠시 후 다시 시도해 주세요',1)}
+    else if(m=='daily'){iqLeft=0;iqMsg('오늘 보낼 수 있는 횟수를 모두 썼어요',1)}
+    else if(m=='len')iqMsg('5~500자로 적어 주세요',1);
+    else if(refMiss(e)){iqOff=1;iqBuild()}
+    else iqMsg('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요',1)}
+  iqBusy=0;iqSt();iqLs()}
+async function iqCheck(){if(iqChk||!sb||!AF.user||!AF.synced||iqOff)return;let f=null;try{f=localStorage.getItem(iqUK())}catch(e){}if(!f)return;iqChk=1;
+  try{const d=await iqRpc('my_inquiries');iqApply(d);if((d.unseen|0)>0){try{AF.chatSys('📩 문의에 답변이 도착했어요 · 설정 → 문의하기에서 확인하세요','#7dffe0')}catch(e){}try{AF.toast('문의에 답변이 도착했어요','#7dffe0')}catch(e){}}}
+  catch(e){if(refMiss(e))iqOff=1}}
+window.addEventListener('af-nick',iqCheck);
+window.addEventListener('af-user',()=>{iqChk=0;iqRows=null;iqAt=0;iqErr='';if(iq.classList.contains('on'))iqBuild()});
 buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirst(tm);
 })();
 </script>
