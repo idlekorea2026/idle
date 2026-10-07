@@ -233,6 +233,26 @@ body.ttl #cht{display:none}
 #iq .iqi .rp{margin-top:6px;padding:7px 10px;border-left:3px solid #7dffe0;border-radius:4px;background:#7dffe00f;color:#c9f5ec;white-space:pre-wrap;word-break:break-all;line-height:1.5}
 #iq .iqi .rp b{display:block;font-weight:400;color:#7dffe0;font-size:13px}
 #iq .em{padding:14px 0;text-align:center;color:#9fb5b0;font-size:15px}
+
+/* ── 하단바 슬림화 + 보스 재도전 버튼 정리 ── */
+body #bossb{top:auto;bottom:calc(var(--wbb,100px) + 6px);height:28px;padding:0 12px;border-radius:14px;font-size:13px;box-shadow:0 0 10px #ffb84a44}
+body #bossb small{font-size:10px;margin-left:3px}
+@media(pointer:fine) and (min-width:641px){
+#hud{--s:46px;--m:34px;--o:84px;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr) auto;grid-template-areas:"hp xp xp xp mp" "hp hb sks mn mp";gap:4px 12px;padding:6px max(16px,calc((100vw - 1000px)/2)) calc(6px + env(safe-area-inset-bottom,0px))}
+#hud .hb{justify-self:end}#hud .grp.mn{justify-self:end}
+#hud #sks{position:static;grid-area:sks;justify-self:start;align-self:center}
+#hud .xp{font-size:12px;gap:8px}#hud .xb{height:8px}#hud .grp{padding:4px 6px}
+}
+@media(pointer:coarse),(max-width:640px){
+#hud{--o:62px;gap:3px 6px;padding:4px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+#hud .xp{font-size:12px}#hud .xb{height:8px}
+#hud .hb>.grp:not(.mv){grid-area:3/3/4/6;justify-self:end}
+#hud [data-k=l],#hud [data-k=r]{height:40px}
+#hud #sks .sl{--s:38px}
+#hud [data-k=chr],#hud [data-k=shop]{position:fixed;top:var(--ct,74px);width:30px;height:30px;padding:0;border-radius:50%;opacity:.6;border-width:1px;background:#0a101699;box-shadow:none}
+#hud [data-k=chr] span,#hud [data-k=shop] span{display:none}
+#hud [data-k=shop]{right:46px}#hud [data-k=chr]{right:82px}
+}
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="hud"><div class="orb hp" id="ohp"><i></i><b></b></div><div class="xp"><span id="lv">Lv.1</span><span id="cp"></span><div class="xb"><i id="xpf"></i></div><span id="xpt">0%</span></div><div class="hb"><div class="grp mv"><button class="sl" data-k="l"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="sl" data-k="r"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button></div><div class="grp"><button class="sl" data-k="a"><svg viewBox="0 0 24 24"><path d="M5 19 19 5M14 5h5v5M8 16l-3 3"/></svg><span>베기</span><kbd>Z</kbd></button><button class="sl" data-k="s"><svg viewBox="0 0 24 24"><path d="M6 5Q19 12 6 19 12 12 6 5z"/></svg><span>검기</span><kbd>X</kbd></button><button class="sl" data-k="u"><svg viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg><span>폭발</span><kbd>C</kbd></button><button class="sl" data-k="j"><svg viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6"/></svg><span>점프</span><kbd>Spc</kbd></button></div></div><div class="grp mn"><button class="sl sm on" data-k="auto"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2-5M19 4v4h-4"/></svg><span>자동</span><kbd>Q</kbd></button><button class="sl sm on" data-k="mute"><svg viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4zM16 9q3 3 0 6"/></svg><span>소리</span><kbd>M</kbd></button><button class="sl sm" data-k="chr"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg><span>장비</span><kbd>I</kbd></button><button class="sl sm" data-k="shop"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5zM9 8a3 3 0 0 1 6 0"/></svg><span>단련</span><kbd>B</kbd></button><button class="sl sm" data-k="esc"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span><kbd>Esc</kbd></button></div><div class="orb mp" id="omp"><i></i><b></b></div><div id="sks"><button class="sl" data-k="k1"></button><button class="sl" data-k="k2"></button><button class="sl" data-k="k3"></button></div></div><button id="bossb" data-k="boss" style="display:none">보스 재도전 <small>R</small></button>
@@ -1768,4 +1788,4 @@ addEventListener('af-user',()=>{ST=null;RK=null;RKC[0]=RKC[1]=null;upd();refresh
 <script>(function(){const c=document.getElementById('cht');if(!c)return;const b=document.createElement('button');b.className='sz';b.type='button';c.insertBefore(b,c.firstChild);
 let n=0;try{n=+localStorage.getItem('chsz')||0}catch(e){}n=n>=0&&n<3?n:0;
 const ap=()=>{c.dataset.sz=n;b.textContent='크기 '+(n+1)+'/3'};ap();
-const go=()=>{n=(n+1)%3;ap();try{localStorage.setItem('chsz',n)}catch(e){}};b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();go()});b.addEventListener('click',e=>{e.stopPropagation();if(e.detail===0)go()})})();</script></body></html>
+const go=()=>{n=(n+1)%3;ap();try{localStorage.setItem('chsz',n)}catch(e){}};b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();go()});b.addEventListener('click',e=>{e.stopPropagation();if(e.detail===0)go()})})();</script><script>(function(){var h=document.getElementById("hud");if(!h||!window.ResizeObserver)return;new ResizeObserver(function(){document.documentElement.style.setProperty("--wbb",(h.offsetHeight+8)+"px")}).observe(h)})();</script></body></html>
