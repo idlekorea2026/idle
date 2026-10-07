@@ -143,7 +143,7 @@ body.ttl #hud{opacity:0;pointer-events:none}
 /* ---- 채팅 ---- */
 #cht{position:fixed;left:10px;bottom:120px;width:min(var(--w,380px),calc(100vw - 20px));z-index:10;font:var(--f,14px)/1.35 'Do Hyeon',sans-serif;color:#e8f1ee;pointer-events:none}
 #cht[data-sz="1"]{--h:230px;--f:15px;--w:440px}#cht[data-sz="2"]{--h:330px;--f:16px;--w:520px}
-#cht .sz{display:none;position:absolute;right:0;top:0;padding:2px 10px;border:1px solid #6b5228;border-radius:8px;background:#0a0f13d9;color:#ffd98a;font:inherit;font-size:13px;cursor:pointer;pointer-events:auto;user-select:none;-webkit-user-select:none}#cht.on .sz{display:block}
+#cht .sz{display:none;position:absolute;right:0;top:0;width:auto;height:auto;white-space:nowrap;line-height:1.35;padding:2px 10px;border-bottom:0;border-radius:8px 8px 0 0;border:1px solid #6b5228;border-radius:8px;background:#0a0f13d9;color:#ffd98a;font:inherit;font-size:13px;cursor:pointer;pointer-events:auto;user-select:none;-webkit-user-select:none}#cht.on .sz{display:block}
 body.ttl #cht{display:none}
 #cht .ct{display:none;gap:4px;margin-bottom:-1px;pointer-events:auto}
 #cht.on .ct{display:flex}
@@ -263,7 +263,7 @@ const TR={a:.00005,h:.000035},mhp=q=>M.round((100+P.lv*20+hu*HU.v+bs('hp',q)+bon
 const SM={k:15,a:.12,b:.26},smf=n=>{const s=n-1;return 1+M.min(s,SM.k)*SM.a+M.max(0,s-SM.k)*SM.b};
 /* 난이도 벽: s0 스테이지부터 몬스터가 지수로 강해져요(체력은 th, 공격력은 td 스테이지마다 약 2.7배 = e배).
    숫자가 작을수록 벽이 빨리·가파르게 와요. 경험치·골드는 벽의 영향을 안 받아서 벽에서 사냥해도 계속 성장해요. */
-const WALL={s0:70,th:35,td:66},wallf=(n,t)=>M.exp(M.min(40,M.max(0,n-WALL.s0)/t));
+const WALL={s0:70,th:35,td:64},wallf=(n,t)=>M.exp(M.min(40,M.max(0,n-WALL.s0)/t));
 /* 몹 공격력 보정: 스테이지가 올라갈수록 장비·단련으로 체력이 훨씬 빨리 커져서 몹 공격이 체력바에 티가 안 났어요.
    g 스테이지당 추가 배율(+1.2%p) · cap 최대 추가 배율(+60% = 최대 ×1.6, 약 STAGE 51부터). 초반은 거의 그대로고 갈수록 따끔해져요.
    접촉·탄·폭탄·충격파·보스 공격 전부에 적용돼요. 더 세게 하려면 g·cap을 올리세요. 경험치·골드·몹 체력은 그대로예요. */
@@ -1003,9 +1003,9 @@ document.body.appendChild(o)}
 if(/[?&](sim|debug)\b/.test(location.search)){addEventListener('keydown',e=>{if(e.code=='F2'){e.preventDefault();simShow()}});if(/[?&]sim\b/.test(location.search))setTimeout(simShow,800)}
 /* 추천인 보상: 서버(referral_claim)가 '이번에 새로 수령 처리된 건수'만 알려 주면 여기서 지급해요. 지급 즉시 localStorage 에 저장해서 새로고침돼도 안 날아가요.
    me = 내가 추천받은 보상(0/1) → 골드 + 고급 장비 1개 · n = 내가 초대한 사람 중 스테이지 5에 도달한 수 → 월드보스 코인 REF.c × n */
-const REF={c:10,gm:100};
+const REF={c:10,g:100000};
 function refGrant(me,n){me=+me>0?1:0;n=M.max(0,M.min(10,+n|0));if(!me&&!n)return;const o=[];
-if(me){const gd=M.round((4+stage*2+(P.lv>>1))*REF.gm);gold+=gd;o.push('골드 +'+gd.toLocaleString());const it=mk(SK[rn(0,SK.length)|0],1,3+stage*4+P.lv*1.2);o.push(it.n);pick(it)}
+if(me){const gd=REF.g;gold+=gd;o.push('골드 +'+gd.toLocaleString());const it=mk(SK[rn(0,SK.length)|0],1,3+stage*4+P.lv*1.2);o.push(it.n);pick(it)}
 if(n){WB.c=(WB.c|0)+REF.c*n;o.push('월드보스 코인 +'+REF.c*n)}
 save();csys('추천인 보상: '+o.join(' · '),'#7dffe0');TX.push({x:P.x,y:P.y-170,t:'추천인 보상!',l:2.6,c:'#7dffe0'});sfx(784,.3,'triangle',.06,1.6);try{toast('추천인 보상 · '+o.join(' · '),'#7dffe0')}catch(e){}}
 /* ===== AF: 다른 스크립트와의 약속 ===== */
@@ -1713,4 +1713,4 @@ addEventListener('af-user',()=>{ST=null;RK=null;RKC[0]=RKC[1]=null;upd();refresh
 <script>(function(){const c=document.getElementById('cht');if(!c)return;const b=document.createElement('button');b.className='sz';b.type='button';c.insertBefore(b,c.firstChild);
 let n=0;try{n=+localStorage.getItem('chsz')||0}catch(e){}n=n>=0&&n<3?n:0;
 const ap=()=>{c.dataset.sz=n;b.textContent='크기 '+(n+1)+'/3'};ap();
-b.addEventListener('click',e=>{e.stopPropagation();n=(n+1)%3;ap();try{localStorage.setItem('chsz',n)}catch(e){}})})();</script></body></html>
+const go=()=>{n=(n+1)%3;ap();try{localStorage.setItem('chsz',n)}catch(e){}};b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();go()});b.addEventListener('click',e=>{e.stopPropagation();if(e.detail===0)go()})})();</script></body></html>
