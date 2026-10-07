@@ -985,7 +985,7 @@ function bgStep(dt){simStep(dt);if(ci>0)ci-=dt;if(slw>0)slw-=dt}
 function bgTick(){const n=performance.now();if(!document.hidden||st==0){bgLast=n;bgAcc=0;return}
   bgAcc+=M.min(n-bgLast,600000)/1000;bgLast=n;
   if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:M.round(ot/60)+'분',g:og});og=0}ot=0}}/* 너무 오래 밀리면 방치 보상으로 정산 */
-  let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}if(st==1){autoSave();try{AF.cloudUp&&AF.cloudUp(300000)}catch(e){}}}
+  let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}if(st==1){autoSave();try{AF.cloudUp&&AF.cloudUp(600000)}catch(e){}}}
 try{const wk=new Worker(URL.createObjectURL(new Blob(['setInterval(()=>postMessage(0),250)'],{type:'text/javascript'})));wk.onmessage=bgTick}catch(e){setInterval(bgTick,1000)}
 document.addEventListener('visibilitychange',()=>{bgLast=performance.now();if(!document.hidden){last=0;const a=bgAcc;if(a>=.05&&st==1){let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}}bgAcc=0}});
 
@@ -1293,14 +1293,14 @@ async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=tr
     if(keepLocal){try{AF.save()}catch(e){}}
     if(local&&!useCloud&&!wipe&&(keepLocal||!cloud||tsOf(local)>tsOf(cs)))await cloudUp(true);
     syncDone(0)}catch(e){console.warn('cloud sync',e);syncDone(1)}}
-async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;const n=Date.now();if(n-lastUpT<(force?15000:(gap||55000))&&!(force&&!lastUpT))return;
+async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
   let o;try{o=JSON.parse(raw)}catch(e){return}const key=JSON.stringify(Object.assign({},o,{ts:0}));if(key===lastUp)return;
   lastUpT=n;const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key}
 async function cloudDel(){const u=AF.user;if(!sb||!u)return;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp=''}
 AF.pubFlush=()=>{lastUpT=0;cloudUp(true).catch(()=>{})};
 AF.cloudUp=g=>cloudUp(false,g).catch(()=>{});AF.cloudDel=cloudDel;
-setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(300000)},20000);/* 서버 자동 저장: 켜져 있으면 약 1분마다 */
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&AF.st==1){try{AF.save()}catch(e){}cloudUp(true).catch(()=>{})}});
+setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(600000)},20000);/* 서버 자동 저장: 켜져 있으면 약 10분마다 */
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&AF.st==1){try{AF.save()}catch(e){}cloudUp(true,300000).catch(()=>{})}});/* 탭 전환 저장: 마지막 서버 저장 후 최소 5분 간격 */
 addEventListener('pagehide',()=>{if(AF.st==1)cloudUp(true).catch(()=>{})});
 function setUser(ses){const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:u.id,name:m.nickname||m.name||m.full_name||m.preferred_username||'모험가',avatar:m.avatar_url||m.picture||''}:null,prev=AF.user,ch=(prev&&prev.id)!==(nu&&nu.id)||!AF.authReady;
   AF.user=nu;AF.authReady=1;if(!ch)return;AF.synced=0;AF.syncErr=0;cloudOK=false;
@@ -1325,7 +1325,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&
    · 내 코드는 설정 메뉴에서 보고 복사해요 · 신규 계정(가입 3일 이내)만 코드를 입력할 수 있어요 (서버가 판정)
    · 보상은 서버가 '이번에 새로 수령 처리한 건수'를 돌려줄 때만 AF.refGrant 로 지급해요 → 중복 수령은 서버에서 막혀요
    · 서버는 저장된 game_saves 의 스테이지를 보고 판정하므로, 확인 전에 현재 진행을 먼저 저장·업로드해요 */
-let refCode=null,refCnt=null,refMsg='',refBusy=0,refRun=0,refLast=0,refOff=0;
+let refCode=null,refCnt=null,refMsg='',refBusy=0,refRun=0,refLast=0,refOff=0,refCntAt=0,refFirst=1,refDirty=0;
 const refUK=()=>'ashen_refu_'+(AF.user?AF.user.id:'');
 const refDone=()=>{try{return !!localStorage.getItem(refUK())}catch(e){return false}};
 const refCK=()=>'ashen_refc_'+(AF.user?AF.user.id:''),refCl=()=>{try{return !!localStorage.getItem(refCK())}catch(e){return false}};/* 추천받은 보상을 이미 받았는지(기기 기록) */
@@ -1342,8 +1342,8 @@ function refPaint(){const c=rf.querySelector('#o-ref');if(!c)return;
    +(refMsg?'<div class="or"><span style="color:#ffd98a">'+esc(refMsg)+'</span></div>':'');
   const ni=c.querySelector('#o-refi');if(ni){const pv=val||refPend();if(pv)ni.value=pv}
   if(fk){const n=c.querySelector(fk);if(n&&!n.disabled)n.focus({preventScroll:true})}}
-async function refCount(){if(!sb||!AF.user||refOff)return;try{const r=await sb.rpc('referral_count');if(!r.error&&r.data){refCnt={t:r.data.total|0,d:r.data.done|0};if(rf.classList.contains('on'))refPaint()}}catch(e){}}
-window.addEventListener('af-user',()=>{refCnt=null});
+async function refCount(q){if(!sb||!AF.user||refOff)return;try{const r=await sb.rpc('referral_count');if(!r.error&&r.data){const o=refCnt;refCnt={t:r.data.total|0,d:r.data.done|0};refCntAt=Date.now();if(!q&&o&&(refCnt.t>o.t||refCnt.d>o.d))refDirty=1;/* 친구가 늘었거나 달성했으면 claim 을 바로 한 번 */if(rf.classList.contains('on'))refPaint()}}catch(e){}}
+window.addEventListener('af-user',()=>{refCnt=null;refCntAt=0;refFirst=1;refDirty=0});
 async function refOpen(){refMsg='';refPaint();if(!sb||!AF.user||refOff)return;refCount();if(refCode)return;
   try{const r=await sb.rpc('referral_code');if(r.error)throw r.error;refCode=String(r.data||'')}catch(e){if(refMiss(e))refOff=1;else refMsg='코드를 불러오지 못했어요'}refPaint()}
 const refLink=()=>location.origin+location.pathname+'?ref='+encodeURIComponent(refCode);
@@ -1357,14 +1357,21 @@ async function refUse(){if(refBusy||!sb||!AF.user)return;const i=rf.querySelecto
     if(s=='ok'||s=='used'){try{localStorage.setItem(refUK(),'1')}catch(e){}refLast=0}}
   catch(e){refMsg=refMiss(e)?'추천인 기능을 준비 중이에요':'서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요'}
   refBusy=0;refPaint()}
-/* 보상 확인: 게임 중에만, 2분마다 (등록·로그인 직후엔 바로) */
+/* 보상 확인 (게임 중에만) — 서버 호출을 줄이려고 3단계로 나눠요
+   ① 로그인·등록 직후엔 claim 을 바로 1번 (오프라인 중 쌓인 보상 수령)
+   ② 받을 보상이 있을 수 있는 사람(추천받아 대기 중 / 초대한 친구 중 스테이지 5 미달성 / 상태 모름 / count 가 변함)만 5분마다 claim
+   ③ 그 외 사람은 claim 없이 15분마다 count 만 확인해요 → 친구가 늘거나 달성하면(count 변화) 그때 claim */
+const REF_CLAIM_GAP=300000,REF_COUNT_GAP=900000;
+const refMayClaim=()=>refCnt===null||refDirty||refCnt.t>refCnt.d||(refDone()&&!refCl());
 async function refTick(){if(!sb||!AF.user||!AF.synced||refOff||refRun||AF.st!=1)return;refRun=1;refLast=Date.now();
-  try{if(refDone()&&!refCl()){try{AF.save()}catch(e){}try{await cloudUp(true)}catch(e){}}/* 내가 추천받아 보상 대기 중일 때만 먼저 서버 저장을 올려요 → 그 외 유저의 서버 저장 횟수는 그대로예요 */
-    const r=await sb.rpc('referral_claim');if(r.error)throw r.error;const d=r.data||{};
-    if((d.me|0)>0||(d.n|0)>0){if((d.me|0)>0){try{localStorage.setItem(refCK(),'1')}catch(e){}}AF.refGrant(d.me,d.n);refCount();setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}}
+  try{const first=refFirst;
+    if(!first&&!refMayClaim()){await refCount();if(!refMayClaim())return}/* ③ 받을 보상이 없어 보이면 count 만 확인하고 끝 */
+    if(refDone()&&!refCl()){try{AF.save()}catch(e){}try{await cloudUp(true)}catch(e){}}/* 내가 추천받아 보상 대기 중일 때만 먼저 서버 저장을 올려요 → 그 외 유저의 서버 저장 횟수는 그대로예요 */
+    const r=await sb.rpc('referral_claim');if(r.error)throw r.error;const d=r.data||{};refFirst=0;refDirty=0;
+    if((d.me|0)>0||(d.n|0)>0){if((d.me|0)>0){try{localStorage.setItem(refCK(),'1')}catch(e){}}AF.refGrant(d.me,d.n);refCount(1);setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}else if(first)refCount(1)}
   catch(e){if(refMiss(e))refOff=1}
   finally{refRun=0}}
-setInterval(()=>{if(AF.st==1&&!document.hidden&&Date.now()-refLast>=120000)refTick()},15000);
+setInterval(()=>{if(AF.st==1&&!document.hidden&&(refDirty||Date.now()-refLast>=(refMayClaim()?REF_CLAIM_GAP:REF_COUNT_GAP)))refTick()},15000);
 /* 초대 링크로 들어온 코드 자동 등록: 로그인 + 서버 저장 확인이 끝난 뒤에 해요. 실패(네트워크)하면 15초 뒤 다시, 한 번 접속에 최대 3번까지만 */
 let refAutoRun=0,refAutoN=0;
 async function refAuto(){const v=refPend();if(!v||refAutoRun||refAutoN>=3||!sb||!AF.user||!AF.synced||refOff)return;
