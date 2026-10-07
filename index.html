@@ -1206,9 +1206,9 @@ AF.pauseOn=function(){
 AF.pauseOff=function(){AF.pz=false;pm.classList.remove('on');om.classList.remove('on');rf.classList.remove('on');if(document.activeElement)document.activeElement.blur()};
 
 function act(a,btn){
-  if(gated()&&(a=='cont'||a=='new'||a=='new2'))return;if(a=='resync'){AF.syncErr=0;buildTitle();focusFirst(tm);cloudSync();return}
+  if(gated()&&(a=='cont'||a=='new'||a=='new2'))return;if(a=='resync'){AF.syncErr=0;AF.busy=0;buildTitle();focusFirst(tm);sessGate().then(ok=>{if(ok)cloudSync()});return}
   if(a=='csave'){AF.cloudSaveNow&&AF.cloudSaveNow(btn);return}
-  if(a=='login'){kakaoLogin();return}if(a=='logout'){if(sb)cloudUp(true).catch(()=>{}).then(()=>sb.auth.signOut()).then(()=>location.reload());return}
+  if(a=='login'){kakaoLogin();return}if(a=='logout'){if(sb)acctLogout();return}
   if(a=='cont'){document.body.classList.remove('ttl');tm.classList.add('out');setTimeout(()=>tm.classList.remove('on','out'),300);if(document.activeElement)document.activeElement.blur();if(AF.guest())setTimeout(()=>{try{AF.chatSys('⚠ 로그인 없이 플레이 중이에요. 진행은 이 기기에만 저장되고, 일부 기능은 로그인 후에 이용할 수 있어요.','#ffd98a')}catch(e){}},1200);AF.go();return}
   if(a=='new'){
     btn.dataset.a='new2';btn.classList.add('dg');btn.innerHTML='정말 처음부터 시작할까요?<small>저장 데이터가 지워져요 · 한 번 더 누르세요</small>';
@@ -1329,12 +1329,12 @@ let sb=null;try{AF.tsync&&AF.tsync(SB_URL,SB_KEY)}catch(e){}AF.user=null;AF.auth
 const kaFetch=(u,o)=>{try{const url=String((u&&u.url)||u);if(o&&o.method==='POST'&&typeof o.body==='string'&&url.indexOf('/rest/v1/game_saves')>-1&&new TextEncoder().encode(o.body).length<50000)return fetch(u,Object.assign({},o,{keepalive:true}))}catch(e){}return fetch(u,o)};
 try{if(window.supabase&&!/^YOUR_/.test(SB_URL+SB_KEY))sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',persistSession:true,detectSessionInUrl:true},global:{fetch:kaFetch}});else console.warn('Supabase URL/ANON KEY를 입력하면 로그인 버튼이 나타나요')}catch(e){console.warn('supabase init',e)}AF.sb=sb;
 const gated=()=>AF.user?!AF.synced:!AF.authReady;AF.guest=()=>!!AF.authReady&&!AF.user;/* 게스트: 로그인 없이 플레이 — 서버로 가는 요청·실시간 연결을 전혀 쓰지 않아요 */
-const gateBtn=()=>!sb?`<button disabled>로그인 서비스에 연결할 수 없어요<small>새로고침해 보세요</small></button>`:!AF.authReady?`<button disabled>로그인 확인 중…</button>`:!AF.user?`<button data-a="login" class="kk">카카오로 로그인<small>로그인해야 플레이할 수 있어요</small></button>`:AF.syncErr?`<button data-a="resync">저장 데이터를 불러오지 못했어요<small>눌러서 다시 시도</small></button>`:`<button disabled>저장 데이터 확인 중…</button>`;
+const gateBtn=()=>!sb?`<button disabled>로그인 서비스에 연결할 수 없어요<small>새로고침해 보세요</small></button>`:!AF.authReady?`<button disabled>로그인 확인 중…</button>`:!AF.user?`<button data-a="login" class="kk">카카오로 로그인<small>로그인해야 플레이할 수 있어요</small></button>`:AF.busy?`<button data-a="resync">다른 기기에서 접속 중이에요<small>그 기기를 종료한 뒤 눌러서 다시 시도 (응답 없으면 3분 뒤 자동 해제)</small></button>`:AF.syncErr?`<button data-a="resync">저장 데이터를 불러오지 못했어요<small>눌러서 다시 시도</small></button>`:`<button disabled>저장 데이터 확인 중…</button>`;
 const acctBtn=()=>!sb?'':AF.user?`<button data-a="logout" class="kk out">${esc(AF.nk||AF.user.name)} 님<small>로그아웃</small></button>`:`<button data-a="login" class="kk">카카오로 로그인<small>로그인하면 더 많은 기능을 쓸 수 있어요</small></button>`;
 function kakaoLogin(){if(!sb)return;if(location.protocol=='file:'){alert('로그인은 https 주소에서만 동작해요. 서버에 올린 뒤 시도해 주세요.');return}if(AF.st==1){try{AF.save()}catch(e){}}
   sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+location.pathname,scopes:'profile_nickname profile_image'}}).then(r=>{if(r.error)alert('로그인 실패: '+r.error.message)})}
 /* ===== 클라우드 저장 (Supabase game_saves) ===== */
-const LS='ashen1',OW='ashen1u';let cloudOK=false,lastUp='',lastUpT=0,syncing=false;
+const LS='ashen1',OW='ashen1u';let cloudOK=false,lastUp='',lastUpT=0,syncing=false,cloudHadProg=false;
 const lsGet=()=>{try{return localStorage.getItem(LS)}catch(e){return null}},tsOf=x=>{try{return(JSON.parse(x)||{}).ts||0}catch(e){return 0}};
 function syncDone(err){syncing=false;AF.syncErr=err?1:0;AF.synced=err?0:1;if(!err){window.dispatchEvent(new Event('af-nick'));if(!AF.nk)setTimeout(()=>nkOpen(1),0)}if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}}
 async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=true;
@@ -1345,35 +1345,109 @@ async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=tr
     else if(cloud&&(!local||(!hasProg(local)&&hasProg(cs))||tsOf(cs)>tsOf(local)||(!owner&&hasProg(local))))useCloud=true;/* 서버에 진행이 있고 이 기기가 빈 Lv1이면 시간과 상관없이 서버 저장을 불러와요 */
     {let ln='';try{ln=(JSON.parse(local)||{}).nk||''}catch(e){}if(useCloud&&cloud&&!cloud.nk&&ln){cloud.nk=ln;cs=JSON.stringify(cloud)}/* 서버 저장에 닉네임이 없으면 기기 닉네임을 이어 써요 */
       if(!useCloud&&!wipe&&cloud&&cloud.nk&&!ln&&!AF.nk){AF.nk=cloud.nk}}
-    let keepLocal=false;if(useCloud&&!wipe&&local&&!(owner&&owner!==u.id)&&hasProg(local)){if(!(await ovrAsk(local,cs,!owner))){useCloud=false;keepLocal=true}}
+    let keepLocal=false;if(useCloud&&!wipe&&local&&!(owner&&owner!==u.id)&&hasProg(local)){if(!(await ovrAsk(local,cs,!owner))){useCloud=false;keepLocal=true;
+      try{const L=JSON.parse(local),C=JSON.parse(cs),Ls=L.stage||1,Cs=C.stage||1,Ll=L.lv||1,Cl=C.lv||1;
+        if(Cs>Ls||Cl>Ll){if(!confirm('서버 저장이 더 많이 진행돼 있어요.\n서버 STAGE '+Cs+' · Lv.'+Cl+' / 이 기기 STAGE '+Ls+' · Lv.'+Ll+'\n이 기기 저장으로 바꾸면 서버의 진행은 사라져요. 정말 이 기기 저장으로 덮어쓸까요?')){useCloud=true;keepLocal=false}}}catch(e){}
+      if(keepLocal&&cs){try{localStorage.setItem(LS+'cb@'+u.id,cs)}catch(e){}}/* 덮어쓰기 직전 서버 저장 사본을 이 기기에 보관 */}}
     try{localStorage.setItem(OW,u.id)}catch(e){}
     const afp=(sessionStorage.getItem('afr')||'').split('|'),afOn=afp[0]===u.id&&Date.now()-(+afp[1]||0)<60000;/* 방금(1분 안에) 같은 계정으로 새로고침했는데도 또 적용해야 하면 이상 상태예요 → 업로드를 켜지 않고 '불러오지 못했어요' 로 멈춰서 서버 저장이 기기 데이터로 덮이지 않게 해요 */
     if((useCloud||wipe)&&afOn){sessionStorage.removeItem('afr');syncDone(1);return}
     if(useCloud||wipe){AF.resetting=true;try{if(useCloud)localStorage.setItem(LS,cs);else localStorage.removeItem(LS)}catch(e){}sessionStorage.setItem('afr',u.id+'|'+Date.now());location.reload();return}
-    sessionStorage.removeItem('afr');cloudOK=true;if(cs)lastUp=JSON.stringify(Object.assign({},cloud,{ts:0}));
+    sessionStorage.removeItem('afr');cloudOK=true;cloudHadProg=!!cs&&hasProg(cs);if(cs)lastUp=JSON.stringify(Object.assign({},cloud,{ts:0}));
     if(!useCloud&&!wipe&&local){if(!AF.nk&&cloud&&cloud.nk)AF.nk=cloud.nk;/* 이 기기 저장을 유지해도 서버의 닉네임은 이어 써요 */let ln2='';try{ln2=(JSON.parse(local)||{}).nk||''}catch(e){}if(keepLocal||(AF.nk&&!ln2)){try{AF.save()}catch(e){}}}
     if(local&&!useCloud&&!wipe&&(keepLocal||!cloud||tsOf(local)>tsOf(cs)))await cloudUp(true);
     syncDone(0)}catch(e){console.warn('cloud sync',e);syncDone(1)}}
-async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
+async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;if(cloudHadProg&&!hasProg(raw))return;/* 서버에 진행이 있으면 빈 Lv1 저장으로는 절대 덮어쓰지 않아요 */const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
   let o;try{o=JSON.parse(raw)}catch(e){return}const key=JSON.stringify(Object.assign({},o,{ts:0}));if(key===lastUp)return;
-  lastUpT=n;const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key}
-async function cloudDel(){const u=AF.user;if(!sb||!u)return;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp=''}
+  lastUpT=n;const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key;cloudHadProg=hasProg(raw)}
+async function cloudDel(){const u=AF.user;if(!sb||!u)return;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp='';cloudHadProg=false}
 AF.pubFlush=()=>{lastUpT=0;cloudUp(true).catch(()=>{})};
 AF.cloudUp=g=>cloudUp(false,g).catch(()=>{});AF.cloudDel=cloudDel;
 let csAt=0;AF.cloudSaveNow=async function(btn){const sm=btn&&btn.querySelector('small'),old=sm?sm.textContent:'',say=(t,c)=>{if(sm)sm.textContent=t;try{AF.chatSys(t,c||'#7dffe0')}catch(e){}if(sm)setTimeout(()=>{sm.textContent=old},2500)};
   const u=AF.user;if(!sb||!u||!cloudOK){say('서버 연결을 확인하는 중이에요. 잠시 후 다시 눌러 주세요','#ff9a8a');return}
   if(Date.now()-csAt<20000){say('방금 저장했어요 · 잠시 후 다시 눌러 주세요','#ffd98a');return}
-  try{AF.save()}catch(e){}const raw=lsGet();let o;try{o=JSON.parse(raw)}catch(e){say('저장할 데이터를 읽지 못했어요','#ff9a8a');return}
+  try{AF.save()}catch(e){}const raw=lsGet();let o;try{o=JSON.parse(raw)}catch(e){say('저장할 데이터를 읽지 못했어요','#ff9a8a');return}if(cloudHadProg&&!hasProg(raw)){say('서버에 진행 중인 저장이 있어서 빈 저장으로는 덮어쓰지 않아요','#ff9a8a');return}
   csAt=Date.now();if(sm)sm.textContent='저장 중…';
-  try{const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error)throw r.error;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();say('☁ 서버에 저장했어요 · STAGE '+(o.stage||1)+' · Lv.'+(o.lv||1))}
+  try{const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error)throw r.error;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();cloudHadProg=hasProg(raw);say('☁ 서버에 저장했어요 · STAGE '+(o.stage||1)+' · Lv.'+(o.lv||1))}
   catch(e){csAt=0;console.warn('manual save',e);say('서버 저장에 실패했어요 · 잠시 후 다시 시도해 주세요','#ff9a8a')}};
 setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(600000)},20000);/* 서버 자동 저장: 켜져 있으면 약 10분마다 */
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&AF.st==1){try{AF.save()}catch(e){}cloudUp(true,300000).catch(()=>{})}});/* 탭 전환 저장: 마지막 서버 저장 후 최소 5분 간격 */
 addEventListener('pagehide',()=>{if(AF.st==1)cloudUp(true).catch(()=>{})});
-function setUser(ses){const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:u.id,name:m.nickname||m.name||m.full_name||m.preferred_username||'모험가',avatar:m.avatar_url||m.picture||''}:null,prev=AF.user,ch=(prev&&prev.id)!==(nu&&nu.id)||!AF.authReady;
+/* ===== 단일 접속 락 (한 계정은 한 기기·탭에서만) — 서버: game_sessions 표 + claim_session / release_session 함수 (session_lock.sql) =====
+   · 로그인 직후 claim_session 으로 자리를 잡아요. 이미 다른 기기가 쓰는 중(3분 안에 활동)이면 'busy' → 저장을 불러오기 전에 멈추고 타이틀에 안내해요(이어하기·새 게임 불가).
+   · 접속 중에는 1분마다 확인해요. 오래 멈춰 있다가 다른 기기에 자리를 뺏기면 서버 업로드를 끊고 새로고침해요.
+   · 아직 SQL 을 안 돌렸으면(함수 없음) 락이 조용히 꺼지고 예전처럼 동작해요. */
+/* ===== 로그아웃 = 이 기기의 계정 캐릭터를 '백업 키'로 옮기기 (지우지 않아요) =====
+   로그아웃하면 이 기기의 세이브(ashen1)를 ashen1@계정 으로 옮겨서, 게스트로 '이어하기'를 눌러도 같은 캐릭터가 이어지지 않게 해요(복제·분기 방지).
+   · 서버와 동기화가 끝난 상태(cloudOK)에서만 서버에 먼저 저장하고 옮겨요 · 서버에 이 기기보다 최근 저장이 있으면 덮어쓰지 않고 물어봐요
+   · 서버 저장이 실패하거나 8초 안에 안 끝나면 확인창(취소하면 아무것도 안 바뀌어요) · 백업을 못 만들면(저장 공간 부족) 로그아웃하지 않아요
+   · 다른 탭도 같은 표시(LO, 30초)로 같이 옮겨요 · 다른 계정의 백업은 건드리지 않아요 */
+const LO='ashen1lo';
+function loMove(){/* 로그아웃 표시(시각|계정)가 30초 안에 있으면 이 기기의 세이브를 백업 키로 옮기고 true */
+  let v='';try{v=localStorage.getItem(LO)||''}catch(e){}
+  const i=v.indexOf('|'),t=+v.slice(0,i),uid=v.slice(i+1);
+  if(!t||!uid||Date.now()-t>30000)return false;
+  try{const raw=localStorage.getItem(LS);if(raw)localStorage.setItem(LS+'@'+uid,raw);/* 백업 먼저 */
+    AF.resetting=true;/* 옮긴 뒤 save()·자동저장이 다시 쓰지 못하게 막아요 */
+    localStorage.removeItem(LS);localStorage.removeItem(OW)}catch(e){return false}
+  return true}
+try{const t=+(localStorage.getItem(LO)||'').split('|')[0]||0;if(t&&Date.now()-t>30000)localStorage.removeItem(LO)}catch(e){}/* 오래된 표시는 정리 */
+let loBusy=false;
+async function acctLogout(){
+  const u=AF.user;if(!sb||!u||loBusy)return;loBusy=true;
+  const tmo=(p,ms)=>Promise.race([p,new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),ms))]);
+  let move=false;
+  if(cloudOK){/* 동기화 전이면(막힘·불러오기 실패) 이 기기 저장이 로그인 전 진행일 수 있어서 옮기지 않아요 */
+    let ok=false,stale=false;
+    try{if(AF.st==1)AF.save()}catch(e){}
+    try{
+      const raw=lsGet();
+      if(!raw)ok=true;
+      else{
+        const o=JSON.parse(raw);
+        const r=await tmo(sb.from('game_saves').select('data').eq('uid',u.id).maybeSingle(),8000);
+        if(r.error)throw r.error;
+        const c=r.data&&r.data.data;
+        if(c&&hasProg(JSON.stringify(c))&&!hasProg(raw))ok=true;/* 서버엔 진행이 있고 이 기기는 빈 저장 → 업로드하지 않고 그냥 백업으로만 옮겨요 */
+        else if(c&&(c.ts||0)>(o.ts||0))stale=true;/* 서버가 더 최근 → 오래된 기기 저장으로 덮어쓰지 않아요 */
+        else{const w=await tmo(sb.from('game_saves').upsert({uid:u.id,data:o}),8000);if(!w.error){ok=true;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();cloudHadProg=hasProg(raw)}}
+      }
+    }catch(e){}
+    if(stale){if(!confirm('서버에 이 기기보다 더 최근 저장이 있어요.\n서버 저장은 그대로 두고, 이 기기의 진행은 백업으로 따로 보관한 뒤 로그아웃할까요?')){loBusy=false;return}}
+    else if(!ok){if(!confirm('서버에 저장하지 못했어요.\n이 기기의 최근 진행은 서버에 없고 백업으로만 남아요. 그래도 로그아웃할까요?')){loBusy=false;return}}
+    move=true}
+  if(move){
+    try{localStorage.setItem(LO,Date.now()+'|'+u.id)}catch(e){}
+    if(!loMove()){try{localStorage.removeItem(LO)}catch(e){}try{alert('이 기기의 저장 공간이 부족해서 로그아웃할 수 없어요.\n브라우저 저장 공간을 정리한 뒤 다시 시도해 주세요.')}catch(e){}loBusy=false;return}}
+  try{await sessRelease()}catch(e){}
+  try{await sb.auth.signOut()}catch(e){}
+  try{localStorage.removeItem(LO)}catch(e){}
+  location.reload()}
+let ATK='',sessOff=0,sessT=0;
+const SID=(()=>{const mk=()=>(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)+Date.now());try{let v=sessionStorage.getItem('ashen_sid');if(!v){v=mk();sessionStorage.setItem('ashen_sid',v)}return v}catch(e){return mk()}})();
+const sessMissing=e=>{const m=String((e&&e.message)||'');return !!e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m))};
+async function sessGate(){/* true = 통과(저장 불러오기 진행) / false = 막힘 */
+  AF.busy=0;if(sessOff||!sb||!AF.user)return true;
+  try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;
+    if(r.data==='busy'){AF.busy=1;cloudOK=false;if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}return false}
+    if(r.data!=='ok')throw new Error('claim:'+r.data);
+    if(!sessT)sessT=setInterval(sessCheck,60000);return true}
+  catch(e){if(sessMissing(e)){sessOff=1;console.warn('단일 접속 락: claim_session 함수가 없어요 (session_lock.sql 실행 필요)');return true}
+    console.warn('session gate',e);syncDone(1);return false}}
+async function sessCheck(){
+  if(sessOff||!sb||!AF.user||!AF.synced||AF.busy)return;
+  try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;
+    if(r.data==='busy'){cloudOK=false;AF.busy=1;try{AF.save()}catch(e){}try{alert('다른 기기에서 접속해서 이 기기의 연결이 종료됐어요.')}catch(e){}location.reload()}}
+  catch(e){if(sessMissing(e))sessOff=1}}
+async function sessRelease(){if(sessOff||!sb||!AF.user)return;try{await Promise.race([sb.rpc('release_session',{p_sid:SID}),new Promise(r=>setTimeout(r,3000))])}catch(e){}}
+addEventListener('pagehide',()=>{if(sessOff||!AF.user||!ATK||AF.busy||!AF.synced)return;try{fetch(SB_URL+'/rest/v1/rpc/release_session',{method:'POST',keepalive:true,headers:{apikey:SB_KEY,Authorization:'Bearer '+ATK,'Content-Type':'application/json'},body:JSON.stringify({p_sid:SID})}).catch(()=>{})}catch(e){}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)sessCheck()});
+addEventListener('pageshow',e=>{if(e.persisted)sessCheck()});
+function setUser(ses){ATK=(ses&&ses.access_token)||'';const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:u.id,name:m.nickname||m.name||m.full_name||m.preferred_username||'모험가',avatar:m.avatar_url||m.picture||''}:null,prev=AF.user,ch=(prev&&prev.id)!==(nu&&nu.id)||!AF.authReady;
   AF.user=nu;AF.authReady=1;if(!ch)return;AF.synced=0;AF.syncErr=0;cloudOK=false;
+  if(prev&&!nu&&loMove()){location.reload();return}
   if(prev&&!nu&&AF.st==1){try{AF.save()}catch(e){}location.reload();return}
-  if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}window.dispatchEvent(new Event('af-user'));if(nu)cloudSync()}
+  if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}window.dispatchEvent(new Event('af-user'));if(nu)sessGate().then(ok=>{if(ok)cloudSync()})}
 if(sb){sb.auth.getSession().then(r=>setUser(r.data&&r.data.session),()=>setUser(null));sb.auth.onAuthStateChange((ev,ses)=>setUser(ses))}else setUser(null)
 
 /* ===== 접속자 수 (로그인한 사람만 센다) — 실시간 연결(Realtime/Presence)은 쓰지 않고, 접속자당 1분에 요청 1번(heartbeat)만 보내요.
