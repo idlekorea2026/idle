@@ -177,7 +177,7 @@ body.ttl #cht{display:none}
 .sl[data-cd]:not([data-cd=""])::before{content:attr(data-cd);position:absolute;inset:0;display:grid;place-items:center;z-index:2;font:20px 'Do Hyeon',sans-serif;color:#fff;text-shadow:0 0 3px #000,0 0 6px #000;pointer-events:none}
 #tip{position:fixed;display:none;z-index:60;max-width:230px;padding:8px 10px;border:1px solid #8a6a30;border-radius:6px;background:#0b1014f2;color:#d8e4e0;font:13px/1.4 'Do Hyeon',sans-serif;pointer-events:none;box-shadow:0 4px 14px #000a}
 #tip b{font-size:15px}#tip small{opacity:.7}#tip p{margin:4px 0}#tip div{color:#9ab8ff;font-size:12px}
-#bfs{position:fixed;top:122px;right:14px;z-index:6;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+#bfs{position:fixed;top:var(--bf,122px);right:14px;z-index:6;display:flex;flex-direction:column;gap:6px;pointer-events:none}
 #bfs div{position:relative;display:flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--c);border-radius:6px;background:#0b1014d9;color:#fff;font:13px 'Do Hyeon',sans-serif;overflow:hidden}
 #bfs svg{width:18px;height:18px;fill:none;stroke:var(--c);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 #bfs em{font-style:normal;min-width:14px;text-align:right;color:var(--c)}
@@ -242,6 +242,20 @@ body #bossb small{font-size:10px;margin-left:3px}
 #hud .hb{justify-self:end}#hud .grp.mn{justify-self:end}
 #hud #sks{position:static;grid-area:sks;justify-self:start;align-self:center}
 #hud .xp{font-size:12px;gap:8px}#hud .xb{height:8px}#hud .grp{padding:4px 6px}
+}
+/* PC 큰 화면: 하단 바(체력·마나 구슬, 스킬·메뉴 버튼, 글자)를 창 높이에 맞춰 키워요. 창이 작으면(높이 약 700px 이하) 예전 크기 그대로예요 */
+@media(pointer:fine) and (min-width:641px) and (min-height:501px){
+#hud{--s:clamp(46px,6.8vh,78px);--m:clamp(34px,5vh,56px);--o:clamp(84px,12vh,136px);gap:clamp(4px,.7vh,9px) clamp(12px,1.6vh,20px);padding-left:max(16px,calc((100vw - clamp(1000px,138.9vh,1560px))/2));padding-right:max(16px,calc((100vw - clamp(1000px,138.9vh,1560px))/2))}
+#hud #sks{right:auto}
+#hud .xp{font-size:clamp(12px,1.8vh,19px);gap:clamp(8px,1.1vh,14px)}#hud #cp{font-size:clamp(14px,1.9vh,20px)}#hud .xb{height:clamp(8px,1.3vh,14px)}
+#hud .grp{padding:clamp(4px,.6vh,8px) clamp(6px,.9vh,11px);gap:clamp(8px,1vh,12px)}
+#hud .sl{font-size:clamp(11px,1.55vh,16px)}#hud .sl svg{width:clamp(24px,3.4vh,36px);height:clamp(24px,3.4vh,36px)}
+#hud .sl.sm{font-size:clamp(9px,1.3vh,13px)}#hud .sl.sm svg{width:clamp(18px,2.5vh,28px);height:clamp(18px,2.5vh,28px)}
+#hud .sl kbd{min-width:clamp(13px,1.8vh,19px);height:clamp(13px,1.8vh,19px);font-size:clamp(9px,1.25vh,13px);line-height:clamp(11px,1.55vh,17px)}
+#hud .sl.sm kbd{min-width:clamp(11px,1.5vh,16px);height:clamp(11px,1.5vh,16px);font-size:clamp(8px,1.1vh,12px);line-height:clamp(9px,1.3vh,14px)}
+#hud #sks .sl span{font-size:clamp(10px,1.4vh,14px)}
+#hud .orb b{font-size:clamp(14px,1.95vh,21px)}
+#tst{bottom:max(150px,calc(var(--wbb,0px) + 10px))}
 }
 @media(pointer:coarse),(max-width:640px){
 #hud{--o:62px;gap:3px 6px;padding:4px 8px calc(6px + env(safe-area-inset-bottom,0px))}
@@ -499,8 +513,8 @@ const RA=TIERS,RN=TIERS.map(t=>t.n),TQ=TIERS.map(t=>t.q),TM=TIERS.map(t=>t.m),OC
 const icol=x=>TIERS[x.ri].c,iname=x=>x.u!=null?(x.ri>=5?TIERS[x.ri].n+' 유니크':'유니크'):TIERS[x.ri].n,sq=x=>TQ[x.ri]+(x.u!=null?1:0);
 const SW=[['낡은 검',6,50],['강철 검',16,200],['은빛 장검',34,600],['룬 검',60,1600],['용살검',100,4000]],SA=[['가죽 갑옷',40,50],['사슬 갑옷',100,200],['강화 판금',200,600],['룬 판금',360,1600],['용비늘 갑옷',600,4000]];
 const MOB=matchMedia('(pointer:coarse)').matches,IOS=/iPad|iPhone|iPod/.test(navigator.userAgent),BOOST=MOB?6:1,cph=()=>MOB||W<720;
-let AHINT=MOB?'playback':null,SF,MU,MG,NB,SI,SV=1,MV=1,VOL=.7,nx=0,stp=0,lht=0;
-function audio(){if(mute||VOL<=0)return null;try{if(!AC){AC=AHINT?new(window.AudioContext||window.webkitAudioContext)({latencyHint:AHINT}):new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();const cp=AC.createDynamicsCompressor();cp.threshold.value=-14;cp.knee.value=12;cp.ratio.value=4;cp.release.value=.15;MG.connect(cp);cp.connect(AC.destination);AC.onstatechange=()=>{if(AC.state!='running'&&!document.hidden){try{const r=AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}};SF=AC.createGain();SF.connect(MG);MU=AC.createGain();MU.connect(MG);SF.gain.value=SV;MU.gain.value=MV;
+let AHINT=MOB?'playback':null,SF,MU,MG,NB,SI,RV,SV=1,MV=1,VOL=.7,nx=0,stp=0,lht=0;const SFT={};
+function audio(){if(mute||VOL<=0)return null;try{if(!AC){AC=AHINT?new(window.AudioContext||window.webkitAudioContext)({latencyHint:AHINT}):new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();const cp=AC.createDynamicsCompressor();cp.threshold.value=-14;cp.knee.value=12;cp.ratio.value=4;cp.release.value=.15;MG.connect(cp);cp.connect(AC.destination);AC.onstatechange=()=>{if(AC.state!='running'&&!document.hidden){try{const r=AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}};SF=AC.createGain();SF.connect(MG);MU=AC.createGain();MU.connect(MG);try{/* 공간감: 합성 잔향(1.3초, 뒤로 갈수록 어두워지는 노이즈)을 효과음·음악에 살짝 섞어요 */const L=(AC.sampleRate*1.3)|0,ir=AC.createBuffer(2,L,AC.sampleRate);for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);let lp=0;for(let i=0;i<L;i++){const t=i/L;lp+=((R()*2-1)*M.pow(1-t,2.6)-lp)*(.55-.4*t);d[i]=lp*1.6}}RV=AC.createConvolver();RV.buffer=ir;const rg=AC.createGain();rg.gain.value=.7;RV.connect(rg);rg.connect(MG);const sa=AC.createGain();sa.gain.value=.22;SF.connect(sa);sa.connect(RV);const ma=AC.createGain();ma.gain.value=.12;MU.connect(ma);ma.connect(RV)}catch(e){RV=null}SF.gain.value=SV;MU.gain.value=MV;
 NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const nd=NB.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=R()*2-1}
 MG.gain.value=VOL*BOOST;if(AC.state!='running'){const r=AC.resume();r&&r.catch&&r.catch(()=>{})}}catch(e){return null}return AC}
 function nz(d,f0,f1,ty,v,q,t0){if(!audio()||AC.state!='running')return;try{const c=AC,t=t0||c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),n=c.createGain();s.buffer=NB;s.loop=true;f.type=ty;f.Q.value=q||1;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(M.max(30,f1),t+d);n.gain.setValueAtTime(v*2.5,t);n.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(n);n.connect(t0?MU:SF);s.start(t,R());s.stop(t+d)}catch(e){}}
@@ -523,9 +537,11 @@ function hf(f,d,ty,v,sl){if(mute||VOL<=0)return;f=M.round(f/10)*10;const k=[f,d,
 let el=p.e.find(x=>x.paused||x.ended);if(!el){if(p.e.length>=3)return;el=new Audio(p.u);p.e.push(el)}el.volume=M.min(1,VOL*SV);try{el.currentTime=0}catch(e){}const r=el.play();r&&r.catch&&r.catch(()=>{})}
 const PSC=[0,2,4,7,9,12,14];let hc=0,hlt=0;
 function hitSnd(cr){const n=AC.currentTime;lht=n;if(n-hlt>.9)hc=0;hlt=n;const f=523*M.pow(2,PSC[M.min(hc++,6)]/12);
-nz(.04,4500,1500,'highpass',.05,1);sfx(170+R()*20,.07,'triangle',.07,.6);sfx(f,.09,'sine',.035,1.01);
-if(cr){sfx(1568,.2,'sine',.045,1.02);setTimeout(()=>sfx(2093,.22,'sine',.035,1.02),45)}}
-function sfx(f,d,ty,v,sl){if(mute||VOL<=0)return;try{if(!audio())return;if(AC.state!='running'){hf(f,d,ty||'square',v,sl);return}
+nz(.05,5200,1400,'highpass',.06,1);nz(.09,1400,300,'bandpass',.07,1.5);sfx(170+R()*20,.08,'triangle',.08,.6);sfx(f,.09,'sine',.035,1.01);
+if(cr){nz(.3,6500,2500,'bandpass',.035,9);sfx(1568,.2,'sine',.045,1.02);setTimeout(()=>sfx(2093,.22,'sine',.035,1.02),45)}}
+function enSnd(ok){if(ok){[880,1175,1568].forEach((f,i)=>setTimeout(()=>sfx(f,.18,'triangle',.06),i*70));nz(.3,7000,3000,'highpass',.04,1);setTimeout(()=>sfx(2093,.35,'sine',.04,1.01),210)}else{nz(.18,700,120,'lowpass',.2,1);sfx(150,.22,'sawtooth',.06,.55);setTimeout(()=>sfx(110,.25,'sawtooth',.05,.6),90)}}
+function uiSnd(){sfx(1320,.05,'sine',.05,.75);nz(.025,6000,3500,'highpass',.03,1)}
+function sfx(f,d,ty,v,sl){if(mute||VOL<=0)return;{/* 같은 종류 소리는 35ms 안에 한 번만 · 큰 음높이 슬라이드가 있는 효과음은 음높이를 ±4% 흔들어 반복돼도 덜 질려요(음계 소리는 그대로) */const tk=(ty||'q')+M.round(f/30),pn=performance.now();if(pn-(SFT[tk]||0)<35)return;SFT[tk]=pn;if(sl&&(sl<.9||sl>1.1))f*=1+(R()-.5)*.08}try{if(!audio())return;if(AC.state!='running'){hf(f,d,ty||'square',v,sl);return}
 const t=AC.currentTime,mk=(f0,vv,tt)=>{const o=AC.createOscillator(),n=AC.createGain();o.type=tt;o.frequency.setValueAtTime(f0,t);if(sl)o.frequency.exponentialRampToValueAtTime(M.max(30,f0*sl),t+d);n.gain.setValueAtTime(.0001,t);n.gain.exponentialRampToValueAtTime(vv,t+.01);n.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(n);n.connect(SF);o.start(t);o.stop(t+d+.03)},vv=(v||.05)*3;
 mk(f,vv,ty||'square');if(MOB&&M.min(f,f*(sl||1))<220)mk(f*3,vv*.8,'triangle')}catch(e){}}
 /* 모바일 소리 잠금 해제: pointerdown은 사용자 제스처로 인정되지 않아서 touchend/pointerup/click에서 깨운다 */
@@ -587,7 +603,7 @@ if(u==null)for(let i=0;i<OC[ri];i++){const t=ks.splice(rn(0,ks.length)|0,1)[0];o
 return{sl,ri,k,o,u,p:M.round(pw),v:M.round(pw*TM[ri]*SL[sl][2]*(.9+R()*.2)),n:n||TIERS[ri].pre+b[k]}}/* 기본 능력치 ±10% 랜덤 */
 function rr(b){const r=R()/(1+b*8);let q=TIERS.length-1;while(q>0&&r>=TIERS[q].p*evM(q))q--;while(q>0&&stage<RMIN[q])q--;return q}
 function drop(e){skDrop(e);const isBoss=e.t=='g',n=isBoss?(e.mini?2:3):e.el?2:(R()<.1&&e.t!='m'?1:0);if(isBoss||e.el)IR.b+=n;else IR.n+=n;for(let i=0;i<n;i++)LT.push({x:M.max(60,M.min(WORLD-60,e.x)),y:e.y-e.h/2,vx:rn(-130,130),vy:rn(-560,-400),t:0,l:0,it:mk(SK[rn(0,SK.length)|0],rr(isBoss||e.el?.08:0),3+stage*4+P.lv*1.2)})}
-function land(o){const r=o.it.ri;if(r>=3)csys(TIERS[r].n+(o.it.u!=null?' 유니크':'')+' 아이템 드랍: '+o.it.n,icol(o.it));burst(o.x,GY-8,8,'#c8b89a');sfx(110,.15,'sine',.12,.5);TIERS[r].snd.concat(o.it.u!=null?[1318]:[]).forEach((f,i)=>setTimeout(()=>sfx(f,.25,'triangle',.06),i*110));if(TIERS[r].ann){shake=10;TX.push({x:o.x,y:GY-120,t:o.it.u!=null?'유니크 아이템!':TIERS[r].n+' 아이템!',l:1.8,c:icol(o.it)})}}
+function land(o){const r=o.it.ri;if(r>=3)csys(TIERS[r].n+(o.it.u!=null?' 유니크':'')+' 아이템 드랍: '+o.it.n,icol(o.it));burst(o.x,GY-8,8,'#c8b89a');sfx(110,.15,'sine',.12,.5);TIERS[r].snd.concat(o.it.u!=null?[1318]:[]).forEach((f,i)=>setTimeout(()=>sfx(f,.25,'triangle',.06),i*110));if(TIERS[r].ann){sfx(65,.45,'sine',.12,.6);setTimeout(()=>{sfx(2093,.7,'sine',.04,1.01);nz(.5,9000,4000,'highpass',.03,1)},TIERS[r].snd.length*110);shake=10;TX.push({x:o.x,y:GY-120,t:o.it.u!=null?'유니크 아이템!':TIERS[r].n+' 아이템!',l:1.8,c:icol(o.it)})}}
 /* 자동 장착 판정: 세트 부위는 같은 세트를 이미 낀 개수(자기 포함)만큼 종합 점수를 SETW씩 가산해요. 세트를 맞추려는 장비가 점수 조금 낮다고 팔리거나 밀려나지 않게 해요 (SETW 를 올리면 세트를 더 우선해요) */
 const SETW=.15,sscr=(x,e)=>{let m=1;if(x.u!=null&&UQ[x.u][2]>=0){const si=UQ[x.u][2],q=e||EQ;let n=1;for(const k of SK){const y=q[k];if(y&&k!=x.sl&&y.u!=null&&UQ[y.u][2]==si)n++}m=1+SETW*n}return scr(x)*m};
 /* 자동 교체 판정: 기본 수치×옵션 개수가 아니라 '실제 전투력(cp)'으로 비교해요. 흡혈·치명타·체력 같은 옵션이 빠져서 오히려 약해지는 교체는 하지 않아요.
@@ -700,9 +716,9 @@ offPop({h:hh,g:R.g+sold,x:R.x,l:P.lv>l0?[l0,P.lv]:null,n:R.items.length,e:eq,s:s
 TX.push({x:P.x,y:P.y-95,t:'경험치 +'+R.x.toLocaleString()+(P.lv>l0?'  Lv.'+l0+'→'+P.lv:'')+'  아이템 '+R.items.length.toLocaleString()+'개',l:3.2,c:'#7dffe0'});save()}
 const AE=ENH.auto,er=n=>n<2?1:M.max(ENH.fl,1-(n-1)*.1),ec=n=>M.round(ENH.k*(n+1)*(n+2)+40);
 const rc=x=>M.round(150+x.v*SL[x.sl][5]*3);
-function enh(k){const n=EN[k]|0,c=ec(n);if(gold<c)return 0;gold-=c;if(R()<er(n)){EN[k]=n+1;TX.push({x:P.x,y:P.y-135,t:SL[k][0]+' 강화 성공 +'+EN[k],l:1.2,c:'#7dffe0'});sfx(880,.15,'triangle',.07,1.5);burst(P.x,P.y-50,16,'#7dffe0')}else{TX.push({x:P.x,y:P.y-135,t:'강화 실패',l:1,c:'#ff7a7a'});sfx(160,.2,'sawtooth',.05,.5)}return 1}
+function enh(k){const n=EN[k]|0,c=ec(n);if(gold<c)return 0;gold-=c;if(R()<er(n)){EN[k]=n+1;TX.push({x:P.x,y:P.y-135,t:SL[k][0]+' 강화 성공 +'+EN[k],l:1.2,c:'#7dffe0'});enSnd(1);burst(P.x,P.y-50,16,'#7dffe0')}else{TX.push({x:P.x,y:P.y-135,t:'강화 실패',l:1,c:'#ff7a7a'});enSnd(0)}return 1}
 /* 일괄 강화: 장착 중인 슬롯 중 단계가 가장 낮은 슬롯부터 한 번씩 시도해서 골고루 올려요. 골드가 모자라질 때까지(최대 3000회) 진행 */
-function bulkEnh(){const ks=SK.filter(k=>EQ[k]);if(!ks.length)return '장착한 장비가 없어요';if(!confirm('보유 골드로 장착 슬롯을 낮은 단계부터 골고루 강화할까요?\n실패해도 골드는 소모되고, 골드가 부족해질 때까지 진행해요.'))return chrMsg;let t=0,s=0,sp=0;while(t<3000){let q=ks[0],l=EN[q]|0;for(const k of ks){const v=EN[k]|0;if(v<l){l=v;q=k}}const c=ec(l);if(gold<c)break;gold-=c;sp+=c;t++;if(R()<er(l)){EN[q]=l+1;s++}}if(!t)return '골드가 부족해요';TX.push({x:P.x,y:P.y-135,t:'일괄 강화 완료',l:1.2,c:'#7dffe0'});sfx(880,.15,'triangle',.07,1.5);burst(P.x,P.y-50,16,'#7dffe0');return '일괄 강화: '+t+'회 시도 · 성공 '+s+' · '+sp+'G 사용<br>'+ks.map(k=>SL[k][0]+' +'+(EN[k]|0)).join(' · ')}
+function bulkEnh(){const ks=SK.filter(k=>EQ[k]);if(!ks.length)return '장착한 장비가 없어요';if(!confirm('보유 골드로 장착 슬롯을 낮은 단계부터 골고루 강화할까요?\n실패해도 골드는 소모되고, 골드가 부족해질 때까지 진행해요.'))return chrMsg;let t=0,s=0,sp=0;while(t<3000){let q=ks[0],l=EN[q]|0;for(const k of ks){const v=EN[k]|0;if(v<l){l=v;q=k}}const c=ec(l);if(gold<c)break;gold-=c;sp+=c;t++;if(R()<er(l)){EN[q]=l+1;s++}}if(!t)return '골드가 부족해요';TX.push({x:P.x,y:P.y-135,t:'일괄 강화 완료',l:1.2,c:'#7dffe0'});enSnd(s>0);burst(P.x,P.y-50,16,'#7dffe0');return '일괄 강화: '+t+'회 시도 · 성공 '+s+' · '+sp+'G 사용<br>'+ks.map(k=>SL[k][0]+' +'+(EN[k]|0)).join(' · ')}
 let WBM=null,WBI=0;
 function wbStart(hp,cb){if(WBM||DG||st!=1||ci>0||bossLock())return 0;spawn();th=Object.assign({},th,{n:'재의 심연',sky:['#12040a','#3a0f1a','#5a1a22'],moon:'#ffb0c0',gr:'#2a1218',g1:'#8a2a3a',g2:'#c8506a',gl:'#ff6a2a',b:'적염룡 이그니스'});
 const b={t:'g',wb:1,x:WORLD-450,y:GY,vy:0,hp,mh:hp,w:190,h:230,ph:0,fl:0,xp:0,tm:2,pat:tix(stage),mini:false,sh:2,sc:1.8};E=[b];P.x=WORLD-450-700;cam=M.max(0,M.min(WORLD-W,P.x-W*.42));P.hp=mhp();P.mp=mmp();P.inv=2;WBM={b,hp0:hp,cb};clearInterval(WBI);WBI=setInterval(()=>{if(!WBM){clearInterval(WBI);return}try{localStorage.setItem('wbrun',JSON.stringify({d:M.max(0,M.round(hp-M.max(0,b.hp))),k:Date.now()}))}catch(e){}},3000);BB.innerHTML='도전 종료 <small>R</small>';TX.push({x:P.x,y:P.y-150,t:'월드보스 · 적염룡 이그니스',l:3,c:'#ff4d7d'});return 1}
@@ -757,7 +773,7 @@ document.getElementById('shop').addEventListener('click',e=>{const b=e.target.cl
 if(id=='close')return toggleShop();
 if(id=='reset'){if(confirm('저장 데이터를 지우고 처음부터 시작할까요?')){resetting=true;try{localStorage.removeItem('ashen1')}catch(x){}(AF.cloudDel?AF.cloudDel():Promise.resolve()).then(()=>location.reload(),()=>{alert('서버에 저장된 데이터를 지우지 못했어요. 잠시 후 다시 시도해 주세요.');resetting=false})}return}
 if(id=='fm')farm=!farm;else if(id=='dg'){dgEnter();return}else if(id[0]=='t'&&id.length==2){shopTab=+id[1];document.getElementById('shop').scrollTop=0}else if(id=='ab')ab=!ab;else if(id=='ae')ae=!ae;else if(id=='atr')atr=!atr;else if(id=='tst'){adiag();unlock();audio();sfx(660,.3,'sine',.3);setTimeout(()=>sfx(880,.3,'sine',.3),400);setTimeout(()=>sfx(1100,.4,'sine',.3),800)}else if(id=='vd'||id=='vu')VOL=M.max(0,M.min(1,M.round((VOL+(id=='vu'?.1:-.1))*10)/10));else if(id=='sp'||id=='sn'||id=='sp10'||id=='sn10'){stage=M.max(1,M.min(best,stage+(id[1]=='p'?-1:1)*(id.length>2?10:1)));bk=null;dc=0;frm=false;spawn();save();toggleShop();return}else if(id=='up'){const c=40+up*30;if(gold>=c){gold-=c;up++}}else if(id=='hu'){const c=40+hu*30;if(gold>=c){gold-=c;hu++}}else{const t=id[0]=='w'?SW:SA,x=t[+id.slice(1)];if(gold>=x[2]){gold-=x[2];EQ[id[0]]={sl:id[0],ri:0,v:x[1],n:x[0]}}}
-sfx(880,.08,'square',.05);save();buildShop()});
+uiSnd();save();buildShop()});
 function drawLT(){let li=0;const cur=Object.assign({},EQ);for(const o of LT){const ly=(li++%3)*72,x=o.x-cam,y=o.y,ri=o.it.ri,c=icol(o.it),c0=cur[o.it.sl],eqp=better(o.it,c0,cur);if(eqp)cur[o.it.sl]=o.it;
 if(ri>0){g.globalCompositeOperation='lighter';const tq=sq(o.it),bw=8+tq*7,bh=120+tq*90,q=g.createLinearGradient(0,y,0,y-bh);q.addColorStop(0,c);q.addColorStop(1,'rgba(0,0,0,0)');g.globalAlpha=o.l?.55+M.sin(T*4)*.15:.3;g.fillStyle=q;g.fillRect(x-bw/2,y-bh,bw,bh);g.globalAlpha=1;glow(x,GY-6,50+tq*20,c,.6);g.globalCompositeOperation='source-over'}
 g.save();g.translate(x,y+(o.l?M.sin(T*3+x)*3-6:0));g.rotate(o.l?0:o.t*9);g.fillStyle=c;
@@ -906,7 +922,7 @@ if(k==0){g.fillRect(-12,-86,4,10);g.fillRect(10,-86,4,10);g.fillStyle=c;g.fillRe
 if(k==1){g.fillRect(-1,-86,5,12);g.fillStyle=c;g.fillRect(-13,-88,28,3)}
 if(k==2){g.fillRect(-12,-86,8,20);g.fillStyle=c;g.fillRect(-12,-88,26,2)}
 if(TIERS[Z.ri].fx){g.save();g.globalCompositeOperation='lighter';g.globalAlpha*=.3+M.sin(T*4)*.1;g.fillStyle=c;g.beginPath();g.arc(1,-84,17,M.PI,0);g.fill();g.restore()}}
-function mlay(){const n=performance.now();if(n-mlay.t<400)return;mlay.t=n;const cr=cv.getBoundingClientRect(),sc=cr.height/H||1,o=document.getElementById('onl'),ob=o&&o.classList.contains('on')?o.getBoundingClientRect().bottom:0;mlay.d=0;mlay.i=66+32/sc;const s=document.documentElement.style;s.setProperty('--ot',(cr.top+(cph()?42:50)*sc)+'px');s.setProperty('--ct',(cr.top+66*sc)+'px');s.setProperty('--bt',(cr.top+M.max(172+mlay.d,mlay.i+76)*sc)+'px')}mlay.t=0;mlay.d=0;const mdy=()=>{mlay();return mlay.d};
+let PCB=190;function mlay(){const n=performance.now();if(n-mlay.t<400)return;mlay.t=n;const cr=cv.getBoundingClientRect(),sc=cr.height/H||1,o=document.getElementById('onl'),ob=o&&o.classList.contains('on')?o.getBoundingClientRect().bottom:0;mlay.d=0;mlay.i=66+32/sc;const s=document.documentElement.style;s.setProperty('--ot',(cr.top+(cph()?42:50)*sc)+'px');s.setProperty('--ct',(cr.top+66*sc)+'px');s.setProperty('--bt',(cr.top+M.max(172+mlay.d,mlay.i+76)*sc)+'px');/* PC: 오른쪽 위 글자(자동/수동 줄) 아래에 버프·이벤트 배지, 왼쪽 장비 스펙 아래에 월드보스 버튼 */if(!cph()&&!MOB){s.setProperty('--bf',(cr.top+96*sc)+'px');s.setProperty('--wt',(cr.top+PCB*sc)+'px')}else{s.removeProperty('--bf');s.removeProperty('--wt')}}mlay.t=0;mlay.d=0;const mdy=()=>{mlay();return mlay.d};
 function mcard(){/* 한 줄 카드: Lv · 전투력 · 골드만. 장비 칸·단련 수치는 장비창/단련창에 있어서 뺐어요. 폭 178 안에 들어오게 글자 크기를 맞춰요 */const x=8,y=8+mdy(),w=178,h=32,F='"Do Hyeon",sans-serif',a1='Lv.'+P.lv,a2='전투력 '+kn(cp()),a3=kn(gold),gp=9;let fs=14;g.save();for(;fs>9;fs--){g.font=fs+'px '+F;if(g.measureText(a1).width+g.measureText(a2).width+g.measureText(a3).width+fs+gp*2+20<=w)break}g.fillStyle='rgba(10,16,22,.88)';g.strokeStyle='#8a6a30';g.lineWidth=1.5;g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,10);else g.rect(x,y,w,h);g.fill();g.stroke();g.font=fs+'px '+F;g.textAlign='left';const by=y+h/2+fs*.36;let cx=x+10;g.fillStyle='#ffd98a';g.fillText(a1,cx,by);cx+=g.measureText(a1).width+gp;g.fillStyle='#7dffe0';g.fillText(a2,cx,by);cx+=g.measureText(a2).width+gp;g.fillStyle='#ffcf4a';g.beginPath();g.arc(cx+fs*.3,y+h/2,fs*.3,0,7);g.fill();g.fillText(a3,cx+fs*.7+3,by);g.restore()}
 function drawP(){const x=P.x-cam,y=P.y,sp=M.min(1,M.abs(P.vx)/200),w=P.g?M.sin(T*16)*sp:0;g.save();g.translate(x,y);
 g.fillStyle='#0008';g.beginPath();g.ellipse(0,0,20,5,0,0,7);g.fill();
@@ -938,8 +954,8 @@ g.globalCompositeOperation='lighter';for(const p of PR){glow(p.x-cam,p.y,60,'#7d
 g.textAlign='center';g.font='26px "Do Hyeon",sans-serif';for(const t of TX){g.font=(t.s||26)+'px "Do Hyeon",sans-serif';g.globalAlpha=M.min(1,t.l*2);g.lineWidth=4;g.strokeStyle='rgba(0,0,0,.7)';g.strokeText(t.t,t.x-cam,t.y);g.fillStyle=t.c;g.fillText(t.t,t.x-cam,t.y)}g.globalAlpha=1;
 g.restore();
 GRADE();g.drawImage(VIG,0,0,W,CH);const WS=W;W=WS/VZ;g.save();g.scale(VZ,VZ);try{
-if(st){g.textAlign='left';g.font='20px "Do Hyeon",sans-serif';g.fillStyle='#ffcf4a';if(cph())mcard();else{const gt='● 골드 '+kn(gold)+'   단련 +'+up;g.font='20px "Do Hyeon",sans-serif';const gw=g.measureText(gt).width+24;g.fillStyle='rgba(10,16,22,.72)';g.strokeStyle='#8a6a30';g.lineWidth=1.5;g.beginPath();if(g.roundRect)g.roundRect(12,8,gw,38,10);else g.rect(12,8,gw,38);g.fill();g.stroke();g.fillStyle='#ffcf4a';g.fillText(gt,24,34)}
-if(!cph()){g.font='15px "Do Hyeon",sans-serif';SK.forEach((k,i)=>{const it=EQ[k];g.fillStyle=it?icol(it):'#6f8080';g.fillText(SL[k][0]+' '+(EN[k]?'+'+EN[k]+' ':'')+(it?it.n+' +'+kn(iv(it)):'없음'),24,58+i*20)});let ol=0;{const ul=Object.keys(OP).filter(t=>bon(t)).map(t=>OP[t][0]+' +'+M.round(bon(t)*10)/10+OP[t][3]);ol=M.ceil(ul.length/4);g.font='13px "Do Hyeon",sans-serif';g.fillStyle='#9fb5b0';for(let i=0;i<ol;i++)g.fillText(ul.slice(i*4,i*4+4).join('  '),24,60+SK.length*20+i*16)}{const q=Object.entries(sb());if(q.length){g.font='13px "Do Hyeon",sans-serif';g.fillStyle=UC;g.fillText(q.map(([i,c])=>ST[i][0]+' '+c+'/4').join('  '),24,78+SK.length*20+(M.max(1,ol)-1)*16)}}}g.font='20px "Do Hyeon",sans-serif';
+if(st){g.textAlign='left';g.font='20px "Do Hyeon",sans-serif';g.fillStyle='#ffcf4a';if(cph())mcard();else{mlay();const gt='● 골드 '+kn(gold)+'   단련 +'+up;g.font='20px "Do Hyeon",sans-serif';const gw=g.measureText(gt).width+24;g.fillStyle='rgba(10,16,22,.72)';g.strokeStyle='#8a6a30';g.lineWidth=1.5;g.beginPath();if(g.roundRect)g.roundRect(12,8,gw,38,10);else g.rect(12,8,gw,38);g.fill();g.stroke();g.fillStyle='#ffcf4a';g.fillText(gt,24,34)}
+if(!cph()){g.font='15px "Do Hyeon",sans-serif';SK.forEach((k,i)=>{const it=EQ[k];g.fillStyle=it?icol(it):'#6f8080';g.fillText(SL[k][0]+' '+(EN[k]?'+'+EN[k]+' ':'')+(it?it.n+' +'+kn(iv(it)):'없음'),24,78+i*20)});let ol=0;{const ul=Object.keys(OP).filter(t=>bon(t)).map(t=>OP[t][0]+' +'+M.round(bon(t)*10)/10+OP[t][3]);ol=M.ceil(ul.length/4);g.font='13px "Do Hyeon",sans-serif';g.fillStyle='#9fb5b0';for(let i=0;i<ol;i++)g.fillText(ul.slice(i*4,i*4+4).join('  '),24,80+SK.length*20+i*16)}{const q=Object.entries(sb());if(q.length){g.font='13px "Do Hyeon",sans-serif';g.fillStyle=UC;g.fillText(q.map(([i,c])=>ST[i][0]+' '+c+'/4').join('  '),24,98+SK.length*20+(M.max(1,ol)-1)*16)}}PCB=106+SK.length*20+(M.max(1,ol)-1)*16}g.font='20px "Do Hyeon",sans-serif';
 g.textAlign='right';g.fillStyle='#e8f1ee';g.fillText('STAGE '+stage,W-20,34);g.font='15px "Do Hyeon",sans-serif';g.fillStyle='#9fb5b0';g.fillText(th.n+' '+((stage-1)%5+1)+'/5'+(farm?' · 스테이지 유지':'')+(frm?' · 파밍 중':'')+(bk?' · 후퇴 중 (목표 '+bk.s+')':''),W-20,54);bar(W-140,cph()?(mdy(),mlay.i+4):62,120,5,P.x/WORLD,'#ffb84a');if(!cph()){g.fillStyle=auto?'#7dffe0':'#9fb5b0';g.fillText((auto?'자동 ON':'수동')+(KB?'  Q 전환 · B 단련':''),W-20,84)}g.font='20px "Do Hyeon",sans-serif';g.textAlign='left';
 const b=E.find(e=>e.t=='g');if(b&&M.abs(b.x-P.x)<900){g.textAlign='center';g.fillStyle='#ffb84a';{const bw=M.min(520,W-40),bx=W/2-bw/2,pc=M.max(0,M.min(1,b.hp/b.mh));const y0=cph()?M.max(112+mdy(),mlay.i+16):68;g.fillStyle='rgba(6,10,14,.75)';g.fillRect(bx-8,y0,bw+16,52);g.fillStyle='#ffb84a';g.textAlign='left';g.font='18px "Do Hyeon",sans-serif';g.fillText(b.mini?th.n+' 수호자':th.b,bx,y0+21);bar(bx,y0+30,cph()?bw-48:bw,14,pc,'#ff7a3a')}}}
 {const bb=E.find(e=>e.t=='g'&&!e.dead&&e.intro);if(bb&&bt>0&&ci<=0){const lo=bt<=10,mid=bt<=15,bl=lo?.55+.45*M.abs(M.sin(T*7)):1;g.save();g.textAlign='center';g.globalAlpha=bl;g.font=(lo?'40px':'30px')+' "Do Hyeon",sans-serif';g.lineWidth=5;g.strokeStyle='rgba(0,0,0,.75)';g.fillStyle=lo?'#ff5a5a':mid?'#ffb84a':'#e8f1ee';const tt=M.ceil(bt)+'초',bw2=M.min(520,W-40),y1=cph()?M.max(112+mdy(),mlay.i+16):68;g.textAlign='right';g.font=(lo?'28px':'24px')+' "Do Hyeon",sans-serif';g.lineWidth=4;if(cph()){const cx=W/2+bw2/2-26,cy=y1+26;g.beginPath();g.arc(cx,cy,17,0,7);g.lineWidth=3;g.strokeStyle=g.fillStyle;g.stroke();g.textAlign='center';g.font='16px "Do Hyeon",sans-serif';g.fillText(M.ceil(bt),cx,cy+6)}else{g.strokeText(tt,W/2+bw2/2,y1+23);g.fillText(tt,W/2+bw2/2,y1+23)}g.restore()}}
@@ -1010,7 +1026,7 @@ const stt=`<div class="cw-sets"><h3>스탯 포인트 <small>남은 ${PT.free}점
 const pvh=`<div class="cw-sets"><h3>패시브 <small>슬롯을 고른 뒤 장착 · 자유롭게 교체</small></h3><div class="cw-set"><div class="cw-ln">${PSL.map((lv,i)=>{const pp=PS[i]!=null?PV[PS[i]]:null,lk=P.lv<lv;return `<button class="ac" data-c="q:${i}" ${lk?'disabled':''} style="${chrPS==i?'outline:2px solid #ffd27a;outline-offset:2px':''}">${lk?'Lv.'+lv+' 해금':pp?pp.n:'비어 있음'}</button>`}).join('')}</div>${PV.map((pp,i)=>{const at=PS.indexOf(i);if(!PU.includes(i)){const mm=PMS.find(x=>x[1]==i)[0];return `<div class="cw-ln" style="opacity:.5"><span>${pp.n} <small>STAGE ${mm} 보스 처치 시 획득</small></span><button class="ac" disabled>잠김</button></div>`}return `<div class="cw-ln"><span>${pp.n} <small>${pp.d}</small></span><button class="ac" data-c="v:${i}" ${P.lv<PSL[chrPS]?'disabled':''}>${at==chrPS?'해제':at>=0?'이동':'장착'}</button></div>`}).join('')}</div></div>`;
 const skh=`<div class="cw-sets"><h3>스킬 <small>보스·챔피언이 스킬북을 떨어뜨려요 · 같은 책을 모으면 강화 · 슬롯 고른 뒤 장착 (키 1·2·3)</small></h3><div class="cw-set"><div class="cw-ln">${SKL.map((lv,i)=>{const id=SKS.eq[i],ss=id&&SKT.find(z=>z.id==id),lk=P.lv<lv;return `<button class="ac" data-c="sq:${i}" ${lk?'disabled':''} style="${chrSK==i?'outline:2px solid #ffd27a;outline-offset:2px':''}">${lk?'Lv.'+lv+' 해금':ss?ss.n:'비어 있음'}</button>`}).join('')}</div>${SKT.map(ss=>{const o=SKS.own[ss.id],at=SKS.eq.indexOf(ss.id);if(!o)return `<div class="cw-ln" style="opacity:.5"><span>${ss.n} <small>[${ss.cls}] 보스·챔피언 처치 시 스킬북 획득</small></span><button class="ac" disabled>미획득</button></div>`;return `<div class="cw-ln"><span>${ss.n} <small>[${ss.cls}] Lv.${o.lv}${o.lv<5?' · 조각 '+o.c+'/'+SKN[o.lv-1]:' · MAX'} · MP ${ss.mp} · 쿨 ${ss.cd}초<br>${skd(ss,o.lv)}</small></span><button class="ac" data-c="sv:${ss.id}" ${P.lv<SKL[chrSK]?'disabled':''}>${at==chrSK?'해제':at>=0?'이동':'장착'}</button></div>`}).join('')}</div></div>`;
 document.getElementById('chr').innerHTML=`<div class="cw"><div class="cw-t"><h2>캐릭터</h2><span class="cw-g">● 골드 ${gold}</span>${KB?'<small>I 열기/닫기 · Esc</small>':''}<button class="ac" data-c="x" aria-label="닫기">✕</button></div><div class="cw-b"><div class="cw-l"><div class="cw-doll"><svg class="fig" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><circle cx="50" cy="26" r="15"/><path d="M14 100c0-26 14-44 36-44s36 18 36 44z"/></svg>${['h','w','a','r','n','f'].map(eq).join('')}</div><div class="cw-d">${chrMsg?`<div class="cw-m">${chrMsg}</div>`:''}${d}</div></div><div class="cw-r"><div class="cw-lv"><b>Lv.${P.lv}</b><div class="xb"><i style="width:${pc}%"></i></div><span>${pc}%</span></div><div class="cw-s">${sr('전투력',cp().toLocaleString())+sr('체력',mhp())+sr('마나',mmp())+sr('공격력',atk())+sr('치명타 확률',M.round(M.min(80,15+bon('cr'))*10)/10+'%'+(15+bon('cr')>=80?' (상한)':''))+sr('흡혈',M.min(20,bon('ls'))+'%')+sr('공격 속도','+'+M.min(50,bon('as'))+'%')+sr('이동 속도','+'+M.min(30,bon('ms'))+'%')+sr('피해 감소',M.min(40,bon('dr'))+'%')+sr('보스 피해','+'+bon('bd')+'%')+sr('마나 회복','+'+bon('mr')+'%')+sr('경험치 획득','+'+bon('xp')+'%')+sr('골드 획득','+'+bon('gd')+'%')+sr('공격 단련','+'+up)}</div>${stt}${pvh}${skh}<div class="cw-sets"><h3>세트 효과</h3>${sets}</div><div class="cw-sets"><h3>드롭 등급 해금</h3><div class="cw-set">${RMIN.map((m,i)=>i?`<small style="color:${stage>=m?RA[i].c:'#6f8080'}">${RN[i]}${TIERS[i].uq?' · 유니크':''} — ${stage>=m?'해금':isFinite(m)?'STAGE '+m+' 이상':'준비 중'}</small>`:'').join('')}</div></div></div></div></div>`}
-document.getElementById('chr').addEventListener('click',e=>{if(e.target.id=='chr')return closeChr();const s=e.target.closest('[data-sl]');if(s){chrSel=s.dataset.sl;chrMsg='';sfx(660,.05,'square',.04);buildChr();return}
+document.getElementById('chr').addEventListener('click',e=>{if(e.target.id=='chr')return closeChr();const s=e.target.closest('[data-sl]');if(s){chrSel=s.dataset.sl;chrMsg='';sfx(990,.04,'sine',.04,.8);buildChr();return}
 const b=e.target.closest('button[data-c]');if(!b||b.disabled)return;const id=b.dataset.c,x=EQ[chrSel];if(id=='x')return closeChr();
 if(id.startsWith('p:')){const [,k,n]=id.split(':');const m=M.min(+n,PT.free);PT[k]+=m;PT.free-=m}
 else if(id=='lk'){LK[chrSel]=LKO[(LKO.indexOf(LK[chrSel]|0)+1)%4];chrMsg='교체 방식: '+LKN[LK[chrSel]]}else if(id=='pauto'){PT.auto=!PT.auto;if(PT.auto&&PT.free){const f=PT.free;PT.free=0;gainPts(f)}}
@@ -1020,7 +1036,7 @@ else if(id.startsWith('v:'))eqPas(+id.slice(2));
 else if(id.startsWith('sq:'))chrSK=+id.slice(3);
 else if(id.startsWith('sv:'))skEq(id.slice(3));
 else if(id=='eb'){chrMsg=bulkEnh()}else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강화 성공! +'+EN[chrSel]:'강화 실패 · 단계는 그대로예요'}else if(id[0]=='r'&&x){chrMsg=reroll(x,+id.slice(1))?'옵션을 재굴림했어요':''}
-sfx(880,.08,'square',.05);save();buildChr()});
+uiSnd();save();buildChr()});
 function fxu(dt){FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{if(t.l0==null)t.l0=t.l;const lo=t.l0>=2.5&&t.t&&t.t.length>8;t.y-=(lo?12:40)*dt;t.l-=dt*(lo?.55:1);return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;
 /* 한 프레임(또는 백그라운드 한 틱)의 진행. loop 와 bgStep 이 같이 써요 */
@@ -1334,7 +1350,7 @@ const acctBtn=()=>!sb?'':AF.user?`<button data-a="logout" class="kk out">${esc(A
 function kakaoLogin(){if(!sb)return;if(location.protocol=='file:'){alert('로그인은 https 주소에서만 동작해요. 서버에 올린 뒤 시도해 주세요.');return}if(AF.st==1){try{AF.save()}catch(e){}}
   sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+location.pathname,scopes:'profile_nickname profile_image'}}).then(r=>{if(r.error)alert('로그인 실패: '+r.error.message)})}
 /* ===== 클라우드 저장 (Supabase game_saves) ===== */
-const LS='ashen1',OW='ashen1u';let cloudOK=false,lastUp='',lastUpT=0,syncing=false,cloudHadProg=false;
+const LS='ashen1',OW='ashen1u';let cloudOK=false,lastUp='',lastUpT=0,syncing=false,cloudHadProg=false,lockAt=0;/* lockAt: 마지막으로 '이 기기가 자리 주인' 임을 서버에서 확인한 시각 */
 const lsGet=()=>{try{return localStorage.getItem(LS)}catch(e){return null}},tsOf=x=>{try{return(JSON.parse(x)||{}).ts||0}catch(e){return 0}};
 function syncDone(err){syncing=false;AF.syncErr=err?1:0;AF.synced=err?0:1;if(!err){window.dispatchEvent(new Event('af-nick'));if(!AF.nk)setTimeout(()=>nkOpen(1),0)}if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}}
 async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=true;
@@ -1359,7 +1375,7 @@ async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=tr
     syncDone(0)}catch(e){console.warn('cloud sync',e);syncDone(1)}}
 async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;if(cloudHadProg&&!hasProg(raw))return;/* 서버에 진행이 있으면 빈 Lv1 저장으로는 절대 덮어쓰지 않아요 */const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
   let o;try{o=JSON.parse(raw)}catch(e){return}const key=JSON.stringify(Object.assign({},o,{ts:0}));if(key===lastUp)return;
-  lastUpT=n;const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key;cloudHadProg=hasProg(raw)}
+  const pT=lastUpT;lastUpT=n;if(!(await lockOk())||!cloudOK){lastUpT=pT;return}/* 업로드 직전에 내 자리가 맞는지 확인(오래 멈췄다 깬 기기가 옛 저장으로 덮어쓰는 것 방지) */const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key;cloudHadProg=hasProg(raw)}
 async function cloudDel(){const u=AF.user;if(!sb||!u)return;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp='';cloudHadProg=false}
 AF.pubFlush=()=>{lastUpT=0;cloudUp(true).catch(()=>{})};
 AF.cloudUp=g=>cloudUp(false,g).catch(()=>{});AF.cloudDel=cloudDel;
@@ -1367,7 +1383,7 @@ let csAt=0;AF.cloudSaveNow=async function(btn){const sm=btn&&btn.querySelector('
   const u=AF.user;if(!sb||!u||!cloudOK){say('서버 연결을 확인하는 중이에요. 잠시 후 다시 눌러 주세요','#ff9a8a');return}
   if(Date.now()-csAt<20000){say('방금 저장했어요 · 잠시 후 다시 눌러 주세요','#ffd98a');return}
   try{AF.save()}catch(e){}const raw=lsGet();let o;try{o=JSON.parse(raw)}catch(e){say('저장할 데이터를 읽지 못했어요','#ff9a8a');return}if(cloudHadProg&&!hasProg(raw)){say('서버에 진행 중인 저장이 있어서 빈 저장으로는 덮어쓰지 않아요','#ff9a8a');return}
-  csAt=Date.now();if(sm)sm.textContent='저장 중…';
+  csAt=Date.now();if(sm)sm.textContent='저장 중…';if(!(await lockOk())||!cloudOK){csAt=0;say('다른 기기에서 접속 중이라 저장하지 않았어요','#ff9a8a');return}
   try{const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error)throw r.error;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();cloudHadProg=hasProg(raw);say('☁ 서버에 저장했어요 · STAGE '+(o.stage||1)+' · Lv.'+(o.lv||1))}
   catch(e){csAt=0;console.warn('manual save',e);say('서버 저장에 실패했어요 · 잠시 후 다시 시도해 주세요','#ff9a8a')}};
 setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(600000)},20000);/* 서버 자동 저장: 켜져 있으면 약 10분마다 */
@@ -1410,7 +1426,7 @@ async function acctLogout(){
         const c=r.data&&r.data.data;
         if(c&&hasProg(JSON.stringify(c))&&!hasProg(raw))ok=true;/* 서버엔 진행이 있고 이 기기는 빈 저장 → 업로드하지 않고 그냥 백업으로만 옮겨요 */
         else if(c&&(c.ts||0)>(o.ts||0))stale=true;/* 서버가 더 최근 → 오래된 기기 저장으로 덮어쓰지 않아요 */
-        else{const w=await tmo(sb.from('game_saves').upsert({uid:u.id,data:o}),8000);if(!w.error){ok=true;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();cloudHadProg=hasProg(raw)}}
+        else if(!(await tmo(lockOk(),8000).catch(()=>false)))stale=true;/* 자리를 확인하지 못했거나 다른 기기가 쓰는 중이면 서버를 덮어쓰지 않아요 */else{const w=await tmo(sb.from('game_saves').upsert({uid:u.id,data:o}),8000);if(!w.error){ok=true;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();cloudHadProg=hasProg(raw)}}
       }
     }catch(e){}
     if(stale){if(!confirm('서버에 이 기기보다 더 최근 저장이 있어요.\n서버 저장은 그대로 두고, 이 기기의 진행은 백업으로 따로 보관한 뒤 로그아웃할까요?')){loBusy=false;return}}
@@ -1430,17 +1446,21 @@ async function sessGate(){/* true = 통과(저장 불러오기 진행) / false =
   AF.busy=0;if(sessOff||!sb||!AF.user)return true;
   try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;
     if(r.data==='busy'){AF.busy=1;cloudOK=false;if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}return false}
-    if(r.data!=='ok')throw new Error('claim:'+r.data);
+    if(r.data!=='ok')throw new Error('claim:'+r.data);lockAt=Date.now();
     if(!sessT)sessT=setInterval(sessCheck,60000);return true}
   catch(e){if(sessMissing(e)){sessOff=1;console.warn('단일 접속 락: claim_session 함수가 없어요 (session_lock.sql 실행 필요)');return true}
     console.warn('session gate',e);syncDone(1);return false}}
 async function sessCheck(){
   if(sessOff||!sb||!AF.user||!AF.synced||AF.busy)return;
   try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;
-    if(r.data==='busy'){cloudOK=false;AF.busy=1;try{AF.save()}catch(e){}try{alert('다른 기기에서 접속해서 이 기기의 연결이 종료됐어요.')}catch(e){}location.reload()}}
+    if(r.data==='busy'){cloudOK=false;AF.busy=1;try{AF.save()}catch(e){}try{alert('다른 기기에서 접속해서 이 기기의 연결이 종료됐어요.')}catch(e){}location.reload()}else if(r.data==='ok')lockAt=Date.now()}
   catch(e){if(sessMissing(e))sessOff=1}}
+/* 업로드 직전 자리 확인: 최근 150초 안에 확인했으면(서버 임대는 3분) 그대로 통과 — 창을 닫는 순간에도 바로 올라가요. 오래됐으면 서버에 다시 확인하고, 다른 기기가 쓰는 중이면 올리지 않고 접속 종료 처리(sessCheck)해요 */
+async function lockOk(){if(sessOff||!sb||!AF.user)return true;if(Date.now()-lockAt<150000)return true;
+  try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;if(r.data==='ok'){lockAt=Date.now();return true}if(r.data==='busy'){lockAt=0;sessCheck()}return false}
+  catch(e){if(sessMissing(e)){sessOff=1;return true}return false}}
 async function sessRelease(){if(sessOff||!sb||!AF.user)return;try{await Promise.race([sb.rpc('release_session',{p_sid:SID}),new Promise(r=>setTimeout(r,3000))])}catch(e){}}
-addEventListener('pagehide',()=>{if(sessOff||!AF.user||!ATK||AF.busy||!AF.synced)return;try{fetch(SB_URL+'/rest/v1/rpc/release_session',{method:'POST',keepalive:true,headers:{apikey:SB_KEY,Authorization:'Bearer '+ATK,'Content-Type':'application/json'},body:JSON.stringify({p_sid:SID})}).catch(()=>{})}catch(e){}});
+addEventListener('pagehide',()=>{if(sessOff||!AF.user||!ATK||AF.busy||!AF.synced)return;lockAt=0;try{fetch(SB_URL+'/rest/v1/rpc/release_session',{method:'POST',keepalive:true,headers:{apikey:SB_KEY,Authorization:'Bearer '+ATK,'Content-Type':'application/json'},body:JSON.stringify({p_sid:SID})}).catch(()=>{})}catch(e){}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sessCheck()});
 addEventListener('pageshow',e=>{if(e.persisted)sessCheck()});
 function setUser(ses){ATK=(ses&&ses.access_token)||'';const u=ses&&ses.user,m=(u&&u.user_metadata)||{},nu=u?{id:u.id,name:m.nickname||m.name||m.full_name||m.preferred_username||'모험가',avatar:m.avatar_url||m.picture||''}:null,prev=AF.user,ch=(prev&&prev.id)!==(nu&&nu.id)||!AF.authReady;
@@ -1740,7 +1760,7 @@ ok=()=>!!(AF.sb&&AF.user),rpc=async(f,a)=>{const r=await AF.sb.rpc(f,a);if(r.err
 setST=d=>{if(d&&typeof d=='object'){try{if(ST&&d.my!==ST.my)RKC[0]=null}catch(e){}ST=d;DO.v=(+d.t||Date.now())-Date.now()}try{upd()}catch(e){}};/* 서버가 정답: 보스 HP·도전 횟수·구매 한도·정산은 전부 서버(wb_server.sql) 값이고 서버 시계 기준이에요 */
 let rfBusy=0;async function refresh(){if(!ok()||rfBusy)return;rfBusy=1;try{let f=null;try{f=JSON.parse(localStorage.getItem('wbfin'))}catch(e){}
 if(f&&f.d>=0&&!AF.wbBusy()){setST(await rpc('wb_finish',{p_dmg:f.d}));localStorage.removeItem('wbfin')}else setST(await rpc('wb_state'));err=''}catch(e){err='서버에 연결하지 못했어요'}finally{rfBusy=0}if(p.style.display=='block')draw()}
-const css=document.createElement('style');css.textContent=`#wbb{position:fixed;left:10px;top:84px;z-index:7;width:60px;height:66px;padding:0;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:12px;cursor:pointer;color:#ffe2a0;font:13px/1 "Do Hyeon",sans-serif;background:radial-gradient(circle at 50% 28%,#5a2a1a 0,#241109 60%,#0c0706 100%);box-shadow:inset 0 0 0 1px #d7a550,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #8a6428,inset 0 8px 10px #ffb06a1f,0 5px 12px #000b,0 0 16px #ff5a2a30;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;transition:transform .12s,filter .15s,box-shadow .2s}
+const css=document.createElement('style');css.textContent=`#wbb{position:fixed;left:10px;top:var(--wt,84px);z-index:7;width:60px;height:66px;padding:0;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:12px;cursor:pointer;color:#ffe2a0;font:13px/1 "Do Hyeon",sans-serif;background:radial-gradient(circle at 50% 28%,#5a2a1a 0,#241109 60%,#0c0706 100%);box-shadow:inset 0 0 0 1px #d7a550,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #8a6428,inset 0 8px 10px #ffb06a1f,0 5px 12px #000b,0 0 16px #ff5a2a30;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;transition:transform .12s,filter .15s,box-shadow .2s}
 #wbb svg{width:32px;height:32px;display:block;filter:drop-shadow(0 0 5px #ff6a2acc)}
 #wbb .wl{letter-spacing:-.5px;text-shadow:0 1px 2px #000,0 0 6px #ff7a3a66}
 #wbb .wn{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 4px;box-sizing:border-box;border-radius:10px;font:12px/18px "Do Hyeon",sans-serif;text-align:center;color:#fff;border:1px solid #ffe0cc;box-shadow:0 2px 5px #000b;display:none}
