@@ -1311,9 +1311,11 @@ async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=tr
       if(!useCloud&&!wipe&&cloud&&cloud.nk&&!ln&&!AF.nk){AF.nk=cloud.nk}}
     let keepLocal=false;if(useCloud&&!wipe&&local&&!(owner&&owner!==u.id)&&hasProg(local)){if(!(await ovrAsk(local,cs,!owner))){useCloud=false;keepLocal=true}}
     try{localStorage.setItem(OW,u.id)}catch(e){}
-    if((useCloud||wipe)&&!sessionStorage.getItem('afr')){AF.resetting=true;try{if(useCloud)localStorage.setItem(LS,cs);else localStorage.removeItem(LS)}catch(e){}sessionStorage.setItem('afr','1');location.reload();return}
+    const afp=(sessionStorage.getItem('afr')||'').split('|'),afOn=afp[0]===u.id&&Date.now()-(+afp[1]||0)<60000;/* 방금(1분 안에) 같은 계정으로 새로고침했는데도 또 적용해야 하면 이상 상태예요 → 업로드를 켜지 않고 '불러오지 못했어요' 로 멈춰서 서버 저장이 기기 데이터로 덮이지 않게 해요 */
+    if((useCloud||wipe)&&afOn){sessionStorage.removeItem('afr');syncDone(1);return}
+    if(useCloud||wipe){AF.resetting=true;try{if(useCloud)localStorage.setItem(LS,cs);else localStorage.removeItem(LS)}catch(e){}sessionStorage.setItem('afr',u.id+'|'+Date.now());location.reload();return}
     sessionStorage.removeItem('afr');cloudOK=true;if(cs)lastUp=JSON.stringify(Object.assign({},cloud,{ts:0}));
-    if(keepLocal){try{AF.save()}catch(e){}}
+    if(!useCloud&&!wipe&&local){if(!AF.nk&&cloud&&cloud.nk)AF.nk=cloud.nk;/* 이 기기 저장을 유지해도 서버의 닉네임은 이어 써요 */let ln2='';try{ln2=(JSON.parse(local)||{}).nk||''}catch(e){}if(keepLocal||(AF.nk&&!ln2)){try{AF.save()}catch(e){}}}
     if(local&&!useCloud&&!wipe&&(keepLocal||!cloud||tsOf(local)>tsOf(cs)))await cloudUp(true);
     syncDone(0)}catch(e){console.warn('cloud sync',e);syncDone(1)}}
 async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
