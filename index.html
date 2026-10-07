@@ -1270,7 +1270,10 @@ try{const u=new URL(location.href);if(u.searchParams.has('ref')){const v=(u.sear
 /* ===== 카카오 로그인 (Supabase) — 아래 두 값만 채우면 돼요 ===== */
 const SB_URL='https://ulhfkgokgxvwbxotamds.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsaGZrZ29rZ3h2d2J4b3RhbWRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3OTQ2OTIsImV4cCI6MjEwNjM3MDY5Mn0.1clWa2SQHFfDcjIg3iZu80uAvI1ld-Jy5qxUXY5g6ug';
 let sb=null;try{AF.tsync&&AF.tsync(SB_URL,SB_KEY)}catch(e){}AF.user=null;AF.authReady=0;AF.sb=null;
-try{if(window.supabase&&!/^YOUR_/.test(SB_URL+SB_KEY))sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',persistSession:true,detectSessionInUrl:true}});else console.warn('Supabase URL/ANON KEY를 입력하면 로그인 버튼이 나타나요')}catch(e){console.warn('supabase init',e)}AF.sb=sb;
+/* 저장 업로드(game_saves)만 keepalive: 창을 닫는 순간에도 브라우저가 요청을 끊지 않아요. 채팅·랭킹·로그인 등 다른 요청은 그대로예요.
+   keepalive 는 요청 크기 64KB 한도가 있어서(헤더 포함) 본문이 50KB 를 넘으면 기존 방식으로 보내요. 요청 수는 늘지 않아요. */
+const kaFetch=(u,o)=>{try{const url=String((u&&u.url)||u);if(o&&o.method==='POST'&&typeof o.body==='string'&&url.indexOf('/rest/v1/game_saves')>-1&&new TextEncoder().encode(o.body).length<50000)return fetch(u,Object.assign({},o,{keepalive:true}))}catch(e){}return fetch(u,o)};
+try{if(window.supabase&&!/^YOUR_/.test(SB_URL+SB_KEY))sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{flowType:'pkce',persistSession:true,detectSessionInUrl:true},global:{fetch:kaFetch}});else console.warn('Supabase URL/ANON KEY를 입력하면 로그인 버튼이 나타나요')}catch(e){console.warn('supabase init',e)}AF.sb=sb;
 const gated=()=>AF.user?!AF.synced:!AF.authReady;AF.guest=()=>!!AF.authReady&&!AF.user;/* 게스트: 로그인 없이 플레이 — 서버로 가는 요청·실시간 연결을 전혀 쓰지 않아요 */
 const gateBtn=()=>!sb?`<button disabled>로그인 서비스에 연결할 수 없어요<small>새로고침해 보세요</small></button>`:!AF.authReady?`<button disabled>로그인 확인 중…</button>`:!AF.user?`<button data-a="login" class="kk">카카오로 로그인<small>로그인해야 플레이할 수 있어요</small></button>`:AF.syncErr?`<button data-a="resync">저장 데이터를 불러오지 못했어요<small>눌러서 다시 시도</small></button>`:`<button disabled>저장 데이터 확인 중…</button>`;
 const acctBtn=()=>!sb?'':AF.user?`<button data-a="logout" class="kk out">${esc(AF.nk||AF.user.name)} 님<small>로그아웃</small></button>`:`<button data-a="login" class="kk">카카오로 로그인<small>로그인하면 더 많은 기능을 쓸 수 있어요</small></button>`;
