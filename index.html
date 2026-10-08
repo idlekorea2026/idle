@@ -87,6 +87,8 @@ button.on{background:#ffb84a;color:#0b1218}
 .cw-sets{display:flex;flex-direction:column;gap:8px}.cw h3{margin:0;font-weight:400;font-size:16px;color:#ffb84a}
 .cw-set{padding:8px 12px;display:flex;flex-direction:column;gap:2px;font-size:15px;box-shadow:none;background:#0a0f13}.cw-set small.act{color:#5dff8a}
 .cw .cw-tabs{display:flex;gap:6px;padding:10px 14px 0}.cw .cw-tabs button{flex:1;width:auto;min-width:0;height:38px;padding:0 4px;border-radius:8px;font-size:15px;white-space:nowrap}
+#pt{align-items:center;justify-content:center;padding:12px;z-index:21;background:#02060acc;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}.pt-u{margin:4px 0 8px;padding-left:20px;color:#c9d6d2;font-size:15px;line-height:1.65}.pt-u li{margin-bottom:3px}
+body.pnew .mb button[data-a=opt]::after{content:'NEW';position:absolute;top:50%;right:12px;transform:translateY(-50%);padding:1px 7px;border-radius:9px;background:#ff5a5a;color:#fff;font-size:11px;letter-spacing:0}body.pnew .or .tg[data-a=pat]::after{content:' NEW';color:#ff7a7a}
 /* ===== 타이틀 · 일시정지 · 설정 메뉴 ===== */
 .ov{position:fixed;inset:0;z-index:20;display:none;font-family:'Do Hyeon',sans-serif;color:#e8f1ee;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .ov.on{display:flex}
@@ -1183,13 +1185,29 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
   <h3>화면</h3>${FSOK?tg('o-fs','전체화면','F 키로도 전환해요'):''}${tg('o-sh','화면 흔들림')}${tg('o-fx','전투 연출','슬로모션 · 확대')}
   <h3>공개</h3>${tg('o-pub','내 정보 공개','채팅에서 내 닉네임을 누르면 레벨·전투력·장비가 보여요 (로그인 시 서버에 반영)')}
   
-  <h3>고객지원</h3><div class="or"><span>문의하기<small>버그 제보·건의 · 답변도 여기서 확인해요</small></span><button class="tg on" data-a="inq">열기</button></div>
+  <h3>고객지원</h3><div class="or"><span>업데이트 내역<small>최근 바뀐 내용을 볼 수 있어요</small></span><button class="tg on" data-a="pat">열기</button></div><div class="or"><span>문의하기<small>버그 제보·건의 · 답변도 여기서 확인해요</small></span><button class="tg on" data-a="inq">열기</button></div>
   <h3 class="kh">조작</h3>
   <div class="keys"><kbd>← →</kbd><span>이동</span><kbd>Space</kbd><span>점프</span><kbd>Z</kbd><span>베기</span><kbd>X</kbd><span>검기</span><kbd>C</kbd><span>폭발</span><kbd>Q</kbd><span>자동/수동</span><kbd>I</kbd><span>장비</span><kbd>B</kbd><span>단련</span><kbd>M</kbd><span>소리</span><kbd>Enter</kbd><span>채팅</span><kbd>F</kbd><span>전체화면</span><kbd>Esc</kbd><span>메뉴</span></div>
   <div class="mb bk"><button class="pri" data-a="back">돌아가기</button></div></div>`;
 const rf=$('div','ov');rf.id='rf';
 rf.innerHTML=`<div class="pn wide"><h2>추천인</h2><div class="st">친구를 초대하고 보상을 받아요</div><div id="o-ref"></div><div class="mb bk"><button class="pri" data-a="ref-back">돌아가기</button></div></div>`;
 const rk=$('div','ov');rk.id='rk';const iq=$('div','ov');iq.id='iq';document.body.append(tm,pm,om,rf,rk,iq);
+const pt=$('div','ov');pt.id='pt';document.body.append(pt);
+/* ===== 업데이트 내역 =====
+   ※ 패치할 때마다 PATCH 배열 '맨 위'에 새 항목을 추가하세요 (Claude 에게 시킬 땐: "패치 내역에 추가해줘").
+   · v 는 날짜+번호(예 2026100802) — v 가 바뀌면 유저 화면에 NEW 표시가 다시 떠요 · d 는 화면에 보이는 날짜
+   · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
+   · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
+const PATCH=[
+{v:'2026100801',d:'10/8',t:['타이틀 화면 안내를 고쳤어요: 카카오 로그인하면 서버에 자동 저장되고 다른 기기에서도 이어서 할 수 있어요','"챔피언"을 "정예"로 이름을 통일했어요 · 스킬북은 보스·정예를 처치하면 얻어요','장비창(I)을 장비 · 능력치 · 패시브 · 스킬 · 세트 탭으로 나눠서 스크롤이 짧아졌어요','스킬 탭에 스킬북 등급(일반·고급·희귀)이 몇 스테이지부터 나오는지 표시해요','설정에 업데이트 내역을 추가했어요']}
+];
+const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
+function pmark(){try{localStorage.setItem(PSK,PATCH[0].v)}catch(e){}document.body.classList.remove('pnew')}
+try{if(!pgot()&&AF.P.lv<=1&&AF.stage<=1&&AF.gold==0)localStorage.setItem(PSK,PATCH[0].v);document.body.classList.toggle('pnew',pgot()!==PATCH[0].v)}catch(e){}/* 처음 하는 유저에겐 NEW 를 띄우지 않아요 */
+let ptOp=null;
+function openPat(from){ptOp=from;pt.innerHTML='<div class="pn wide"><h2>업데이트 내역</h2><div class="st">최근 바뀐 내용이에요</div>'+PATCH.map(x=>'<h3>'+x.d+' 업데이트</h3><ul class="pt-u">'+x.t.map(l=>'<li>'+l.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c])+'</li>').join('')+'</ul>').join('')+'<div class="mb bk"><button class="pri" data-a="pat-x">닫기</button></div></div>';pt.classList.add('on');pmark();focusFirst(pt)}
+function closePat(){pt.classList.remove('on');const b=ptOp&&ptOp.isConnected?ptOp:null;b?b.focus({preventScroll:true}):focusFirst(om)}
+
 
 /* ---- 설정 UI 동기화 ---- */
 const q=id=>om.querySelector('#'+id);
@@ -1214,7 +1232,7 @@ document.addEventListener('fullscreenchange',sync);document.addEventListener('we
 const items=r=>[...r.querySelectorAll('button:not([disabled]),input[type=range],textarea')].filter(x=>x.getClientRects().length);
 const focusFirst=r=>{const l=items(r);l.length&&l[0].focus({preventScroll:true})};
 const move=(r,d)=>{const l=items(r);if(!l.length)return;let i=l.indexOf(document.activeElement);i=i<0?(d>0?0:l.length-1):(i+d+l.length)%l.length;l[i].focus({preventScroll:true})};
-const topOv=()=>document.body.classList.contains('nk')?null:iq.classList.contains('on')?iq:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
+const topOv=()=>document.body.classList.contains('nk')?null:pt.classList.contains('on')?pt:iq.classList.contains('on')?iq:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
 
 let opener=null,confirmT=0;
 function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
@@ -1243,7 +1261,7 @@ function act(a,btn){
   if(a=='rank'){openRank(btn);return}if(a=='rk-x'){closeRank();return}
   if(a=='ref'){openRef(btn);return}if(a=='ref-back'){closeRef();return}if(a=='ref-copy'){refCopy();return}if(a=='ref-link'){refCopy(1);return}if(a=='ref-use'){refUse();return}if(a=='opt'){openOpt(btn);return}
   if(a=='back'){closeOpt();return}
-  if(a=='inq'){openInq(btn);return}if(a=='iq-x'){closeInq();return}if(a=='iq-send'){iqSend();return}
+  if(a=='pat'){openPat(btn);return}if(a=='pat-x'){closePat();return}if(a=='inq'){openInq(btn);return}if(a=='iq-x'){closeInq();return}if(a=='iq-send'){iqSend();return}
   if(a.indexOf('iq-c')==0){iqCat=+a.slice(4)||0;iq.querySelectorAll('#iq-cs button').forEach((x,i)=>x.classList.toggle('on',i==iqCat));return}
   if(a=='fs'||a=='o-fs'){AF.toggleFS();return}
   if(a=='resume'){AF.pauseOff();return}if(a=='guide'){AF.pauseOff();if(AF.guide)AF.guide();return}
@@ -1254,7 +1272,7 @@ function act(a,btn){
   if(a=='o-pub'){AF.pub=!AF.pub;try{AF.save()}catch(e){}AF.pubFlush();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
 }
-[tm,pm,om,rf,rk,iq].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
+[tm,pm,om,rf,rk,iq,pt].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
 /* ===== 랭킹 (최고 스테이지 기준) — 실시간 연결·주기 요청 없이, 창을 열 때 get_ranking 1번만 불러와요 (2분 캐시).
    · 순위 값은 서버가 저장 때 검증한 최고 스테이지예요 (ranking.sql) — 기기에서 올린 값 그대로가 아니에요
    · 같은 스테이지면 먼저 도달한 사람이 위 · 내 정보 공개를 끈 사람은 빠져요 ===== */
@@ -1297,9 +1315,9 @@ rk.addEventListener('focusin',e=>{const t=e.target;if(t.classList&&t.classList.c
 addEventListener('keydown',e=>{
   const on=topOv();if(!on||e.ctrlKey||e.metaKey||e.altKey)return;
   e.stopPropagation();
-  const k=e.code,t=e.target;if(t&&((t.tagName=='INPUT'&&t.type=='text')||t.tagName=='TEXTAREA')){if(k=='Escape'){e.preventDefault();if(!e.repeat){if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq()}}else if((k=='Enter'||k=='NumpadEnter')&&t.id=='o-refi'&&!e.isComposing){e.preventDefault();if(!e.repeat)refUse()}return}
+  const k=e.code,t=e.target;if(t&&((t.tagName=='INPUT'&&t.type=='text')||t.tagName=='TEXTAREA')){if(k=='Escape'){e.preventDefault();if(!e.repeat){if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pt)closePat()}}else if((k=='Enter'||k=='NumpadEnter')&&t.id=='o-refi'&&!e.isComposing){e.preventDefault();if(!e.repeat)refUse()}return}
   if(k=='KeyF'){e.preventDefault();if(!e.repeat)AF.toggleFS();return}
-  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pm)AF.pauseOff();return}
+  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pt)closePat();else if(on===pm)AF.pauseOff();return}
   if(k=='ArrowDown'||k=='ArrowUp'){e.preventDefault();move(on,k=='ArrowDown'?1:-1);return}
   if(k=='Tab'){e.preventDefault();move(on,e.shiftKey?-1:1);return}
   if(t&&t.type=='range'&&(k=='ArrowLeft'||k=='ArrowRight'))return;
