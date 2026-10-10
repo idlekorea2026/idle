@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610101530">
+<meta name="build" content="202610102030">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -608,7 +608,7 @@ function otsm(x){return (x.o||[]).map(q=>OP[q[0]][0]+' +'+q[1]+OP[q[0]][3]+'('+o
 function rv(t,ri,p){const d=OP[t];return M.max(1,M.round((d[1]+R()*(d[2]-d[1]))*(.7+TQ[ri]*.3)*(d[4]?p/10:1)))}
 const ipw=x=>x.p||x.v/TM[x.ri]/SL[x.sl][2];
 function mk(sl,ri,pw){const b=SL[sl][6],ks=Object.keys(OP);let k=rn(0,b.length)|0,o=[],u,n;
-if(TIERS[ri].uq&&R()<TIERS[ri].uq){const al=UQ.map((x,i)=>i).filter(i=>UQ[i][1]==sl&&(UQ[i][5]||4)<=ri),tp=al.filter(i=>(UQ[i][5]||4)==ri),pl=tp.length?tp:al;if(pl.length){u=pl[rn(0,pl.length)|0];k=UQ[u][3];n=UQ[u][0];o=UQ[u][4].map(t=>[t,M.round(rv(t,ri,pw)*1.25)])}}
+if(TIERS[ri].uq&&R()<TIERS[ri].uq){const al=UQ.map((x,i)=>i).filter(i=>UQ[i][1]==sl&&(UQ[i][5]||4)<=ri),mx=M.max(...al.map(i=>UQ[i][5]||4)),pl=al.filter(i=>(UQ[i][5]||4)==mx);if(pl.length){u=pl[rn(0,pl.length)|0];k=UQ[u][3];n=UQ[u][0];o=UQ[u][4].map(t=>[t,M.round(rv(t,ri,pw)*1.25)])}}
 if(u==null)for(let i=0;i<OC[ri];i++){const t=ks.splice(rn(0,ks.length)|0,1)[0];o.push([t,rv(t,ri,pw)])}
 return{sl,ri,k,o,u,p:M.round(pw),v:M.round(pw*TM[ri]*SL[sl][2]*(.9+R()*.2)),n:n||TIERS[ri].pre+b[k]}}/* 기본 능력치 ±10% 랜덤 */
 function rr(b){const r=R()/(1+b*8);let q=TIERS.length-1;while(q>0&&r>=TIERS[q].p*evM(q))q--;while(q>0&&stage<RMIN[q])q--;return q}
