@@ -865,7 +865,8 @@ LT=LT.filter(o=>{o.t+=dt;if(!o.l){o.vy+=1500*dt;o.x+=o.vx*dt;o.y+=o.vy*dt;if(o.y
 else{const d=o.x-P.x;if(o.t>.6&&M.abs(d)<300)o.x-=M.sign(d)*M.min(M.abs(d),380*dt);if(M.abs(d)<34&&o.t>.6){pick(o.it);return false}}return true});
 FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});
 TX=TX.filter(t=>{if(t.l0==null)t.l0=t.l;const lo=t.l0>=2.5&&t.t&&t.t.length>8;t.y-=(lo?12:40)*dt;t.l-=dt*(lo?.55:1);return t.l>0});
-cam+=(M.max(0,M.min(WORLD-W,P.x-W*.42+P.f*60))-cam)*M.min(1,dt*6);shake*=.88}
+cam+=(M.max(0,M.min(WORLD-W,P.x-W*.42+P.f*60))-cam)*M.min(1,dt*6);shake*=.88;
+for(const e of E){if(e.hf>0)e.hf=M.max(0,e.hf-dt*5);if(e.tr==null)continue;if(e.th>0){e.th-=dt;continue}const f=M.max(0,e.hp/e.mh);if(e.tr>f)e.tr=M.max(f,e.tr-(.35+(e.tr-f)*2.2)*dt);else e.tr=null}}
 function ridge(f,base,amp,col,sc,off){g.fillStyle=col;g.beginPath();g.moveTo(0,H);for(let x=0;x<=W;x+=12){const wx=x+cam*f;g.lineTo(x,base-(M.sin(wx*sc+off)+M.sin(wx*sc*2.3+off*2)*.5+1.5)*amp)}g.lineTo(W,H);g.fill()}
 function trees(f,col,gap,hh,seed){g.fillStyle=col;const s=M.floor(cam*f/gap);for(let i=s;i<s+W/gap+3;i++){const h=hh*(.7+((i*9301+seed)%233)/233*.7),x=i*gap-cam*f+((i*7919)%50-25);
 for(let k=0;k<3;k++){g.beginPath();g.moveTo(x-32+k*7,GY+10-k*h*.28);g.lineTo(x,GY+10-h*(.5+k*.25)-k*h*.1);g.lineTo(x+32-k*7,GY+10-k*h*.28);g.fill()}}}
@@ -1138,6 +1139,11 @@ function refGrant(me,n){me=+me>0?1:0;n=M.max(0,M.min(10,+n|0));if(!me&&!n)return
 if(me){const gd=REF.g;gold+=gd;o.push('골드 +'+gd.toLocaleString());const it=mk(SK[rn(0,SK.length)|0],1,3+stage*4+P.lv*1.2);o.push(it.n);pick(it)}
 if(n){WB.c=(WB.c|0)+REF.c*n;o.push('월드보스 코인 +'+REF.c*n)}
 save();csys('추천인 보상: '+o.join(' · '),'#7dffe0');TX.push({x:P.x,y:P.y-170,t:'추천인 보상!',l:2.6,c:'#7dffe0'});sfx(784,.3,'triangle',.06,1.6);try{toast('추천인 보상 · '+o.join(' · '),'#7dffe0')}catch(e){}}
+/* 추천 누적 보상: 서버(referral_ms_claim)가 '이번에 새로 달성한 단계'의 보상 내용(c 월보 코인·box 전설 상자·rr 재굴림 쿠폰·g 골드)을 돌려주면 그대로 지급해요. 수량·단계는 서버 표(referral_tiers)에서 조절해요 */
+function refMsGrant(list){if(!Array.isArray(list)||!list.length)return;const o=[];let c=0,b=0,r=0,gd=0;
+for(const z of list){if(!z)continue;c+=M.max(0,M.min(1e5,+z.c|0));b+=M.max(0,M.min(1e3,+z.box|0));r+=M.max(0,M.min(1e4,+z.rr|0));gd+=M.max(0,M.min(1e12,+z.g||0))}
+if(c){WB.c=(WB.c|0)+c;o.push('월드보스 코인 +'+c)}if(b){WB.pb=(WB.pb|0)+b;o.push('전설 상자 +'+b)}if(r){WB.rr=(WB.rr|0)+r;o.push('재굴림 쿠폰 +'+r)}if(gd){gold+=gd;o.push('골드 +'+gd.toLocaleString())}
+if(!o.length)return;save();csys('추천 누적 보상: '+o.join(' · '),'#7dffe0');TX.push({x:P.x,y:P.y-170,t:'추천 누적 보상!',l:2.6,c:'#7dffe0'});sfx(784,.3,'triangle',.06,1.6);try{toast('추천 누적 보상 · '+o.join(' · '),'#7dffe0')}catch(e){}}
 /* ===== AF: 다른 스크립트와의 약속 ===== */
 Object.defineProperties(AF,{
   mute:{get:()=>mute,set:v=>{mute=v},enumerable:true},
@@ -1163,7 +1169,7 @@ Object.defineProperties(AF,{
   nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true},
   pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true}
 });
-Object.assign(AF,{guide:()=>guidePop(),refGrant,toast,wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
+Object.assign(AF,{guide:()=>guidePop(),refGrant,refMsGrant,toast,wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
 wbInfo:it=>{const c=EQ[it.sl],v=c?swapV(it,c):null,d=v&&v.a?M.round((v.b-v.a)/v.a*1000)/10:null;return{nm:iname(it)+' '+it.n,col:icol(it),op:ots(it),cur:c?iname(c)+' '+c.n+(c.o&&c.o.length?' · '+ots(c):''):'(비어 있음)',d,sv:wbSv(it),cv:c?wbSv(c):0}},
 wbEquip:it=>{const c=EQ[it.sl];EQ[it.sl]=it;if(c)gold+=wbSv(c);TX.push({x:P.x,y:P.y-100,t:'착용: '+it.n,l:1.3,c:icol(it)});save()},
 wbSell:it=>{gold+=wbSv(it);save()},wbReroll:(it,j)=>reroll(it,j),wbRc:it=>rc(it),BOOST,P:new Proxy(P,{set:()=>true,defineProperty:()=>false,deleteProperty:()=>false}),cp,sfx,K,go,save});
@@ -1579,15 +1585,16 @@ function refPaint(){const c=rf.querySelector('#o-ref');if(!c)return;
   c.innerHTML=''
    +'<div class="or"><span>내 추천 코드<small>친구가 가입 3일 안에 입력하고 스테이지 5에 도달하면 월드보스 코인 +10 (주 10명까지)</small></span><b style="min-width:92px;letter-spacing:.08em">'+esc(refCode||'…')+'</b><button class="tg on" data-a="ref-copy"'+(refCode?'':' disabled')+'>복사</button></div>'
    +(refCnt?'<div class="or"><span>누적 추천<small>내 코드로 등록한 사람 · 스테이지 5 달성 '+refCnt.d.toLocaleString('ko-KR')+'명</small></span><b style="min-width:92px">'+refCnt.t.toLocaleString('ko-KR')+'명</b></div>':'')
+   +refTierRows()
     +'<div class="or"><span>초대 링크<small>친구가 이 주소로 들어와 로그인하면 코드가 자동으로 등록돼요</small></span><button class="tg on" data-a="ref-link"'+(refCode?'':' disabled')+'>링크 복사</button></div>'
    +(refDone()?'<div class="or"><span>추천인 등록 완료<small>스테이지 5에 도달하면 골드 + 고급 장비를 받아요</small></span></div>'
      :'<div class="or"><span>추천인 코드 입력<small>가입 3일 이내 계정만 · 보상: 골드 + 고급 장비 1개</small></span><input id="o-refi" type="text" maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="코드" style="width:104px;height:32px;box-sizing:border-box;padding:0 8px;border:1px solid #6b5228;border-radius:6px;background:#070b0e;color:#fff2c4;font:16px \'Do Hyeon\',sans-serif;outline:0;text-transform:uppercase;-webkit-user-select:text;user-select:text"><button class="tg" data-a="ref-use"'+(refBusy?' disabled':'')+'>등록</button></div>')
    +(refMsg?'<div class="or"><span style="color:#ffd98a">'+esc(refMsg)+'</span></div>':'');
   const ni=c.querySelector('#o-refi');if(ni){const pv=val||refPend();if(pv)ni.value=pv}
   if(fk){const n=c.querySelector(fk);if(n&&!n.disabled)n.focus({preventScroll:true})}}
-async function refCount(q){if(!sb||!AF.user||refOff)return;try{const r=await sb.rpc('referral_count');if(!r.error&&r.data){const o=refCnt;refCnt={t:r.data.total|0,d:r.data.done|0};refCntAt=Date.now();if(!q&&o&&(refCnt.t>o.t||refCnt.d>o.d))refDirty=1;/* 친구가 늘었거나 달성했으면 claim 을 바로 한 번 */if(rf.classList.contains('on'))refPaint()}}catch(e){}}
+async function refCount(q){if(!sb||!AF.user||refOff)return;try{const r=await sb.rpc('referral_count');if(!r.error&&r.data){const o=refCnt;refCnt={t:r.data.total|0,d:r.data.done|0,tiers:Array.isArray(r.data.tiers)?r.data.tiers:[]};refCntAt=Date.now();if(!q&&o&&(refCnt.t>o.t||refCnt.d>o.d))refDirty=1;/* 친구가 늘었거나 달성했으면 claim 을 바로 한 번 */if(rf.classList.contains('on'))refPaint()}}catch(e){}}
 window.addEventListener('af-user',()=>{refCnt=null;refCntAt=0;refFirst=1;refDirty=0});
-async function refOpen(){refMsg='';refPaint();if(!sb||!AF.user||refOff)return;refCount();if(refCode)return;
+async function refOpen(){refMsg='';refPaint();if(!sb||!AF.user||refOff)return;refCount();if(AF.st==1)refMs();if(refCode)return;
   try{const r=await sb.rpc('referral_code');if(r.error)throw r.error;refCode=String(r.data||'')}catch(e){if(refMiss(e))refOff=1;else refMsg='코드를 불러오지 못했어요'}refPaint()}
 const refLink=()=>location.origin+location.pathname+'?ref='+encodeURIComponent(refCode);
 function refCopy(link){if(!refCode)return;const txt=link?refLink():refCode,ok=()=>{refMsg=link?'초대 링크를 복사했어요':'복사했어요';refPaint()};
@@ -1605,13 +1612,24 @@ async function refUse(){if(refBusy||!sb||!AF.user)return;const i=rf.querySelecto
    ② 받을 보상이 있을 수 있는 사람(추천받아 대기 중 / 초대한 친구 중 스테이지 5 미달성 / 상태 모름 / count 가 변함)만 5분마다 claim
    ③ 그 외 사람은 claim 없이 15분마다 count 만 확인해요 → 친구가 늘거나 달성하면(count 변화) 그때 claim */
 const REF_CLAIM_GAP=300000,REF_COUNT_GAP=900000;
-const refMayClaim=()=>refCnt===null||refDirty||refCnt.t>refCnt.d||(refDone()&&!refCl());
+const refMayClaim=()=>refCnt===null||refDirty||refCnt.t>refCnt.d||(refDone()&&!refCl())||(refCnt.tiers||[]).some(z=>!z.got&&refCnt.d>=z.need);
+const refTierTxt=z=>[z.c>0?'월보 코인 '+z.c:'',z.box>0?'전설 상자 '+z.box:'',z.rr>0?'재굴림 쿠폰 '+z.rr:'',z.g>0?'골드 '+(+z.g).toLocaleString('ko-KR'):''].filter(Boolean).join(' + ');
+const refTierRows=()=>{if(!refCnt||!refCnt.tiers||!refCnt.tiers.length)return '';const d=refCnt.d,tr=refCnt.tiers,nx=tr.find(z=>!z.got&&d<z.need),rd=tr.some(z=>!z.got&&d>=z.need);
+  return '<div class="or"><span>누적 보상<small>달성한 친구 '+d.toLocaleString('ko-KR')+'명'+(nx?' · 다음 보상까지 '+(nx.need-d)+'명':' · 모든 단계를 달성했어요')+(rd?' · 수령 대기는 게임 중 자동으로 받아요':'')+'</small></span></div>'
+  +tr.map(z=>{const got=!!z.got,rdy=!got&&d>=z.need,col=got?'#5dff8a':rdy?'#ffd98a':'#9fb5b0',stx=got?'✔ 받음':rdy?'수령 대기':(z.need-d)+'명 남음';
+    return '<div class="or"><span style="color:'+col+'">'+z.need+'명 달성<small>'+refTierTxt(z)+'</small></span><b style="min-width:84px;color:'+col+'">'+stx+'</b></div>'}).join('')};
+let refMsOff=0;
+async function refMs(){if(refMsOff||!sb||!AF.user||!AF.refMsGrant)return;
+  try{await refCount(1);if(!(refCnt&&(refCnt.tiers||[]).some(z=>!z.got&&refCnt.d>=z.need)))return;
+    const r=await sb.rpc('referral_ms_claim');if(r.error)throw r.error;const g=r.data&&r.data.got;
+    if(Array.isArray(g)&&g.length){AF.refMsGrant(g);refCount(1);setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}}
+  catch(e){if(refMiss(e))refMsOff=1}}
 async function refTick(){if(!sb||!AF.user||!AF.synced||refOff||refRun||AF.st!=1)return;refRun=1;refLast=Date.now();
   try{const first=refFirst;
     if(!first&&!refMayClaim()){await refCount();if(!refMayClaim())return}/* ③ 받을 보상이 없어 보이면 count 만 확인하고 끝 */
     if(refDone()&&!refCl()){try{AF.save()}catch(e){}try{await cloudUp(true)}catch(e){}}/* 내가 추천받아 보상 대기 중일 때만 먼저 서버 저장을 올려요 → 그 외 유저의 서버 저장 횟수는 그대로예요 */
     const r=await sb.rpc('referral_claim');if(r.error)throw r.error;const d=r.data||{};refFirst=0;refDirty=0;
-    if((d.me|0)>0||(d.n|0)>0){if((d.me|0)>0){try{localStorage.setItem(refCK(),'1')}catch(e){}}AF.refGrant(d.me,d.n);refCount(1);setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}else if(first)refCount(1)}
+    if((d.me|0)>0||(d.n|0)>0){if((d.me|0)>0){try{localStorage.setItem(refCK(),'1')}catch(e){}}AF.refGrant(d.me,d.n);refCount(1);setTimeout(()=>AF.pubFlush(),11000);if(rf.classList.contains('on'))refPaint()}else if(first)refCount(1);await refMs()}
   catch(e){if(refMiss(e))refOff=1}
   finally{refRun=0}}
 setInterval(()=>{if(AF.st==1&&!document.hidden&&(refDirty||Date.now()-refLast>=(refMayClaim()?REF_CLAIM_GAP:REF_COUNT_GAP)))refTick()},15000);
