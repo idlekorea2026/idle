@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610062030">
+<meta name="build" content="202610101530">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -1144,6 +1144,13 @@ function refMsGrant(list){if(!Array.isArray(list)||!list.length)return;const o=[
 for(const z of list){if(!z)continue;c+=M.max(0,M.min(1e5,+z.c|0));b+=M.max(0,M.min(1e3,+z.box|0));r+=M.max(0,M.min(1e4,+z.rr|0));gd+=M.max(0,M.min(1e12,+z.g||0))}
 if(c){WB.c=(WB.c|0)+c;o.push('월드보스 코인 +'+c)}if(b){WB.pb=(WB.pb|0)+b;o.push('전설 상자 +'+b)}if(r){WB.rr=(WB.rr|0)+r;o.push('재굴림 쿠폰 +'+r)}if(gd){gold+=gd;o.push('골드 +'+gd.toLocaleString())}
 if(!o.length)return;save();csys('추천 누적 보상: '+o.join(' · '),'#7dffe0');TX.push({x:P.x,y:P.y-170,t:'추천 누적 보상!',l:2.6,c:'#7dffe0'});sfx(784,.3,'triangle',.06,1.6);try{toast('추천 누적 보상 · '+o.join(' · '),'#7dffe0')}catch(e){}}
+/* 우편 수령: 서버(mail_claim)가 한 번만 내어 준 보상을 그대로 지급해요 (g 골드 · c 월보 코인 · box 전설 상자 · rr 재굴림 쿠폰 · items 장비[슬롯, 등급 — 옵션은 여기서 랜덤]) */
+function mailGrant(p){if(!p||typeof p!='object')return[];const o=[];
+const g=M.max(0,M.min(1e12,+p.g||0)),c=M.max(0,M.min(1e5,+p.c|0)),b=M.max(0,M.min(1e3,+p.box|0)),r=M.max(0,M.min(1e4,+p.rr|0));
+if(g){gold+=g;o.push('골드 +'+g.toLocaleString())}if(c){WB.c=(WB.c|0)+c;o.push('월드보스 코인 +'+c)}if(b){WB.pb=(WB.pb|0)+b;o.push('전설 상자 +'+b)}if(r){WB.rr=(WB.rr|0)+r;o.push('재굴림 쿠폰 +'+r)}
+const its=Array.isArray(p.items)?p.items.slice(0,10):[];
+for(const z of its){const sl=z&&z.sl,ri=z?(z.ri|0):-1;if(SK.indexOf(sl)<0||ri<0||ri>=TIERS.length)continue;const it=mk(sl,ri,3+stage*4+P.lv*1.2);o.push(iname(it)+' '+it.n);pick(it)}
+if(!o.length)return o;save();csys('우편 수령: '+o.join(' · '),'#ffd98a');TX.push({x:P.x,y:P.y-170,t:'우편 수령!',l:2.6,c:'#ffd98a'});sfx(784,.3,'triangle',.06,1.6);try{toast('우편 수령 · '+o.join(' · '),'#ffd98a')}catch(e){}return o}
 /* ===== AF: 다른 스크립트와의 약속 ===== */
 Object.defineProperties(AF,{
   mute:{get:()=>mute,set:v=>{mute=v},enumerable:true},
@@ -1169,7 +1176,7 @@ Object.defineProperties(AF,{
   nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true},
   pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true}
 });
-Object.assign(AF,{guide:()=>guidePop(),refGrant,refMsGrant,toast,wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
+Object.assign(AF,{guide:()=>guidePop(),refGrant,refMsGrant,mailGrant,toast,wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
 wbInfo:it=>{const c=EQ[it.sl],v=c?swapV(it,c):null,d=v&&v.a?M.round((v.b-v.a)/v.a*1000)/10:null;return{nm:iname(it)+' '+it.n,col:icol(it),op:ots(it),cur:c?iname(c)+' '+c.n+(c.o&&c.o.length?' · '+ots(c):''):'(비어 있음)',d,sv:wbSv(it),cv:c?wbSv(c):0}},
 wbEquip:it=>{const c=EQ[it.sl];EQ[it.sl]=it;if(c)gold+=wbSv(c);TX.push({x:P.x,y:P.y-100,t:'착용: '+it.n,l:1.3,c:icol(it)});save()},
 wbSell:it=>{gold+=wbSv(it);save()},wbReroll:(it,j)=>reroll(it,j),wbRc:it=>rc(it),BOOST,P:new Proxy(P,{set:()=>true,defineProperty:()=>false,deleteProperty:()=>false}),cp,sfx,K,go,save});
@@ -1228,13 +1235,14 @@ function buildTitle(){
   <div class="mb">${gated()?gateBtn():has
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.cp().toLocaleString()}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
-  <button data-a="opt">설정</button>${soc}${gated()||AF.guest()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>${AF.guest()?'<p class="gn">☁️ <b>카카오 로그인</b>하면 <b>서버에 자동 저장</b>되고<br>다른 기기에서도 <b>이어서 플레이</b>할 수 있어요<br><small>지금은 로그인 없이 플레이 중이라 진행이 이 기기에만 저장돼요 · 브라우저 데이터를 지우면 사라져요</small></p>':''}
+  <button data-a="opt">설정</button>${AF.user&&sb&&AF.synced?'<button data-a="ml">우편함</button>':''}${AF.isAdmin?'<button data-a="adm">관리자</button>':''}${soc}${gated()||AF.guest()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>${AF.guest()?'<p class="gn">☁️ <b>카카오 로그인</b>하면 <b>서버에 자동 저장</b>되고<br>다른 기기에서도 <b>이어서 플레이</b>할 수 있어요<br><small>지금은 로그인 없이 플레이 중이라 진행이 이 기기에만 저장돼요 · 브라우저 데이터를 지우면 사라져요</small></p>':''}
   <p class="ofh">💤 <b>오프라인 사냥</b> — 게임을 꺼 둬도 사냥이 계속돼요!<br>최대 ${Math.round(AF.OFF.max/3600)}시간, 골드·경험치·아이템을 ${Math.round(AF.OFF.eff*100)}% 보상으로 받아요</p>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
   onShow();
 }
+AF.buildTitle=buildTitle;
 pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"></div><p class="gn" id="pgn" style="display:none"></p><div class="mb">
-  <button class="pri" data-a="resume">계속하기</button><div class="mr"><button data-a="rank">랭킹</button><button class="rw" data-a="ref">추천인</button></div><button data-a="guide">게임 가이드<small>조작 · 골드 보는 곳 · 쓰는 곳</small></button><button data-a="opt">설정</button>${fsBtn()}<button class="kk" data-a="login" id="pml" style="display:none">카카오로 로그인<small>지금까지의 진행이 서버에 안전하게 저장돼요</small></button><button data-a="csave" id="pmc" style="display:none">서버에 지금 저장<small>진행상황을 계정에 바로 저장해요</small></button><button data-a="title">타이틀로</button></div></div>`;
+  <button class="pri" data-a="resume">계속하기</button><div class="mr"><button data-a="rank">랭킹</button><button class="rw" data-a="ref">추천인</button></div><button data-a="guide">게임 가이드<small>조작 · 골드 보는 곳 · 쓰는 곳</small></button><button data-a="opt">설정</button><button data-a="ml" id="pmm" style="display:none">우편함</button><button data-a="adm" id="pma" style="display:none">관리자</button>${fsBtn()}<button class="kk" data-a="login" id="pml" style="display:none">카카오로 로그인<small>지금까지의 진행이 서버에 안전하게 저장돼요</small></button><button data-a="csave" id="pmc" style="display:none">서버에 지금 저장<small>진행상황을 계정에 바로 저장해요</small></button><button data-a="title">타이틀로</button></div></div>`;
 
 const sl=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><input type="range" min="0" max="100" step="5" id="${id}" aria-label="${label}"><b id="${id}v"></b></div>`;
 const tg=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><button class="tg" id="${id}" data-a="${id}"></button></div>`;
@@ -1251,6 +1259,7 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
 const rf=$('div','ov');rf.id='rf';
 rf.innerHTML=`<div class="pn wide"><h2>추천인</h2><div class="st">친구를 초대하고 보상을 받아요</div><div id="o-ref"></div><div class="mb bk"><button class="pri" data-a="ref-back">돌아가기</button></div></div>`;
 const rk=$('div','ov');rk.id='rk';const iq=$('div','ov');iq.id='iq';document.body.append(tm,pm,om,rf,rk,iq);
+const ad=$('div','ov');ad.id='ad';const ml=$('div','ov');ml.id='ml';document.body.append(ad,ml);/* 관리자 · 우편함 (동작은 아래쪽 '관리자 메뉴 · 우편함' 스크립트) */
 const pt=$('div','ov');pt.id='pt';document.body.append(pt);
 /* ===== 업데이트 내역 =====
    ※ 패치할 때마다 PATCH 배열 '맨 위'에 새 항목을 추가하세요 (Claude 에게 시킬 땐: "패치 내역에 추가해줘").
@@ -1292,7 +1301,7 @@ document.addEventListener('fullscreenchange',sync);document.addEventListener('we
 const items=r=>[...r.querySelectorAll('button:not([disabled]),input[type=range],textarea')].filter(x=>x.getClientRects().length);
 const focusFirst=r=>{const l=items(r);l.length&&l[0].focus({preventScroll:true})};
 const move=(r,d)=>{const l=items(r);if(!l.length)return;let i=l.indexOf(document.activeElement);i=i<0?(d>0?0:l.length-1):(i+d+l.length)%l.length;l[i].focus({preventScroll:true})};
-const topOv=()=>document.body.classList.contains('nk')?null:pt.classList.contains('on')?pt:iq.classList.contains('on')?iq:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
+const topOv=()=>document.body.classList.contains('nk')?null:pt.classList.contains('on')?pt:ad.classList.contains('on')?ad:ml.classList.contains('on')?ml:iq.classList.contains('on')?iq:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
 
 let opener=null,confirmT=0;
 function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
@@ -1308,7 +1317,9 @@ AF.pauseOn=function(){
 };
 AF.pauseOff=function(){AF.pz=false;pm.classList.remove('on');om.classList.remove('on');rf.classList.remove('on');if(document.activeElement)document.activeElement.blur()};
 
+{const _po=AF.pauseOn;AF.pauseOn=function(){_po.apply(this,arguments);try{const a=pm.querySelector('#pma'),m=pm.querySelector('#pmm');if(a)a.style.display=AF.isAdmin?'':'none';if(m)m.style.display=(AF.user&&AF.synced)?'':'none'}catch(e){}}}
 function act(a,btn){
+  if(a=='adm'||a=='ml'||a.indexOf('ad-')==0||a.indexOf('ml-')==0){if(AF.ovAct)AF.ovAct(a,btn);return}
   if(gated()&&(a=='cont'||a=='new'||a=='new2'))return;if(a=='resync'){AF.syncErr=0;AF.busy=0;buildTitle();focusFirst(tm);sessGate().then(ok=>{if(ok)cloudSync()});return}
   if(a=='csave'){AF.cloudSaveNow&&AF.cloudSaveNow(btn);return}
   if(a=='login'){kakaoLogin();return}if(a=='logout'){if(sb)acctLogout();return}
@@ -1332,7 +1343,7 @@ function act(a,btn){
   if(a=='o-pub'){AF.pub=!AF.pub;try{AF.save()}catch(e){}AF.pubFlush();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
 }
-[tm,pm,om,rf,rk,iq,pt].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
+[tm,pm,om,rf,rk,iq,pt,ad,ml].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
 /* ===== 랭킹 (최고 스테이지 기준) — 실시간 연결·주기 요청 없이, 창을 열 때 get_ranking 1번만 불러와요 (2분 캐시).
    · 순위 값은 서버가 저장 때 검증한 최고 스테이지예요 (ranking.sql) — 기기에서 올린 값 그대로가 아니에요
    · 같은 스테이지면 먼저 도달한 사람이 위 · 내 정보 공개를 끈 사람은 빠져요 ===== */
@@ -1375,9 +1386,9 @@ rk.addEventListener('focusin',e=>{const t=e.target;if(t.classList&&t.classList.c
 addEventListener('keydown',e=>{
   const on=topOv();if(!on||e.ctrlKey||e.metaKey||e.altKey)return;
   e.stopPropagation();
-  const k=e.code,t=e.target;if(t&&((t.tagName=='INPUT'&&t.type=='text')||t.tagName=='TEXTAREA')){if(k=='Escape'){e.preventDefault();if(!e.repeat){if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pt)closePat()}}else if((k=='Enter'||k=='NumpadEnter')&&t.id=='o-refi'&&!e.isComposing){e.preventDefault();if(!e.repeat)refUse()}return}
+  const k=e.code,t=e.target;if(t&&((t.tagName=='INPUT'&&t.type=='text')||t.tagName=='TEXTAREA')){if(k=='Escape'){e.preventDefault();if(!e.repeat){if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pt)closePat();else if(on===ad||on===ml)AF.closeOv&&AF.closeOv(on.id)}}else if((k=='Enter'||k=='NumpadEnter')&&t.id=='o-refi'&&!e.isComposing){e.preventDefault();if(!e.repeat)refUse()}return}
   if(k=='KeyF'){e.preventDefault();if(!e.repeat)AF.toggleFS();return}
-  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pt)closePat();else if(on===pm)AF.pauseOff();return}
+  if(k=='Escape'){e.preventDefault();if(e.repeat)return;if(on===rk){const pf=document.getElementById('pf');if(!(pf&&pf.classList.contains('on')))closeRank()}else if(on===om)closeOpt();else if(on===rf)closeRef();else if(on===iq)closeInq();else if(on===pt)closePat();else if(on===ad||on===ml)AF.closeOv&&AF.closeOv(on.id);else if(on===pm)AF.pauseOff();return}
   if(k=='ArrowDown'||k=='ArrowUp'){e.preventDefault();move(on,k=='ArrowDown'?1:-1);return}
   if(k=='Tab'){e.preventDefault();move(on,e.shiftKey?-1:1);return}
   if(t&&t.type=='range'&&(k=='ArrowLeft'||k=='ArrowRight'))return;
@@ -1440,8 +1451,17 @@ function kakaoLogin(){if(!sb)return;if(location.protocol=='file:'){alert('로그
 const LS='ashen1',OW='ashen1u';let cloudOK=false,lastUp='',lastUpT=0,syncing=false,cloudHadProg=false,lockAt=0;/* lockAt: 마지막으로 '이 기기가 자리 주인' 임을 서버에서 확인한 시각 */
 const lsGet=()=>{try{return localStorage.getItem(LS)}catch(e){return null}},tsOf=x=>{try{return(JSON.parse(x)||{}).ts||0}catch(e){return 0}};
 function syncDone(err){syncing=false;AF.syncErr=err?1:0;AF.synced=err?0:1;if(!err){window.dispatchEvent(new Event('af-nick'));if(!AF.nk)setTimeout(()=>nkOpen(1),0)}if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}}
+/* ===== 계정 정지 — 서버(my_ban)가 '정지 중'이라고 하면 게임을 막아요(접속할 때 한 번만 확인). 저장·채팅·우편은 서버(RLS)에서도 막혀 있어서 이 화면은 안내용이에요 ===== */
+async function banBlock(){if(!sb||!AF.user)return !!AF.banned;if(AF.banned)return true;
+  try{const r=await sb.rpc('my_ban');if(r.error||!r.data||!r.data.banned)return false;showBan(r.data);return true}catch(e){return false}}
+function showBan(d){AF.banned=1;AF.resetting=true;cloudOK=false;const u=d.until?new Date(d.until):null,perm=!u||isNaN(u)||u.getFullYear()>=2900;
+  const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;background:#070d12;color:#ff9a8a;font:20px/1.7 "Do Hyeon",sans-serif';
+  o.innerHTML='<div>이용이 정지된 계정이에요<br><small style="color:#9fb5b0;font-size:15px">'+(d.reason?'사유: '+esc(d.reason)+'<br>':'')+(perm?'기간: 영구':'해제 예정: '+esc(u.toLocaleString('ko-KR')))+'<br>문의가 필요하면 운영자에게 연락해 주세요.</small><br><br><button id="bnx" style="width:auto;height:auto;border-radius:8px;padding:8px 18px;font:17px \'Do Hyeon\',sans-serif;border:1px solid #6b5228;background:#1c262d;color:#f0d9a0;cursor:pointer">로그아웃</button></div>';
+  document.body.appendChild(o);
+  ['keydown','keyup','pointerdown','click','touchstart'].forEach(t=>addEventListener(t,e=>{if(o.contains(e.target))return;e.stopImmediatePropagation()},true));
+  const x=o.querySelector('#bnx');x.onclick=()=>{const go=()=>location.reload();try{sb.auth.signOut().then(go,go)}catch(e){go()}}}
 async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=true;
-  try{const r=await sb.from('game_saves').select('data').eq('uid',u.id).maybeSingle();if(r.error)throw r.error;
+  try{if(await banBlock()){syncing=false;return}const r=await sb.from('game_saves').select('data').eq('uid',u.id).maybeSingle();if(r.error)throw r.error;
     const cloud=r.data&&r.data.data;let cs=cloud?JSON.stringify(cloud):null;const local=lsGet();let owner=null;try{owner=localStorage.getItem(OW)}catch(e){}
     let useCloud=false,wipe=false;
     if(owner&&owner!==u.id){try{if(local)localStorage.setItem(LS+'@'+owner,local)}catch(e){}if(cloud)useCloud=true;else wipe=true}
@@ -1534,7 +1554,7 @@ async function sessGate(){/* true = 통과(저장 불러오기 진행) / false =
   try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;
     if(r.data==='busy'){AF.busy=1;cloudOK=false;if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}return false}
     if(r.data!=='ok')throw new Error('claim:'+r.data);lockAt=Date.now();
-    if(!sessT)sessT=setInterval(sessCheck,60000);return true}
+    if(!sessT)sessT=setInterval(sessCheck,120000);return true}
   catch(e){if(sessMissing(e)){sessOff=1;console.warn('단일 접속 락: claim_session 함수가 없어요 (session_lock.sql 실행 필요)');return true}
     console.warn('session gate',e);syncDone(1);return false}}
 async function sessCheck(){
@@ -1976,6 +1996,184 @@ b.addEventListener('click',()=>{msg='';RK=null;refresh();draw();p.style.display=
 addEventListener('keydown',e=>{const o=p.style.display=='block',r=rp.style.display=='flex',z=q.style.display=='block';if(!(o||r||z))return;if(e.target&&e.target.tagName=='SELECT')return;e.stopImmediatePropagation();if(e.code=='Escape'){e.preventDefault();if(r)rp.style.display='none';else if(o){if(RK){RK=null;draw();p.scrollTop=0}else p.style.display='none'}}},true);
 setInterval(()=>{b.style.display=AF.wbBusy()?'none':'';if(p.style.display=='block'&&!document.hidden&&!RK)refresh()},30000);setInterval(()=>{b.style.display=AF.wbBusy()?'none':''},500);
 addEventListener('af-user',()=>{ST=null;RK=null;RKC[0]=RKC[1]=null;upd();refresh()});setTimeout(refresh,1500);
+})();
+</script>
+<script>/* ===== 관리자 메뉴 · 우편함 =====
+   · 관리자 버튼은 서버(is_admin)가 '관리자'라고 알려준 계정에만 보여요.
+   · 화면에서 숨기는 것과 별개로, 실제 권한 검사는 전부 서버(admin_* 함수)에서 해요. (admin_setup.sql)
+   · 우편함: 서버(mail_claim)가 '한 번만' 수령되게 보장하고, 받은 보상은 게임 코어(AF.mailGrant)가 지급해요. */
+(function(){
+const AF=window.AF,sb=AF&&AF.sb;if(!AF||!sb)return;
+const ad=document.getElementById('ad'),ml=document.getElementById('ml'),tm=document.getElementById('tm');if(!ad||!ml)return;
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const SLN={w:'무기',a:'방어구',h:'투구',r:'반지',n:'목걸이',f:'신발'},SLK=Object.keys(SLN),TRN=['일반','고급','희귀','영웅','전설','신화','초월','천상'];
+const HRS=[['1일',24],['7일',168],['30일',720],['영구',0]];
+const num=v=>{v=String(v==null?'':v).replace(/[^0-9]/g,'');return v?Math.min(+v,1e12):0};
+const pad=n=>String(n).padStart(2,'0');
+const dt=s=>{if(!s)return '-';const d=new Date(s);return isNaN(d)?'-':(d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes())};
+const fmt=v=>v==null?'-':Number(v).toLocaleString();
+const rpc=async(f,a)=>{const r=await sb.rpc(f,a||{});if(r.error)throw r.error;return r.data};
+const em=e=>{const m=String((e&&e.message)||'');
+  if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))return '서버에 관리자 SQL이 아직 적용되지 않았어요 (admin_setup.sql)';
+  const k={forbidden:'권한이 없어요',self:'본인 계정은 정지할 수 없어요',admin:'관리자 계정은 정지할 수 없어요',empty:'보낼 보상이 없어요',title:'제목을 적어 주세요',notfound:'존재하지 않는 유저예요',none:'이미 받았거나 기간이 지난 우편이에요',banned:'정지된 계정은 우편을 받을 수 없어요',auth:'로그인이 필요해요'};
+  return k[m]||('실패했어요: '+m)};
+const nm=u=>u.nk||u.kname||'(이름 없음)';
+const isB=u=>!!(u&&u.ban_until&&new Date(u.ban_until)>new Date());
+const untilT=s=>{const d=new Date(s);return isNaN(d)?'':(d.getFullYear()>=2900?'영구':dt(s))};
+const rw=p=>{const o=[];if(p.g)o.push('골드 '+fmt(p.g));if(p.c)o.push('월드보스 코인 '+fmt(p.c));if(p.box)o.push('전설 상자 '+fmt(p.box));if(p.rr)o.push('재굴림 쿠폰 '+fmt(p.rr));
+  if(Array.isArray(p.items)&&p.items.length){const m={};p.items.forEach(x=>{const k=(SLN[x.sl]||'?')+'('+(TRN[x.ri]||'?')+')';m[k]=(m[k]||0)+1});o.push('장비 '+Object.keys(m).map(k=>k+' ×'+m[k]).join(', '))}
+  return o.join(' · ')||'-'};
+
+const st=document.createElement('style');st.textContent=`
+#ad,#ml{z-index:21;align-items:center;justify-content:center;padding:12px;background:#02060acc;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+@media(pointer:coarse){#ad,#ml{align-items:flex-start;padding-top:calc(env(safe-area-inset-top,0px) + 10px)}}
+#ad .pn,#ml .pn{width:min(560px,100%)}
+.ov .sg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.ov .sg button,.ov .ab{width:auto;min-width:0;height:34px;padding:0 13px;border-radius:17px;border:1px solid #6b5228;background:#0a0f13;color:#7f9590;font:15px 'Do Hyeon',sans-serif;cursor:pointer}
+.ov .sg button.on{background:linear-gradient(#3a2c12,#170f04);color:#ffd98a;border-color:#c99a4a}
+.ov .ab{height:36px;border-radius:8px;font-size:16px;background:linear-gradient(#1c262d,#0a1013);color:#f0d9a0}
+.ov .ab.dg{border-color:#c2452d;color:#ffb0a0}.ov .ab.ok{border-color:#2f8f7d;color:#a8f3e2}
+.ov .ab:disabled{opacity:.4;cursor:default}
+.ov .sg button:focus-visible,.ov .ab:focus-visible{outline:0;border-color:#ffd27a;box-shadow:0 0 12px #ffb84a55}
+.ov .sg button:active,.ov .ab:active{background:#ffb84a;color:#0b1218}
+#ad input,#ad textarea{display:block;box-sizing:border-box;width:100%;margin:4px 0;padding:8px 10px;border:1px solid #6b5228;border-radius:6px;background:#070b0e;color:#fff2c4;font:16px 'Do Hyeon',sans-serif;outline:0;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
+#ad textarea{resize:vertical;line-height:1.5}
+#ad input:focus,#ad textarea:focus{border-color:#ffd27a;box-shadow:0 0 12px #ffb84a44}
+#ad .g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.ov .lb{margin-top:6px;color:#9fb5b0;font-size:13px}
+.ov .ui{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #ffffff12;font-size:15px}
+.ov .ui small,.ov .sel small{display:block;color:#9fb5b0;font-size:13px;word-break:break-all}
+.ov .bn{color:#ff9a8a}
+.ov .sel{margin:8px 0;padding:9px 11px;border:1px solid #c99a4a66;border-radius:8px;background:#2a1f0a66;font-size:15px}
+.ov .em2{padding:14px 0;text-align:center;color:#9fb5b0;font-size:15px}
+.ov .msg{min-height:18px;margin-top:6px;font-size:14px}
+.ov .mi{padding:9px 0;border-top:1px solid #ffffff12;font-size:15px}
+.ov .mi .h{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.ov .mi p{margin:4px 0;color:#e8f1ee;white-space:pre-wrap;word-break:break-all;line-height:1.5}
+.ov .mi .rw2{color:#ffd98a;font-size:14px}.ov .mi small{color:#9fb5b0;font-size:12.5px}
+body.mnew .mb button[data-a=ml]::after{content:'NEW';position:absolute;top:50%;right:12px;transform:translateY(-50%);padding:1px 7px;border-radius:9px;background:#ff5a5a;color:#fff;font-size:11px;letter-spacing:0}
+`;document.head.appendChild(st);
+
+const S={tab:0,q:'',users:null,sel:null,logs:null,ban:{h:24,reason:''},mail:{tgt:'sel',title:'',body:'',g:'',c:'',box:'',rr:'',sl:'w',ri:5,n:'',days:'30'},msg:'',bad:0,busy:0,mails:null};
+let opener=null;
+
+/* ---------- 관리자 화면 ---------- */
+function msg(t,bad){S.msg=t||'';S.bad=!!bad;const m=ad.querySelector('#ad-m');if(m){m.textContent=S.msg;m.style.color=bad?'#ff9a8a':'#7dffe0'}}
+function selBox(){const u=S.sel,b=isB(u);
+  return '<div class="sel"><b>'+esc(nm(u))+'</b>'+(b?' · <span class="bn">정지 중</span>':'')+'<small>UID '+esc(u.uid)+'</small>'
+    +(b?'<small>해제 '+esc(untilT(u.ban_until))+(u.ban_reason?' · 사유: '+esc(u.ban_reason):'')+'</small>':'')
+    +'<div class="lb">정지 기간</div><div class="sg">'+HRS.map(h=>'<button data-a="ad-h" data-v="'+h[1]+'" class="'+(S.ban.h==h[1]?'on':'')+'">'+h[0]+'</button>').join('')+'</div>'
+    +'<input id="ad-r" maxlength="100" autocomplete="off" placeholder="정지 사유 (선택)" value="'+esc(S.ban.reason)+'">'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><button class="ab dg" data-a="ad-ban">정지</button><button class="ab ok" data-a="ad-unban"'+(b?'':' disabled')+'>정지 해제</button><button class="ab" data-a="ad-tomail">우편 보내기</button></div></div>'}
+function tab0(){
+  let h='<div style="display:flex;gap:6px;align-items:center"><input id="ad-q" maxlength="60" autocomplete="off" placeholder="닉네임 · 카카오 이름 · UID (비우면 최근 접속 순)" value="'+esc(S.q)+'" style="flex:1"><button class="ab ok" data-a="ad-find">검색</button></div>';
+  if(S.sel)h+=selBox();
+  if(S.users===null)h+='<div class="em2">검색 중…</div>';
+  else if(!S.users.length)h+='<div class="em2">결과가 없어요</div>';
+  else h+=S.users.map((u,i)=>'<div class="ui"><div><b>'+esc(nm(u))+'</b>'+(isB(u)?' <span class="bn">정지</span>':'')+(u.admin?' · 관리자':'')
+    +'<small>'+esc(u.kname||'')+' · Lv.'+fmt(u.lv)+' · STAGE '+fmt(u.stage)+' · '+fmt(u.gold)+'G</small><small>가입 '+dt(u.created_at)+' · 접속 '+dt(u.last_sign_in_at)+'</small></div><button class="ab" data-a="ad-sel" data-i="'+i+'">선택</button></div>').join('');
+  return h}
+function tab1(){const m=S.mail;
+  const f=(k,l,ph)=>'<div><div class="lb">'+l+'</div><input data-k="'+k+'" inputmode="numeric" autocomplete="off" placeholder="'+(ph||'0')+'" value="'+esc(m[k])+'"></div>';
+  return '<div class="lb">받는 사람</div><div class="sg"><button data-a="ad-tg" data-v="sel" class="'+(m.tgt=='sel'?'on':'')+'">선택한 유저'+(S.sel?' · '+esc(nm(S.sel)):'')+'</button><button data-a="ad-tg" data-v="all" class="'+(m.tgt=='all'?'on':'')+'">전체 유저</button></div>'
+    +'<input data-k="title" maxlength="30" autocomplete="off" placeholder="제목 (30자)" value="'+esc(m.title)+'"><textarea data-k="body" maxlength="200" rows="3" placeholder="내용 (선택 · 200자)">'+esc(m.body)+'</textarea>'
+    +'<div class="g2">'+f('g','골드')+f('c','월드보스 코인')+f('box','전설 상자')+f('rr','재굴림 쿠폰')+'</div>'
+    +'<div class="lb">장비 · 종류 (옵션은 받을 때 랜덤으로 붙어요)</div><div class="sg">'+SLK.map(k=>'<button data-a="ad-sl" data-v="'+k+'" class="'+(m.sl==k?'on':'')+'">'+SLN[k]+'</button>').join('')+'</div>'
+    +'<div class="lb">장비 · 등급</div><div class="sg">'+TRN.map((n,i)=>'<button data-a="ad-ri" data-v="'+i+'" class="'+(m.ri==i?'on':'')+'">'+n+'</button>').join('')+'</div>'
+    +'<div class="g2">'+f('n','장비 개수 (0~10)')+f('days','보관 기간 (일)','30')+'</div>'
+    +'<div style="margin-top:8px"><button class="ab ok" data-a="ad-send">발송</button></div>'}
+function tab2(){
+  if(S.logs===null)return '<div class="em2">불러오는 중…</div>';
+  if(!S.logs.length)return '<div class="em2">기록이 없어요</div>';
+  const A={ban:'정지',unban:'정지 해제',mail:'우편 발송',mail_all:'전체 우편'};
+  return S.logs.map(l=>{const d=l.detail||{};let x='';if(l.action=='ban')x=(d.hours?d.hours+'시간':'영구')+(d.reason?' · '+d.reason:'');else if(l.action=='mail'||l.action=='mail_all')x=(d.title||'')+' · '+rw(d.payload||{})+(d.count!=null?' · '+d.count+'명':'');
+    return '<div class="ui"><div><b>'+esc(A[l.action]||l.action)+'</b>'+(l.target_uid?' · '+esc(l.target_nk||String(l.target_uid).slice(0,8)):'')+'<small>'+esc(x)+'</small></div><small style="white-space:nowrap">'+dt(l.at)+'</small></div>'}).join('')}
+function admBuild(){
+  const old=ad.querySelector('.pn'),sc=old?old.scrollTop:0;
+  const tabs='<div class="sg">'+['유저','우편 발송','기록'].map((n,i)=>'<button data-a="ad-t" data-v="'+i+'" class="'+(S.tab==i?'on':'')+'">'+n+'</button>').join('')+'</div>';
+  ad.innerHTML='<div class="pn wide"><h2>관리자</h2><div class="st">서버에서 관리자로 확인된 계정만 쓸 수 있어요</div>'+tabs+(S.tab==0?tab0():S.tab==1?tab1():tab2())
+    +'<div class="msg" id="ad-m"></div><div class="mb bk"><button class="pri" data-a="ad-x">돌아가기</button></div></div>';
+  const pn=ad.querySelector('.pn');if(old)pn.style.animation='none';pn.scrollTop=sc;msg(S.msg,S.bad)}
+const refocus=q=>{const e=ad.querySelector(q);if(e)e.focus({preventScroll:true})};
+async function find(){if(S.busy)return;S.busy=1;S.users=S.users||null;
+  try{S.users=await rpc('admin_find_users',{p_q:S.q.trim()});if(S.sel){const f=S.users.find(x=>x.uid==S.sel.uid);if(f)S.sel=f}S.msg='';S.bad=0}
+  catch(e){S.users=S.users||[];S.msg=em(e);S.bad=1}
+  S.busy=0;admBuild();refocus('#ad-q')}
+async function loadLogs(){try{S.logs=await rpc('admin_log_list',{p_limit:60});S.msg='';S.bad=0}catch(e){S.logs=[];S.msg=em(e);S.bad=1}if(S.tab==2)admBuild()}
+async function doBan(){const u=S.sel;if(!u||S.busy)return;const h=S.ban.h,lab=h==0?'영구':h>=24?(h/24)+'일':h+'시간';
+  if(!confirm(nm(u)+' 계정을 '+lab+' 정지할까요?'))return;S.busy=1;msg('처리 중…');
+  try{const r=S.ban.reason.trim().slice(0,100),d=await rpc('admin_ban',{p_uid:u.uid,p_hours:h,p_reason:r});u.ban_until=d&&d.until;u.ban_reason=r;S.ban.reason='';S.msg='정지했어요';S.bad=0}
+  catch(e){S.msg=em(e);S.bad=1}S.busy=0;admBuild()}
+async function doUnban(){const u=S.sel;if(!u||S.busy)return;if(!confirm(nm(u)+' 계정의 정지를 해제할까요?'))return;S.busy=1;msg('처리 중…');
+  try{await rpc('admin_unban',{p_uid:u.uid});u.ban_until=null;u.ban_reason=null;S.msg='정지를 해제했어요';S.bad=0}
+  catch(e){S.msg=em(e);S.bad=1}S.busy=0;admBuild()}
+async function doSend(){if(S.busy)return;const m=S.mail,all=m.tgt=='all',err=t=>msg(t,1);
+  if(!all&&!S.sel){err('유저 탭에서 받을 유저를 먼저 선택해 주세요');return}
+  const title=m.title.trim();if(!title){err('제목을 적어 주세요');return}
+  const p={},g=num(m.g),c=num(m.c),bx=num(m.box),rr=num(m.rr),n=Math.min(10,num(m.n));
+  if(g)p.g=g;if(c)p.c=c;if(bx)p.box=bx;if(rr)p.rr=rr;if(n)p.items=Array.from({length:n},()=>({sl:m.sl,ri:m.ri}));
+  if(!Object.keys(p).length){err('보상을 하나 이상 넣어 주세요');return}
+  const days=Math.min(365,Math.max(1,num(m.days)||30));
+  if(!confirm((all?'전체 유저':nm(S.sel))+'에게 보낼까요?\n\n'+title+'\n'+rw(p)+'\n보관 '+days+'일'))return;
+  S.busy=1;msg('보내는 중…');
+  try{const d=await rpc('admin_send_mail',{p_uid:all?null:S.sel.uid,p_title:title.slice(0,30),p_body:m.body.trim().slice(0,200),p_payload:p,p_days:days});
+    S.msg=(d|0)+'명에게 보냈어요';S.bad=0;m.title='';m.body='';m.g=m.c=m.box=m.rr=m.n=''}
+  catch(e){S.msg=em(e);S.bad=1}S.busy=0;admBuild()}
+function openAdm(b){if(!AF.isAdmin)return;opener=b||null;S.msg='';admBuild();ad.classList.add('on');refocus('button:not([disabled])');if(S.users===null)find();else if(S.tab==2)loadLogs()}
+
+/* ---------- 우편함 ---------- */
+const setCnt=n=>document.body.classList.toggle('mnew',n>0);
+function mlMsg(t,bad){const m=ml.querySelector('#ml-m');if(m){m.textContent=t||'';m.style.color=bad?'#ff9a8a':'#7dffe0'}}
+function mlBuild(){const old=ml.querySelector('.pn'),sc=old?old.scrollTop:0;let h='<div class="pn wide"><h2>우편함</h2><div class="st">수령하면 바로 지급돼요</div>';
+  if(S.mails===null)h+='<div class="em2">불러오는 중…</div>';
+  else if(!S.mails.length)h+='<div class="em2">받을 우편이 없어요</div>';
+  else h+='<div style="display:flex;justify-content:flex-end;margin-bottom:4px"><button class="ab ok" data-a="ml-all">모두 받기</button></div>'
+    +S.mails.map(m=>'<div class="mi"><div class="h"><b>'+esc(m.t)+'</b><button class="ab ok" data-a="ml-get" data-id="'+esc(m.id)+'">수령</button></div>'+(m.b?'<p>'+esc(m.b)+'</p>':'')+'<div class="rw2">'+esc(rw(m.p||{}))+'</div><small>보관 기한 '+dt(m.ex)+'</small></div>').join('');
+  h+='<div class="msg" id="ml-m"></div><div class="mb bk"><button class="pri" data-a="ml-x">돌아가기</button></div></div>';
+  ml.innerHTML=h;const pn=ml.querySelector('.pn');if(old)pn.style.animation='none';pn.scrollTop=sc}
+let mlAt=0;/* 우편 확인은 주기적으로 하지 않아요: 로그인 직후 · 우편함을 열 때 · 탭에 다시 돌아왔을 때(1분에 한 번까지)만 서버에 물어봐요 */
+async function mailLoad(force){const u=AF.user;if(!u||!AF.synced||AF.banned)return;if(!force&&Date.now()-mlAt<60000)return;mlAt=Date.now();
+  try{const d=await rpc('mail_list');if(AF.user&&AF.user.id==u.id){S.mails=Array.isArray(d)?d:[];setCnt(S.mails.length)}}catch(e){if(S.mails===null)S.mails=[]}}
+async function openMl(b){opener=b||null;if(!AF.user||!AF.synced)return;mlBuild();ml.classList.add('on');const f=ml.querySelector('button:not([disabled])');if(f)f.focus({preventScroll:true});
+  await mailLoad(true);mlBuild();const g=ml.querySelector('button:not([disabled])');if(g&&ml.classList.contains('on')&&!ml.contains(document.activeElement))g.focus({preventScroll:true})}
+async function claimOne(id){const m=(S.mails||[]).find(x=>String(x.id)==String(id));if(!m)return false;
+  if(typeof AF.mailGrant!='function'){mlMsg('이 버전에서는 우편을 받을 수 없어요. 새로고침해 주세요',1);return false}
+  const d=await rpc('mail_claim',{p_id:m.id});AF.mailGrant(d);S.mails=S.mails.filter(x=>x!==m);setCnt(S.mails.length);try{if(AF.pubFlush)AF.pubFlush()}catch(e){}return true}
+let mlBusy=0;
+async function mlGet(id){if(mlBusy)return;mlBusy=1;try{if(await claimOne(id))mlMsg('받았어요!');mlBuild()}catch(e){mlMsg(em(e),1);await mailLoad(true);mlBuild()}mlBusy=0;const f=ml.querySelector('button[data-a=ml-get],button[data-a=ml-x]');if(f)f.focus({preventScroll:true})}
+async function mlAll(){if(mlBusy)return;mlBusy=1;let n=0;try{for(const m of (S.mails||[]).slice())if(await claimOne(m.id))n++;mlBuild();mlMsg(n+'개를 받았어요')}catch(e){mlBuild();mlMsg(em(e),1);await mailLoad(true);mlBuild()}mlBusy=0}
+
+function closeOv(id){(id=='ad'?ad:ml).classList.remove('on');const b=opener&&opener.isConnected?opener:null;if(b)b.focus({preventScroll:true});else{const f=document.querySelector('.ov.on button:not([disabled])');if(f)f.focus({preventScroll:true})}}
+AF.closeOv=closeOv;
+AF.ovAct=function(a,b){
+  const v=b&&b.dataset?b.dataset.v:'';
+  if(a=='adm'){openAdm(b);return}if(a=='ml'){openMl(b);return}
+  if(a=='ad-x'){closeOv('ad');return}if(a=='ml-x'){closeOv('ml');return}
+  if(a=='ml-get'){mlGet(b.dataset.id);return}if(a=='ml-all'){mlAll();return}
+  if(!AF.isAdmin)return;
+  if(a=='ad-t'){S.tab=+v||0;S.msg='';admBuild();refocus('button[data-a=ad-t].on');if(S.tab==2)loadLogs();return}
+  if(a=='ad-find'){find();return}
+  if(a=='ad-sel'){const u=S.users&&S.users[+b.dataset.i];if(u){S.sel=u;S.msg='';admBuild();ad.querySelector('.pn').scrollTop=0;refocus('button[data-a=ad-ban]')}return}
+  if(a=='ad-h'){S.ban.h=+v;admBuild();refocus('button[data-a=ad-h].on');return}
+  if(a=='ad-ban'){doBan();return}if(a=='ad-unban'){doUnban();return}
+  if(a=='ad-tomail'){S.tab=1;S.mail.tgt='sel';S.msg='';admBuild();refocus('button[data-a=ad-t].on');return}
+  if(a=='ad-tg'){S.mail.tgt=v;admBuild();refocus('button[data-a=ad-tg].on');return}
+  if(a=='ad-sl'){S.mail.sl=v;admBuild();refocus('button[data-a=ad-sl].on');return}
+  if(a=='ad-ri'){S.mail.ri=+v;admBuild();refocus('button[data-a=ad-ri].on');return}
+  if(a=='ad-send'){doSend();return}
+};
+ad.addEventListener('input',e=>{const t=e.target;if(!t)return;if(t.id=='ad-q')S.q=t.value;else if(t.id=='ad-r')S.ban.reason=t.value;else if(t.dataset&&t.dataset.k)S.mail[t.dataset.k]=t.value});
+/* 게임의 키 처리(맨 위 창만 반응)가 먼저 돌기 때문에, 검색창 Enter 는 같은 단계(window · capture)에서 따로 받아요 */
+addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.isComposing&&e.target&&e.target.id=='ad-q'&&ad.classList.contains('on')){e.preventDefault();if(!e.repeat)find()}},true);
+
+/* ---------- 관리자 여부 · 새 우편 확인 ---------- */
+let chkId='';
+async function chkAdmin(){const u=AF.user;if(!u||!AF.synced||chkId===u.id)return;chkId=u.id;let ok=false;try{ok=!!(await rpc('is_admin'))}catch(e){}
+  if(AF.user&&AF.user.id===u.id){const was=AF.isAdmin;AF.isAdmin=ok;if(ok&&!was&&tm&&tm.classList.contains('on')&&AF.buildTitle)AF.buildTitle()}}
+addEventListener('af-nick',()=>{chkAdmin();mailLoad(true)});
+addEventListener('af-user',()=>{AF.isAdmin=false;chkId='';S.mails=null;S.sel=null;S.users=null;S.logs=null;setCnt(0);ad.classList.remove('on');ml.classList.remove('on')});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)mailLoad()});
+if(AF.user&&AF.synced){chkAdmin();mailLoad(true)}
 })();
 </script>
 <script>(function(){const c=document.getElementById('cht');if(!c)return;const b=document.createElement('button');b.className='sz';b.type='button';c.insertBefore(b,c.firstChild);
