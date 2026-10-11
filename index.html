@@ -845,12 +845,12 @@ if(fa&&P.cd<=0){if(P.ct<=0)P.combo=0;P.combo=P.combo%3+1;const big=P.combo==3;nz
 const w=big?140:105,x0=P.f>0?P.x:P.x-w;
 for(const e of E)if(!e.dead&&e.x+e.w/2>x0&&e.x-e.w/2<x0+w&&e.y>P.y-130&&e.y-e.h<P.y+10)hit(e,atk()*(big?1.8:1),P.f)}
 if(fs&&P.sc<=0&&P.mp>=20){P.mp-=20;P.sc=.5;P.at=.2;sfx(500,.3,'sawtooth',.04,2.5);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*760,l:.9,d:P.f,h:new Set()})}
-uc-=dt;if(uc<=0&&P.mp>=40&&(K.u||(auto&&(E.filter(e=>!e.dead&&M.abs(e.x-P.x)<230&&e.y>P.y-160).length>=3||E.some(e=>e.t=='g'&&!e.dead&&M.abs(e.x-P.x)<230))))){uc=9;P.mp-=40;shake=12;sfx(90,.5,'sawtooth',.1,3);RG.push({x:P.x,t:0});nz(.7,1800,50,'lowpass',.3,.7);for(const e of E)if(!e.dead&&M.abs(e.x-P.x)<260&&e.y>P.y-180)hit(e,atk()*3,e.x>=P.x?1:-1,1)}
+uc-=dt;if(uc<=0&&ci<=0&&P.mp>=40&&(K.u||(auto&&(E.filter(e=>!e.dead&&M.abs(e.x-P.x)<230&&e.y>P.y-160).length>=3||E.some(e=>e.t=='g'&&!e.dead&&M.abs(e.x-P.x)<230))))){uc=9;P.mp-=40;shake=12;sfx(90,.5,'sawtooth',.1,3);RG.push({x:P.x,t:0});nz(.7,1800,50,'lowpass',.3,.7);for(const e of E)if(!e.dead&&M.abs(e.x-P.x)<260&&e.y>P.y-180)hit(e,atk()*3,e.x>=P.x?1:-1,1)}
 SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=WBM?60:btf(b0.mini,stage);ci=2.4;sbT=0;sdT=0;if(WBM||DG){if(chrOpen)closeChr();if(shopOpen)toggleShop()}slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
 {const bb=E.find(e=>e.t=='g'&&!e.dead&&e.intro);if(bb&&bt>0&&ci<=0&&st==1){bt-=dt;if(bt<=5&&bt>0&&M.ceil(bt)!=btl){btl=M.ceil(bt);sfx(880,.08,'square',.05)}if(bt<=0){const rp=M.ceil(bb.hp/bb.mh*100);bt=0;P.hp=0;st=2;csys('시간 초과! 보스 체력 '+rp+'% 남음','#ff7a7a');TX.push({x:P.x,y:P.y-100,t:'시간 초과! 보스 '+rp+'% 남음',l:1.8,c:'#ff7a7a'});slw=.7;slf=.25;zm=1.1;sfx(240,1,'sawtooth',.08,.15)}}}
 if((ab||atr)&&(abt-=dt)<=0){abt=2;buyAll()}
 PR=PR.filter(p=>{p.x+=p.vx*dt;p.l-=dt;FX.push({x:p.x,y:p.y+rn(-25,25),vx:0,vy:rn(-40,40),l:.3,c:'#7dffe0'});
-for(const e of E)if(!e.dead&&!p.h.has(e)&&M.abs(e.x-p.x)<e.w/2+20&&p.y>e.y-e.h-30&&p.y<e.y+10){p.h.add(e);hit(e,atk()*(p.m||2.2),p.d)}
+for(const e of E)if(!e.dead&&!p.h.has(e)&&M.abs(e.x-p.x)<e.w/2+20&&p.y>e.y-e.h-30-(e.t=='g'?300:90)&&p.y<e.y+10+(e.t=='g'?300:90)){p.h.add(e);hit(e,atk()*(p.m||2.2),p.d)}
 return p.l>0});
 for(const e of E){if(e.dead)continue;if(e.t=='g'&&(!e.intro||ci>0))continue;e.fl-=dt;e.ph+=dt;if(e.ni>0)e.ni-=dt;const dx=P.x-e.x,ad=M.abs(dx),sg=M.sign(dx);
 MON[e.t].ai(e,dt,dx,ad,sg);
@@ -1267,8 +1267,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026101001',d:'10/10',t:['월드보스: 보스를 빨리 처치해도 낸 피해가 전투력대로 정확히 기록돼요 (처치 시간 때문에 피해가 줄어 순위가 밀리던 문제를 고쳤어요)','월드보스 도전 보스의 체력이 크게 늘어, 강한 모험가도 60초 동안 낸 딜이 순위에 그대로 반영돼요','잘못 기록된 피해로 순위 보상이 달라진 일부 모험가에게 보정 보상을 드렸어요']},
-{v:'2026100904',d:'10/9',t:['최상위 장비 등급 2개가 추가됐어요: 적룡(STAGE 500~) · 창세(STAGE 570~) · 드랍 확률은 천상보다 낮지만 크게 차이 나지 않게 맞췄어요','영웅 이상 장비가 떨어지면 등급 색 빛기둥이 솟고 소리도 나요 (등급이 높을수록 커져요)','몬스터·보스 체력바에 깎인 만큼 잔상이 남아 한눈에 보여요','오래 조작하지 않으면 효과음이 자동으로 작아지고, 화면을 누르면 바로 돌아와요']}
+{v:'2026101101',d:'10/11',t:['관통검기: 점프 중인 보스와 몬스터에게도 잘 맞도록 판정 범위를 넓혔어요','폭발: 보스 등장 연출 중에는 자동으로 터지지 않아요 (이동속도가 빨라도 헛발이 되지 않아요)']}
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
 function pmark(){try{localStorage.setItem(PSK,PATCH[0].v)}catch(e){}document.body.classList.remove('pnew')}
@@ -2006,7 +2005,7 @@ addEventListener('af-user',()=>{ST=null;RK=null;RKC[0]=RKC[1]=null;upd();refresh
 const AF=window.AF,sb=AF&&AF.sb;if(!AF||!sb)return;
 const ad=document.getElementById('ad'),ml=document.getElementById('ml'),tm=document.getElementById('tm');if(!ad||!ml)return;
 const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-const SLN={w:'무기',a:'방어구',h:'투구',r:'반지',n:'목걸이',f:'신발'},SLK=Object.keys(SLN),TRN=['일반','고급','희귀','영웅','전설','신화','초월','천상'];
+const SLN={w:'무기',a:'방어구',h:'투구',r:'반지',n:'목걸이',f:'신발'},SLK=Object.keys(SLN),TRN=['일반','고급','희귀','영웅','전설','신화','초월','천상','적룡','창세'];
 const HRS=[['1일',24],['7일',168],['30일',720],['영구',0]];
 const num=v=>{v=String(v==null?'':v).replace(/[^0-9]/g,'');return v?Math.min(+v,1e12):0};
 const pad=n=>String(n).padStart(2,'0');
@@ -2015,7 +2014,7 @@ const fmt=v=>v==null?'-':Number(v).toLocaleString();
 const rpc=async(f,a)=>{const r=await sb.rpc(f,a||{});if(r.error)throw r.error;return r.data};
 const em=e=>{const m=String((e&&e.message)||'');
   if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))return '서버에 관리자 SQL이 아직 적용되지 않았어요 (admin_setup.sql)';
-  const k={forbidden:'권한이 없어요',self:'본인 계정은 정지할 수 없어요',admin:'관리자 계정은 정지할 수 없어요',empty:'보낼 보상이 없어요',title:'제목을 적어 주세요',notfound:'존재하지 않는 유저예요',none:'이미 받았거나 기간이 지난 우편이에요',banned:'정지된 계정은 우편을 받을 수 없어요',auth:'로그인이 필요해요'};
+  const k={forbidden:'권한이 없어요',self:'본인 계정은 정지할 수 없어요',admin:'관리자 계정은 정지할 수 없어요',empty:'보낼 보상이 없어요',title:'제목을 적어 주세요',notfound:'존재하지 않는 유저예요',none:'이미 받았거나 기간이 지난 우편이에요',banned:'정지된 계정은 우편을 받을 수 없어요',auth:'로그인이 필요해요',noreply:'답변을 적어 주세요',rlen:'답변은 500자까지 적을 수 있어요',noinq:'존재하지 않는 문의예요'};
   return k[m]||('실패했어요: '+m)};
 const nm=u=>u.nk||u.kname||'(이름 없음)';
 const isB=u=>!!(u&&u.ban_until&&new Date(u.ban_until)>new Date());
@@ -2054,7 +2053,7 @@ const st=document.createElement('style');st.textContent=`
 body.mnew .mb button[data-a=ml]::after{content:'NEW';position:absolute;top:50%;right:12px;transform:translateY(-50%);padding:1px 7px;border-radius:9px;background:#ff5a5a;color:#fff;font-size:11px;letter-spacing:0}
 `;document.head.appendChild(st);
 
-const S={tab:0,q:'',users:null,sel:null,logs:null,ban:{h:24,reason:''},mail:{tgt:'sel',title:'',body:'',g:'',c:'',box:'',rr:'',sl:'w',ri:5,n:'',days:'30'},msg:'',bad:0,busy:0,mails:null};
+const S={tab:0,q:'',users:null,sel:null,logs:null,ban:{h:24,reason:''},mail:{tgt:'sel',title:'',body:'',g:'',c:'',box:'',rr:'',sl:'w',ri:5,n:'',days:'30'},msg:'',bad:0,busy:0,mails:null,pg:0,more:0,det:null,iq:{st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0}};
 let opener=null;
 
 /* ---------- 관리자 화면 ---------- */
@@ -2064,14 +2063,15 @@ function selBox(){const u=S.sel,b=isB(u);
     +(b?'<small>해제 '+esc(untilT(u.ban_until))+(u.ban_reason?' · 사유: '+esc(u.ban_reason):'')+'</small>':'')
     +'<div class="lb">정지 기간</div><div class="sg">'+HRS.map(h=>'<button data-a="ad-h" data-v="'+h[1]+'" class="'+(S.ban.h==h[1]?'on':'')+'">'+h[0]+'</button>').join('')+'</div>'
     +'<input id="ad-r" maxlength="100" autocomplete="off" placeholder="정지 사유 (선택)" value="'+esc(S.ban.reason)+'">'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><button class="ab dg" data-a="ad-ban">정지</button><button class="ab ok" data-a="ad-unban"'+(b?'':' disabled')+'>정지 해제</button><button class="ab" data-a="ad-tomail">우편 보내기</button></div></div>'}
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><button class="ab dg" data-a="ad-ban">정지</button><button class="ab ok" data-a="ad-unban"'+(b?'':' disabled')+'>정지 해제</button><button class="ab" data-a="ad-tomail">우편 보내기</button><button class="ab" data-a="ad-det">'+(S.det&&S.det.uid==u.uid?'상세 닫기':'상세 보기')+'</button></div></div>'}
 function tab0(){
   let h='<div style="display:flex;gap:6px;align-items:center"><input id="ad-q" maxlength="60" autocomplete="off" placeholder="닉네임 · 카카오 이름 · UID (비우면 최근 접속 순)" value="'+esc(S.q)+'" style="flex:1"><button class="ab ok" data-a="ad-find">검색</button></div>';
-  if(S.sel)h+=selBox();
+  if(S.sel)h+=selBox()+detBox();
+  const pgb=S.users&&(S.pg>0||S.more)?'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0"><button class="ab" data-a="ad-pg" data-v="-1"'+(S.pg>0?'':' disabled')+'>◀ 이전</button><span>'+(S.pg+1)+'페이지</span><button class="ab" data-a="ad-pg" data-v="1"'+(S.more?'':' disabled')+'>다음 ▶</button></div>':'';
   if(S.users===null)h+='<div class="em2">검색 중…</div>';
-  else if(!S.users.length)h+='<div class="em2">결과가 없어요</div>';
-  else h+=S.users.map((u,i)=>'<div class="ui"><div><b>'+esc(nm(u))+'</b>'+(isB(u)?' <span class="bn">정지</span>':'')+(u.admin?' · 관리자':'')
-    +'<small>'+esc(u.kname||'')+' · Lv.'+fmt(u.lv)+' · STAGE '+fmt(u.stage)+' · '+fmt(u.gold)+'G</small><small>가입 '+dt(u.created_at)+' · 접속 '+dt(u.last_sign_in_at)+'</small></div><button class="ab" data-a="ad-sel" data-i="'+i+'">선택</button></div>').join('');
+  else if(!S.users.length)h+='<div class="em2">결과가 없어요</div>'+pgb;
+  else h+=pgb+S.users.map((u,i)=>'<div class="ui"><div><b>'+esc(nm(u))+'</b>'+(isB(u)?' <span class="bn">정지</span>':'')+(u.admin?' · 관리자':'')
+    +'<small>'+esc(u.kname||'')+' · Lv.'+fmt(u.lv)+' · STAGE '+fmt(u.stage)+' · '+fmt(u.gold)+'G</small><small>가입 '+dt(u.created_at)+' · 접속 '+dt(u.last_sign_in_at)+'</small></div><button class="ab" data-a="ad-sel" data-i="'+i+'">선택</button></div>').join('')+pgb;
   return h}
 function tab1(){const m=S.mail;
   const f=(k,l,ph)=>'<div><div class="lb">'+l+'</div><input data-k="'+k+'" inputmode="numeric" autocomplete="off" placeholder="'+(ph||'0')+'" value="'+esc(m[k])+'"></div>';
@@ -2085,20 +2085,85 @@ function tab1(){const m=S.mail;
 function tab2(){
   if(S.logs===null)return '<div class="em2">불러오는 중…</div>';
   if(!S.logs.length)return '<div class="em2">기록이 없어요</div>';
-  const A={ban:'정지',unban:'정지 해제',mail:'우편 발송',mail_all:'전체 우편'};
-  return S.logs.map(l=>{const d=l.detail||{};let x='';if(l.action=='ban')x=(d.hours?d.hours+'시간':'영구')+(d.reason?' · '+d.reason:'');else if(l.action=='mail'||l.action=='mail_all')x=(d.title||'')+' · '+rw(d.payload||{})+(d.count!=null?' · '+d.count+'명':'');
+  const A={ban:'정지',unban:'정지 해제',mail:'우편 발송',mail_all:'전체 우편',inq_reply:'문의 답변'};
+  return S.logs.map(l=>{const d=l.detail||{};let x='';if(l.action=='inq_reply')x='#'+d.id+(d.edit?' · 수정':'')+(d.preview?' · '+d.preview:'');else if(l.action=='ban')x=(d.hours?d.hours+'시간':'영구')+(d.reason?' · '+d.reason:'');else if(l.action=='mail'||l.action=='mail_all')x=(d.title||'')+' · '+rw(d.payload||{})+(d.count!=null?' · '+d.count+'명':'');
     return '<div class="ui"><div><b>'+esc(A[l.action]||l.action)+'</b>'+(l.target_uid?' · '+esc(l.target_nk||String(l.target_uid).slice(0,8)):'')+'<small>'+esc(x)+'</small></div><small style="white-space:nowrap">'+dt(l.at)+'</small></div>'}).join('')}
+const OPN={cr:['치명타','%'],ls:['흡혈','%'],xp:['경험치','%'],gd:['골드','%'],at:['공격력',''],hp:['체력',''],as:['공격 속도','%'],ms:['이동 속도','%'],mr:['마나 회복','%'],bd:['보스 피해','%'],dr:['피해 감소','%']};
+const TNM=(()=>{try{if(typeof TIERS!=='undefined'&&Array.isArray(TIERS))return TIERS.map(t=>t.n)}catch(e){}return['일반','고급','희귀','영웅','전설','신화','초월','천상','적룡','창세']})();
+const SLV={w:'공격력',r:'공격력',n:'공격력',a:'체력',h:'체력',f:'체력'};
+function detEq(k,x,en){const nmk=SLN[k];
+  if(!x||typeof x!='object')return '<div style="padding:5px 0;border-top:1px solid #ffffff12"><b>'+nmk+'</b> <small style="color:#9fb5b0">비어 있음</small></div>';
+  const e=en&&en[k]|0,opt=(Array.isArray(x.o)?x.o:[]).map(q=>{const d=OPN[q&&q[0]];return d?d[0]+' +'+q[1]+d[1]:''}).filter(Boolean).join(' · ');
+  return '<div style="padding:5px 0;border-top:1px solid #ffffff12"><b>'+nmk+'</b> · ['+esc(TNM[x.ri]||'?')+(x.u!=null?' 유니크':'')+'] '+esc(x.n||'')+(e?' <span style="color:#ffd98a">+'+e+'강</span>':'')
+    +'<small>'+SLV[k]+' '+fmt(Math.round(+x.v||0))+(opt?' · '+esc(opt):'')+'</small></div>'}
+function detBox(){const d=S.det;if(!S.sel||!d||d.uid!=S.sel.uid)return '';
+  if(d.loading)return '<div class="em2">상세 불러오는 중…</div>';
+  const r=d.data;if(!r)return '';const v=r.save,pt=v&&v.pt||{};
+  let h='<div class="sel" style="margin-top:6px"><b>상세 정보</b>';
+  if(!v)h+='<small>저장된 게임 데이터가 없어요</small>';
+  else{
+    h+='<small>Lv.'+fmt(v.lv)+' · STAGE '+fmt(v.stage)+' (최고 '+fmt(v.best)+')'+(v.farm?' · 파밍 중':'')+'</small>'
+      +'<small>골드 '+fmt(v.gold)+' · 경험치 '+fmt(v.xp)+'</small>'
+      +'<small>단련 공격 '+fmt(v.up)+' · 체력 '+fmt(v.hu)+'</small>'
+      +'<small>스탯 힘 '+fmt(pt.str||0)+' · 체력 '+fmt(pt.vit||0)+' · 민첩 '+fmt(pt.dex||0)+' · 지혜 '+fmt(pt.wis||0)+' · 남은 '+fmt(pt.free||0)+'</small>'
+      +(v.ts?'<small>마지막 저장 '+dt(v.ts)+'</small>':'')
+      +'<div class="lb">장비</div>'+SLK.map(k=>detEq(k,v.EQ&&v.EQ[k],v.en)).join('')}
+  const iq=Array.isArray(r.inq)?r.inq:[];
+  h+='<div class="lb">문의 '+fmt(r.inq_total||0)+'건'+(iq.length&&r.inq_total>iq.length?' (최근 '+iq.length+'건)':'')+'</div>';
+  h+=iq.length?iq.map(q=>'<div style="padding:5px 0;border-top:1px solid #ffffff12"><b>'+esc(IQN[q.cat]||'기타')+'</b> · '+dt(q.created_at)+' · <span style="color:'+(q.replied?'#7dffe0':'#ffd98a')+'">'+(q.replied?'답변 완료':'답변 대기')+'</span><small>'+esc(q.body)+'</small></div>').join(''):'<small>문의 기록이 없어요</small>';
+  return h+'</div>'}
+async function loadDet(){const u=S.sel;if(!u)return;
+  if(S.det&&S.det.loading)return;
+  if(S.det&&S.det.uid==u.uid){S.det=null;admBuild();return}
+  S.det={uid:u.uid,loading:1,data:null};admBuild();
+  try{const r=await rpc('admin_user_detail',{p_uid:u.uid});if(S.det&&S.det.uid==u.uid){S.det.data=r;S.det.loading=0}S.msg='';S.bad=0}
+  catch(e){S.det=null;S.msg=em(e);S.bad=1}
+  admBuild()}
+const PGI=10,IQN={bug:'버그',idea:'건의',etc:'기타'};
+const uaS=u=>{u=String(u||'');const o=['Android','iPhone','iPad','Windows','Macintosh','Linux'].find(x=>u.includes(x)),b=['SamsungBrowser','Edg','Firefox','Chrome','Safari'].find(x=>u.includes(x));return(o||'')+(b?(o?' · ':'')+b:'')};
+function iqBadge(){const b=ad.querySelector('[data-a=ad-t][data-v="3"]');if(b)b.textContent='문의'+(S.iq.open?' '+S.iq.open:'')}
+function iqCard(r){const q=S.iq,has=!!(r.reply&&String(r.reply).trim()),i=r.info||{},dr=q.dr[r.id],val=dr!==undefined?dr:(r.reply||'');
+  const inf=[i.stage!=null?'STAGE '+fmt(i.stage):'',i.lv!=null?'Lv.'+fmt(i.lv):'',i.cp!=null?'전투력 '+fmt(i.cp):'',i.build?'빌드 '+i.build:'',uaS(i.ua)].filter(Boolean).join(' · ');
+  return '<div style="border-top:1px solid #ffffff12;padding:10px 0">'
+    +'<div style="display:flex;justify-content:space-between;gap:8px;font-size:15px"><b>'+esc(IQN[r.cat]||'기타')+' · '+esc(r.nk||'(이름 없음)')+'</b><span style="white-space:nowrap;color:'+(has?'#7dffe0':'#ffd98a')+'">'+(has?(r.seen?'답변 완료':'답변 완료 · 미확인'):'답변 대기')+'</span></div>'
+    +'<small style="display:block;color:#9fb5b0">'+dt(r.created_at)+(has?' · 답변 '+dt(r.replied_at):'')+'</small>'
+    +'<p style="margin:6px 0;white-space:pre-wrap;word-break:break-word;font-size:15px">'+esc(r.body)+'</p>'
+    +(inf?'<small style="display:block;color:#9fb5b0;margin-bottom:6px">'+esc(inf)+'</small>':'')
+    +'<textarea data-iq="'+esc(r.id)+'" maxlength="500" rows="3" placeholder="답변 (500자)">'+esc(val)+'</textarea>'
+    +'<div style="margin-top:4px"><button class="ab ok" data-a="ad-iqr" data-id="'+esc(r.id)+'">'+(has?'답변 수정':'답변 보내기')+'</button></div></div>'}
+function tab3(){const q=S.iq;
+  let h='<div class="sg">'+[['open','답변 대기'],['done','답변 완료'],['all','전체']].map(x=>'<button data-a="ad-iqs" data-v="'+x[0]+'" class="'+(q.st==x[0]?'on':'')+'">'+x[1]+(x[0]=='open'&&q.open?' '+q.open:'')+'</button>').join('')+'</div>';
+  const pgb=q.rows&&(q.pg>0||q.more)?'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0"><button class="ab" data-a="ad-iqpg" data-v="-1"'+(q.pg>0?'':' disabled')+'>◀ 이전</button><span>'+(q.pg+1)+'페이지</span><button class="ab" data-a="ad-iqpg" data-v="1"'+(q.more?'':' disabled')+'>다음 ▶</button></div>':'';
+  if(q.rows===null)h+='<div class="em2">불러오는 중…</div>';
+  else if(!q.rows.length)h+='<div class="em2">'+(q.st=='open'?'답변 대기 중인 문의가 없어요':'문의가 없어요')+'</div>'+pgb;
+  else h+=pgb+q.rows.map(iqCard).join('')+pgb;
+  return h}
 function admBuild(){
   const old=ad.querySelector('.pn'),sc=old?old.scrollTop:0;
-  const tabs='<div class="sg">'+['유저','우편 발송','기록'].map((n,i)=>'<button data-a="ad-t" data-v="'+i+'" class="'+(S.tab==i?'on':'')+'">'+n+'</button>').join('')+'</div>';
-  ad.innerHTML='<div class="pn wide"><h2>관리자</h2><div class="st">서버에서 관리자로 확인된 계정만 쓸 수 있어요</div>'+tabs+(S.tab==0?tab0():S.tab==1?tab1():tab2())
+  const tabs='<div class="sg">'+['유저','우편 발송','기록','문의'].map((n,i)=>'<button data-a="ad-t" data-v="'+i+'" class="'+(S.tab==i?'on':'')+'">'+n+(i==3&&S.iq.open?' '+S.iq.open:'')+'</button>').join('')+'</div>';
+  ad.innerHTML='<div class="pn wide"><h2>관리자</h2><div class="st">서버에서 관리자로 확인된 계정만 쓸 수 있어요</div>'+tabs+(S.tab==0?tab0():S.tab==1?tab1():S.tab==2?tab2():tab3())
     +'<div class="msg" id="ad-m"></div><div class="mb bk"><button class="pri" data-a="ad-x">돌아가기</button></div></div>';
   const pn=ad.querySelector('.pn');if(old)pn.style.animation='none';pn.scrollTop=sc;msg(S.msg,S.bad)}
 const refocus=q=>{const e=ad.querySelector(q);if(e)e.focus({preventScroll:true})};
-async function find(){if(S.busy)return;S.busy=1;S.users=S.users||null;
-  try{S.users=await rpc('admin_find_users',{p_q:S.q.trim()});if(S.sel){const f=S.users.find(x=>x.uid==S.sel.uid);if(f)S.sel=f}S.msg='';S.bad=0}
+const PG=30;
+async function find(pg){if(S.busy)return;S.busy=1;S.users=S.users||null;const p=Math.max(0,pg|0),q=S.q.trim();
+  try{let r;
+    try{r=await rpc('admin_find_users',{p_q:q,p_limit:PG+1,p_offset:p*PG})}
+    catch(e){if(p==0&&e&&(e.code==='PGRST202'||e.code==='42883'))r=await rpc('admin_find_users',{p_q:q});else throw e}/* 서버 SQL 을 아직 안 바꿨으면 예전 방식(30명)으로 */
+    S.pg=p;S.more=r.length>PG;S.users=r.slice(0,PG);if(S.sel){const f=S.users.find(x=>x.uid==S.sel.uid);if(f)S.sel=f}S.msg='';S.bad=0}
   catch(e){S.users=S.users||[];S.msg=em(e);S.bad=1}
-  S.busy=0;admBuild();refocus('#ad-q')}
+  S.busy=0;admBuild();if(pg===undefined)refocus('#ad-q');else{const pn=ad.querySelector('.pn');if(pn)pn.scrollTop=0}}
+async function loadInq(pg,quiet){const q=S.iq;if(q.busy)return;q.busy=1;const p=Math.max(0,pg|0);
+  try{const r=await rpc('admin_inquiry_list',{p_status:q.st,p_limit:PGI+1,p_offset:p*PGI}),rows=(r&&r.rows)||[];q.pg=p;q.more=rows.length>PGI;q.rows=rows.slice(0,PGI);q.open=(r&&r.open)|0;if(!quiet){S.msg='';S.bad=0}}
+  catch(e){q.rows=q.rows||[];if(!quiet){S.msg=em(e);S.bad=1}}
+  q.busy=0;if(S.tab==3){admBuild();if(pg!==undefined&&!quiet){const pn=ad.querySelector('.pn');if(pn)pn.scrollTop=0}}else iqBadge()}
+async function doIqReply(id){const q=S.iq;if(S.busy)return;const row=q.rows&&q.rows.find(x=>String(x.id)===String(id));if(!row)return;
+  const t=(q.dr[row.id]!==undefined?q.dr[row.id]:(row.reply||'')).trim();if(!t){msg('답변을 적어 주세요',1);return}
+  const had=!!(row.reply&&String(row.reply).trim());S.busy=1;msg('보내는 중…');
+  try{const d=await rpc('admin_inquiry_reply',{p_id:row.id,p_reply:t.slice(0,500)});row.reply=t;row.replied_at=(d&&d.replied_at)||new Date().toISOString();row.seen=false;delete q.dr[row.id];if(!had)q.open=Math.max(0,q.open-1);
+    S.msg=had?'답변을 수정했어요':'답변을 보냈어요';S.bad=0;
+    if(q.st=='open'){q.rows=q.rows.filter(x=>x!==row);if(!q.rows.length){S.busy=0;loadInq(q.more?q.pg:Math.max(0,q.pg-1),1);return}}}
+  catch(e){S.msg=em(e);S.bad=1}S.busy=0;admBuild()}
 async function loadLogs(){try{S.logs=await rpc('admin_log_list',{p_limit:60});S.msg='';S.bad=0}catch(e){S.logs=[];S.msg=em(e);S.bad=1}if(S.tab==2)admBuild()}
 async function doBan(){const u=S.sel;if(!u||S.busy)return;const h=S.ban.h,lab=h==0?'영구':h>=24?(h/24)+'일':h+'시간';
   if(!confirm(nm(u)+' 계정을 '+lab+' 정지할까요?'))return;S.busy=1;msg('처리 중…');
@@ -2119,7 +2184,7 @@ async function doSend(){if(S.busy)return;const m=S.mail,all=m.tgt=='all',err=t=>
   try{const d=await rpc('admin_send_mail',{p_uid:all?null:S.sel.uid,p_title:title.slice(0,30),p_body:m.body.trim().slice(0,200),p_payload:p,p_days:days});
     S.msg=(d|0)+'명에게 보냈어요';S.bad=0;m.title='';m.body='';m.g=m.c=m.box=m.rr=m.n=''}
   catch(e){S.msg=em(e);S.bad=1}S.busy=0;admBuild()}
-function openAdm(b){if(!AF.isAdmin)return;opener=b||null;S.msg='';admBuild();ad.classList.add('on');refocus('button:not([disabled])');if(S.users===null)find();else if(S.tab==2)loadLogs()}
+function openAdm(b){if(!AF.isAdmin)return;opener=b||null;S.msg='';admBuild();ad.classList.add('on');refocus('button:not([disabled])');if(S.users===null)find();else if(S.tab==2)loadLogs();if(S.tab==3)loadInq(S.iq.pg);else if(S.iq.rows===null)loadInq(0,1)}
 
 /* ---------- 우편함 ---------- */
 const setCnt=n=>document.body.classList.toggle('mnew',n>0);
@@ -2151,8 +2216,13 @@ AF.ovAct=function(a,b){
   if(a=='ad-x'){closeOv('ad');return}if(a=='ml-x'){closeOv('ml');return}
   if(a=='ml-get'){mlGet(b.dataset.id);return}if(a=='ml-all'){mlAll();return}
   if(!AF.isAdmin)return;
-  if(a=='ad-t'){S.tab=+v||0;S.msg='';admBuild();refocus('button[data-a=ad-t].on');if(S.tab==2)loadLogs();return}
+  if(a=='ad-t'){S.tab=+v||0;S.msg='';admBuild();refocus('button[data-a=ad-t].on');if(S.tab==2)loadLogs();if(S.tab==3)loadInq(S.iq.pg);return}
   if(a=='ad-find'){find();return}
+  if(a=='ad-pg'){find(S.pg+(+v||0));return}
+  if(a=='ad-iqs'){S.iq.st=v;S.iq.rows=null;S.iq.pg=0;S.msg='';admBuild();loadInq(0);return}
+  if(a=='ad-iqpg'){loadInq(S.iq.pg+(+v||0));return}
+  if(a=='ad-iqr'){doIqReply(b.dataset.id);return}
+  if(a=='ad-det'){loadDet();return}
   if(a=='ad-sel'){const u=S.users&&S.users[+b.dataset.i];if(u){S.sel=u;S.msg='';admBuild();ad.querySelector('.pn').scrollTop=0;refocus('button[data-a=ad-ban]')}return}
   if(a=='ad-h'){S.ban.h=+v;admBuild();refocus('button[data-a=ad-h].on');return}
   if(a=='ad-ban'){doBan();return}if(a=='ad-unban'){doUnban();return}
@@ -2162,7 +2232,7 @@ AF.ovAct=function(a,b){
   if(a=='ad-ri'){S.mail.ri=+v;admBuild();refocus('button[data-a=ad-ri].on');return}
   if(a=='ad-send'){doSend();return}
 };
-ad.addEventListener('input',e=>{const t=e.target;if(!t)return;if(t.id=='ad-q')S.q=t.value;else if(t.id=='ad-r')S.ban.reason=t.value;else if(t.dataset&&t.dataset.k)S.mail[t.dataset.k]=t.value});
+ad.addEventListener('input',e=>{const t=e.target;if(!t)return;if(t.id=='ad-q')S.q=t.value;else if(t.id=='ad-r')S.ban.reason=t.value;else if(t.dataset&&t.dataset.iq)S.iq.dr[t.dataset.iq]=t.value;else if(t.dataset&&t.dataset.k)S.mail[t.dataset.k]=t.value});
 /* 게임의 키 처리(맨 위 창만 반응)가 먼저 돌기 때문에, 검색창 Enter 는 같은 단계(window · capture)에서 따로 받아요 */
 addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.isComposing&&e.target&&e.target.id=='ad-q'&&ad.classList.contains('on')){e.preventDefault();if(!e.repeat)find()}},true);
 
@@ -2171,7 +2241,7 @@ let chkId='';
 async function chkAdmin(){const u=AF.user;if(!u||!AF.synced||chkId===u.id)return;chkId=u.id;let ok=false;try{ok=!!(await rpc('is_admin'))}catch(e){}
   if(AF.user&&AF.user.id===u.id){const was=AF.isAdmin;AF.isAdmin=ok;if(ok&&!was&&tm&&tm.classList.contains('on')&&AF.buildTitle)AF.buildTitle()}}
 addEventListener('af-nick',()=>{chkAdmin();mailLoad(true)});
-addEventListener('af-user',()=>{AF.isAdmin=false;chkId='';S.mails=null;S.sel=null;S.users=null;S.logs=null;setCnt(0);ad.classList.remove('on');ml.classList.remove('on')});
+addEventListener('af-user',()=>{AF.isAdmin=false;chkId='';S.mails=null;S.sel=null;S.users=null;S.pg=0;S.more=0;S.det=null;S.logs=null;S.iq={st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0};setCnt(0);ad.classList.remove('on');ml.classList.remove('on')});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)mailLoad()});
 if(AF.user&&AF.synced){chkAdmin();mailLoad(true)}
 })();
