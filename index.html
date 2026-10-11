@@ -2104,10 +2104,13 @@ function detBox(){const d=S.det;if(!S.sel||!d||d.uid!=S.sel.uid)return '';
   else{
     h+='<small>Lv.'+fmt(v.lv)+' · STAGE '+fmt(v.stage)+' (최고 '+fmt(v.best)+')'+(v.farm?' · 파밍 중':'')+'</small>'
       +'<small>골드 '+fmt(v.gold)+' · 경험치 '+fmt(v.xp)+'</small>'
+      +'<small>월드보스 코인 '+fmt(v.wb&&+v.wb.c||0)+'</small>'
       +'<small>단련 공격 '+fmt(v.up)+' · 체력 '+fmt(v.hu)+'</small>'
       +'<small>스탯 힘 '+fmt(pt.str||0)+' · 체력 '+fmt(pt.vit||0)+' · 민첩 '+fmt(pt.dex||0)+' · 지혜 '+fmt(pt.wis||0)+' · 남은 '+fmt(pt.free||0)+'</small>'
       +(v.ts?'<small>마지막 저장 '+dt(v.ts)+'</small>':'')
       +'<div class="lb">장비</div>'+SLK.map(k=>detEq(k,v.EQ&&v.EQ[k],v.en)).join('')}
+  /* 추천 누적: 서버(admin_user_detail)가 r.ref={total,done} 을 돌려주면 표시해요 (total 초대한 친구 수 · done 그중 스테이지 5 달성) */
+  h+=r.ref&&typeof r.ref=='object'?'<small>추천 누적 초대 '+fmt(r.ref.total||0)+'명 · 스테이지 5 달성 '+fmt(r.ref.done||0)+'명</small>':'<small style=\"color:#9fb5b0\">추천 누적: 서버 함수에 ref 항목을 추가하면 표시돼요</small>';
   const iq=Array.isArray(r.inq)?r.inq:[];
   h+='<div class="lb">문의 '+fmt(r.inq_total||0)+'건'+(iq.length&&r.inq_total>iq.length?' (최근 '+iq.length+'건)':'')+'</div>';
   h+=iq.length?iq.map(q=>'<div style="padding:5px 0;border-top:1px solid #ffffff12"><b>'+esc(IQN[q.cat]||'기타')+'</b> · '+dt(q.created_at)+' · <span style="color:'+(q.replied?'#7dffe0':'#ffd98a')+'">'+(q.replied?'답변 완료':'답변 대기')+'</span><small>'+esc(q.body)+'</small></div>').join(''):'<small>문의 기록이 없어요</small>';
