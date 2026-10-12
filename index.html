@@ -1201,7 +1201,8 @@ Object.defineProperties(AF,{
   pz:{get:()=>pz,set:v=>{pz=v},enumerable:true},
   resetting:{get:()=>resetting,set:v=>{resetting=v},enumerable:true},
   nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true},
-  pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true}
+  pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true},
+  psAuto:{get:()=>psAuto,set:v=>{psAuto=!!v;try{localStorage.setItem('ashen_psa',psAuto?'1':'0')}catch(e){}},enumerable:true}
 });
 Object.assign(AF,{guide:()=>guidePop(),refGrant,refMsGrant,mailGrant,toast,wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
 wbInfo:it=>{const c=EQ[it.sl],v=c?swapV(it,c):null,d=v&&v.a?M.round((v.b-v.a)/v.a*1000)/10:null;return{nm:iname(it)+' '+it.n,col:icol(it),op:ots(it),cur:c?iname(c)+' '+c.n+(c.o&&c.o.length?' · '+ots(c):''):'(비어 있음)',d,sv:wbSv(it),cv:c?wbSv(c):0}},
@@ -1277,6 +1278,7 @@ const tg=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</sm
 om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항은 바로 저장돼요</div>
   <h3>소리</h3>${tg('o-mute','소리')}${sl('o-vol','전체 볼륨')}${sl('o-sfx','효과음')}${sl('o-mus','배경음')}
   <h3>전투</h3>${tg('o-auto','자동 전투','Q 키로도 전환해요')}
+  <h3>절전</h3>${tg('o-ps','자동 절전','3분 동안 조작이 없으면 절전 화면으로 들어가요 · 끄면 들어가지 않아요 (직접 켜는 절전은 P 키·달 모양 버튼으로 그대로 써요)')}
   <h3>화면</h3>${FSOK?tg('o-fs','전체화면','F 키로도 전환해요'):''}${tg('o-sh','화면 흔들림')}${tg('o-fx','전투 연출','슬로모션 · 확대')}
   <h3>공개</h3>${tg('o-pub','내 정보 공개','채팅에서 내 닉네임을 누르면 레벨·전투력·장비가 보여요 · 끄면 다른 사람의 정보도 볼 수 없어요 · 한 번 바꾸면 24시간 동안 다시 바꿀 수 없어요 (로그인 시 서버에 반영)')}
   
@@ -1295,7 +1297,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026101208',d:'10/12',t:['모바일: 절전 버튼과 단련 버튼이 같은 자리에 겹쳐 보이던 문제를 고쳤어요 (오른쪽 위 버튼이 메뉴 · 절전 · 단련 · 장비 순서로 나란히 보여요)','절전 모드: 화면에 절전 중 얻은 장비(슬롯별 최종 착용 장비·교체 횟수)와 스킬북이 종류별로 정리돼 나와요 · 많이 얻어도 스크롤로 볼 수 있어요','절전 모드 추가: 화면의 달 모양 버튼(PC는 P 키)으로 켜면 화면 그리기를 멈추고 사냥은 그대로 이어져요 (CPU·배터리 절약) · 슬라이드를 밀어서 해제해요','자동 절전: 3분 동안 조작이 없으면 자동으로 절전 모드에 들어가요 (같은 곳에서 끌 수 있어요)','고주사율 모니터에서 화면 갱신 횟수를 제한해 CPU 사용량을 줄였어요 (게임 속도는 그대로예요)','스탯 포인트: 지혜 설명에 마나 회복 증가량도 함께 표시돼요 (기존엔 최대 마나 수치만 보였어요)','설정 → 내 정보 공개: 한 번 바꾸면 24시간 동안 다시 바꿀 수 없어요 (처음 한 번은 바로 바꿀 수 있어요)','능력치 창: 치명타·흡혈·공격 속도·이동 속도·피해 감소·보스 피해에 상한 수치가 항상 함께 표시돼요 (예: 공격 속도 +30% (상한 50%))','스킬 창: 장착 중인 스킬은 금색 테두리, 다른 슬롯에 장착된 스킬은 청록 테두리와 슬롯 번호로 구분돼요']},
+{v:'2026101209',d:'10/12',t:['설정 → 전투 아래에 \'자동 절전\' 켜기/끄기를 추가했어요 (기존 단련 창 → 설정 탭에서도 그대로 바꿀 수 있어요)','모바일: 절전 버튼과 단련 버튼이 같은 자리에 겹쳐 보이던 문제를 고쳤어요 (오른쪽 위 버튼이 메뉴 · 절전 · 단련 · 장비 순서로 나란히 보여요)','절전 모드: 화면에 절전 중 얻은 장비(슬롯별 최종 착용 장비·교체 횟수)와 스킬북이 종류별로 정리돼 나와요 · 많이 얻어도 스크롤로 볼 수 있어요','절전 모드 추가: 화면의 달 모양 버튼(PC는 P 키)으로 켜면 화면 그리기를 멈추고 사냥은 그대로 이어져요 (CPU·배터리 절약) · 슬라이드를 밀어서 해제해요','자동 절전: 3분 동안 조작이 없으면 자동으로 절전 모드에 들어가요 (같은 곳에서 끌 수 있어요)','고주사율 모니터에서 화면 갱신 횟수를 제한해 CPU 사용량을 줄였어요 (게임 속도는 그대로예요)','스탯 포인트: 지혜 설명에 마나 회복 증가량도 함께 표시돼요 (기존엔 최대 마나 수치만 보였어요)','설정 → 내 정보 공개: 한 번 바꾸면 24시간 동안 다시 바꿀 수 없어요 (처음 한 번은 바로 바꿀 수 있어요)','능력치 창: 치명타·흡혈·공격 속도·이동 속도·피해 감소·보스 피해에 상한 수치가 항상 함께 표시돼요 (예: 공격 속도 +30% (상한 50%))','스킬 창: 장착 중인 스킬은 금색 테두리, 다른 슬롯에 장착된 스킬은 청록 테두리와 슬롯 번호로 구분돼요']},
 {v:'2026101101',d:'10/11',t:['관통검기: 점프 중인 보스와 몬스터에게도 잘 맞도록 판정 범위를 넓혔어요','폭발: 보스 등장 연출 중에는 자동으로 터지지 않아요 (이동속도가 빨라도 헛발이 되지 않아요)']}
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
@@ -1313,7 +1315,7 @@ function pubLeftTxt(){const m=Math.ceil(AF.pubLeft()/6e4);return m>=60?Math.ceil
 function sync(){
   paint(q('o-vol'),Math.round(AF.VOL*100));paint(q('o-sfx'),Math.round(AF.SV*100));paint(q('o-mus'),Math.round(AF.MV*100));
   const t=(id,on,a,b)=>{const e=q(id);if(!e)return;e.classList.toggle('on',on);e.textContent=on?a:b};
-  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-auto',!!AF.auto,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pub',!!AF.pub,'켜짐','꺼짐');{const pb=q('o-pub');if(pb&&AF.pubLeft()>0){pb.textContent+=' · '+pubLeftTxt()+' 후 변경';pb.style.whiteSpace='nowrap'}}t('o-fs',isFS(),'켜짐','꺼짐');
+  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-auto',!!AF.auto,'켜짐','꺼짐');t('o-ps',!!AF.psAuto,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pub',!!AF.pub,'켜짐','꺼짐');{const pb=q('o-pub');if(pb&&AF.pubLeft()>0){pb.textContent+=' · '+pubLeftTxt()+' 후 변경';pb.style.whiteSpace='nowrap'}}t('o-fs',isFS(),'켜짐','꺼짐');
   document.querySelectorAll('[data-fs]').forEach(b=>b.textContent=isFS()?'전체화면 해제':'전체화면');
 }
 let ping=0;
@@ -1368,6 +1370,7 @@ function act(a,btn){
   if(a=='title'){AF.save();location.reload();return}
   if(a=='o-mute'){AF.mute=!AF.mute;mtog();applyVol();AF.saveOpt();sync();if(!AF.mute)AF.sfx(660,.08,'triangle',.06,1.2);return}
   if(a=='o-auto'){AF.auto=!AF.auto;document.querySelector('[data-k=auto]').classList.toggle('on',AF.auto);sync();return}
+  if(a=='o-ps'){AF.psAuto=!AF.psAuto;sync();return}
   if(a=='o-sh'){AF.OPT.sh=AF.OPT.sh?0:1;AF.saveOpt();sync();return}
   if(a=='o-pub'){if(!AF.pubToggle()){try{AF.toast('공개 설정은 '+pubLeftTxt()+' 뒤에 바꿀 수 있어요','#ff7a7a')}catch(e){}sync();return}try{AF.save()}catch(e){}AF.pubFlush();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
