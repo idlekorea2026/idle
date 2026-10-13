@@ -797,10 +797,10 @@ const t=ok?'던전 클리어! '+r.join(' · '):'던전 실패 · 보상 없음';
 spawn();P.hp=mhp();P.mp=mmp();P.inv=2;dtm=0;st=1;save()}
 let shopTab=0;
 function buildShop(){const row=(t,sub,btn,dis,id)=>`<div class="row"><div>${t}<br><small>${sub}</small></div><button data-b="${id}" ${dis?'disabled':''}>${btn}</button></div>`;
-const TB=['단련','설정','던전'];
+const TB=['단련','설정','던전'],rowM=(t,sub,c,id)=>{const d=gold<c?'disabled':'',b=(k,x)=>`<button style="padding:0 8px;font-size:14px" data-b="${id}${k}" ${d}>${x}</button>`;return `<div class="row"><div style="flex:1;min-width:0">${t}<br><small>${sub}</small></div><div style="display:flex;gap:5px;flex:none">${b('',c+'G')}${b(10,'×10')}${b(100,'×100')}${b('m','최대')}</div></div>`};
 let h=`<div class="sh-h"><div class="sh-t"><h2>단련 <small>● 골드 ${gold}</small></h2><button class="sh-x" data-b="close" aria-label="닫기">✕</button></div><div class="tabs">${TB.map((n,i)=>`<button data-b="t${i}" class="${shopTab==i?'on':''}">${n}</button>`).join('')}</div></div>`;
 if(shopTab==0){
-const c=40+up*30;h+='<h3>단련</h3>'+row('공격 단련 +'+up,'공격력 +6 · 최종 공격력 ×'+(1+up*TR.a).toFixed(2)+' (누적)',c+'G',gold<c,'up')+row('체력 단련 +'+hu,'체력 +'+HU.v+' · 최대 체력 ×'+(1+hu*TR.h).toFixed(2)+' (누적)',(40+hu*30)+'G',gold<40+hu*30,'hu')+'<div class="row"><button data-b="up10">공격 ×10</button><button data-b="up100">×100</button><button data-b="upm">최대</button></div><div class="row"><button data-b="hu10">체력 ×10</button><button data-b="hu100">×100</button><button data-b="hum">최대</button></div><h3>자동 단련</h3>'+row('자동 단련 '+(atr?'ON':'OFF'),'골드가 모이면 공격·체력 단련을 자동으로 올려요 (기본 꺼짐 · 골드를 직접 쓰려면 끄세요)',atr?'끄기':'켜기',0,'atr')}
+const c=40+up*30;h+='<h3>단련</h3>'+rowM('공격 단련 +'+up,'공격력 +6 · 최종 공격력 ×'+(1+up*TR.a).toFixed(2)+' (누적)',c,'up')+rowM('체력 단련 +'+hu,'체력 +'+HU.v+' · 최대 체력 ×'+(1+hu*TR.h).toFixed(2)+' (누적)',40+hu*30,'hu')+'<h3>자동 단련</h3>'+row('자동 단련 '+(atr?'ON':'OFF'),'골드가 모이면 공격·체력 단련을 자동으로 올려요 (기본 꺼짐 · 골드를 직접 쓰려면 끄세요)',atr?'끄기':'켜기',0,'atr')}
 else if(shopTab==2){const n=dgNow(),T=DGT[n.w],u=DGD.d==n.k;h+='<h3>요일 던전</h3>'+row(T[0]+'요일 · '+T[1]+' 던전','STAGE '+dgStage()+' 난이도 · 클리어 시 '+T[2]+(u?' · 오늘 입장 완료':'')+'<br>죽거나 포기하면 보상이 없고 오늘은 다시 못 들어가요. 방치 보상에는 영향이 없어요.'+(AF.user?'':'<br>🔒 로그인 후에 이용할 수 있어요.'),AF.user?(u?'완료':'입장'):'로그인 필요',!AF.user||u||st!=1||DG||dgBusy,'dg')}
 else{
 h+='<h3>장비 자동 교체</h3>'+row('자동 교체 '+(ae?'ON':'OFF'),'전투력이 실제로 오를 때만 바꿔요 · 끄면 빈 슬롯만 채워요 (슬롯별 교체 방식은 캐릭터 창에서 바꿔요)',ae?'끄기':'켜기',0,'ae')+'<h3>자동 구매</h3>'+row('자동 구매 '+(ab?'ON':'OFF'),'골드가 모이면 슬롯 강화 +'+AE+'까지 자동으로 진행해요 (재굴림 골드를 모으려면 끄세요)',ab?'끄기':'켜기',0,'ab')
@@ -1931,6 +1931,9 @@ async function chk(first){lastC=Date.now();try{const r=await fetch(location.path
   if(first){if(diff){if(A.st!==1&&sessionStorage.getItem('afv')!==rb){sessionStorage.setItem('afv',rb);location.reload();return}banner();return}base=h;return}
   if(base===null)base=h;if(diff||h!==base)banner()}catch(e){}}
 A.chkUpdate=()=>chk(false);chk(true);
+/* 가벼운 확인: 1분마다 HEAD 요청(본문 없음)으로 파일 버전표(ETag·수정시각)만 봐요. 바뀌면 그때만 전체 확인(chk)을 해서 배너를 띄워요 */
+let tag=null,hT=0;async function head(){hT=Date.now();try{const r=await fetch(location.pathname+'?_='+hT,{method:'HEAD',cache:'no-store'});if(!r.ok)return;const t=(r.headers.get('etag')||'')+'|'+(r.headers.get('last-modified')||'');if(t==='|')return;if(tag===null){tag=t;return}if(t!==tag){tag=t;chk(false)}}catch(e){}}
+head();setInterval(()=>{if(!document.hidden&&!shown&&Date.now()-hT>55000)head()},15000);
 setInterval(()=>{if(!document.hidden&&Date.now()-lastC>290000)chk(false)},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-lastC>60000)chk(false)});
 })();
