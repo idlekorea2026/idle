@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610131730">
+<meta name="build" content="202610141325">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -1324,6 +1324,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
+{v:'2026101413',d:'10/14',t:['아이패드·태블릿에서 월드보스 버튼이 오른쪽 위 메뉴 버튼을 가리던 문제를 고쳤어요 (폰처럼 오른쪽 아래로 옮겼어요)']},
 {v:'2026101317',d:'10/13',t:['단련: 공격·체력 ×10 / ×100 / 최대 버튼 추가','기기 저장과 서버 저장이 다를 때 어느 쪽이 더 최근인지 표시해요','보스 재도전 · 월드보스 · 던전 입장 시 스킬 쿨타임이 초기화돼요','보관함: 영웅 이상·유니크 판매 시 확인창이 떠요']},
 {v:'2026101214',d:'10/12',t:['보관함 개편: 판매할 장비 중 보관 기준 등급 이상(그 등급 포함)이면 팔지 않고 슬롯당 10칸까지 보관해요 · 기본은 희귀 이상이고, 장비(I) 창 → 보관함 탭에서 일반 / 고급 / 희귀 / 영웅 / 꺼짐으로 바꿀 수 있어요 · 방치 보상과 월드보스에서 밀려난 옛 장비도 같은 기준을 따라요','보관함이 칸(아이콘) 모양으로 바뀌었어요: 부위마다 지금 낀 장비 대비 전투력 %와 보관 칸 수가 보이고, 부위를 누르면 그 부위만 이름·옵션·버튼과 함께 목록으로 보여요 · 착용·보호·판매 가능','보관함 보호(📌): 지키고 싶은 장비를 보호해 두면 칸이 가득 차도 팔리지 않아요 (최대 20개 · 슬롯의 고정 🔒과는 별개예요)','보관함 정리: 칸이 가득 차면 등급이 낮은 것(같으면 점수가 낮은 것)부터 팔려요 · 부위 목록의 약한 장비 정리로 낀 장비보다 약한 보관 장비를 한 번에 팔 수 있어요 (보호한 장비는 제외)','슬롯이 고정이라 바꾸지 않은 장비도 보관함에 보관되면 안내 채팅에 표시돼요','설정 → 전투 아래에 \'자동 절전\' 켜기/끄기를 추가했어요 (기존 단련 창 → 설정 탭에서도 그대로 바꿀 수 있어요)','모바일: 절전 버튼과 단련 버튼이 같은 자리에 겹쳐 보이던 문제를 고쳤어요 (오른쪽 위 버튼이 메뉴 · 절전 · 단련 · 장비 순서로 나란히 보여요)','절전 모드: 화면에 절전 중 얻은 장비(슬롯별 최종 착용 장비·교체 횟수)와 스킬북이 종류별로 정리돼 나와요 · 많이 얻어도 스크롤로 볼 수 있어요','절전 모드 추가: 화면의 달 모양 버튼(PC는 P 키)으로 켜면 화면 그리기를 멈추고 사냥은 그대로 이어져요 (CPU·배터리 절약) · 슬라이드를 밀어서 해제해요','자동 절전: 3분 동안 조작이 없으면 자동으로 절전 모드에 들어가요 (같은 곳에서 끌 수 있어요)','고주사율 모니터에서 화면 갱신 횟수를 제한해 CPU 사용량을 줄였어요 (게임 속도는 그대로예요)','스탯 포인트: 지혜 설명에 마나 회복 증가량도 함께 표시돼요 (기존엔 최대 마나 수치만 보였어요)','설정 → 내 정보 공개: 한 번 바꾸면 24시간 동안 다시 바꿀 수 없어요 (처음 한 번은 바로 바꿀 수 있어요)','능력치 창: 치명타·흡혈·공격 속도·이동 속도·피해 감소·보스 피해에 상한 수치가 항상 함께 표시돼요 (예: 공격 속도 +30% (상한 50%))','스킬 창: 장착 중인 스킬은 금색 테두리, 다른 슬롯에 장착된 스킬은 청록 테두리와 슬롯 번호로 구분돼요']}
 ];
@@ -1960,7 +1961,7 @@ const css=document.createElement('style');css.textContent=`#wbb{position:fixed;l
 @media(hover:hover){#wbb:hover{transform:translateY(-2px);filter:brightness(1.22);box-shadow:inset 0 0 0 1px #ffd27a,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #c99a4a,inset 0 8px 10px #ffb06a30,0 7px 14px #000c,0 0 22px #ff7a3a99}}
 #wbb:active{transform:scale(.93);filter:brightness(.9)}
 @media(pointer:coarse),(max-width:640px){#wbb{left:8px;top:80px;width:54px;height:60px;border-radius:11px;font-size:12px}#wbb svg{width:28px;height:28px}}
-@media(max-width:640px){#wbb{left:auto;right:8px;top:auto;bottom:var(--wbb,120px);width:46px;height:50px;border-radius:10px;font-size:10px;gap:2px}#wbb svg{width:24px;height:24px}#wbb .wn{top:-6px;right:-6px;min-width:18px;height:18px;font-size:11px;line-height:16px}}@media(pointer:coarse) and (min-width:641px){#wbb{left:auto;right:8px;top:66px}}/* 폰 세로 화면: 왼쪽 위는 레벨·장비 패널이 차지해서 오른쪽 빈 곳으로 */
+@media(max-width:640px){#wbb{left:auto;right:8px;top:auto;bottom:var(--wbb,120px);width:46px;height:50px;border-radius:10px;font-size:10px;gap:2px}#wbb svg{width:24px;height:24px}#wbb .wn{top:-6px;right:-6px;min-width:18px;height:18px;font-size:11px;line-height:16px}}@media(pointer:coarse) and (min-width:641px){#wbb{left:auto;right:8px;top:auto;bottom:var(--wbb,120px)}}/* 폰 세로 화면: 왼쪽 위는 레벨·장비 패널이 차지해서 오른쪽 빈 곳으로 */
 #wbp{position:fixed;inset:0;z-index:9000;background:#02060af2;color:#e8f1ee;overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 10px calc(env(safe-area-inset-bottom,0px) + 24px);font:15px/1.5 "Do Hyeon",sans-serif;display:none}
 #wbp .wc{max-width:440px;margin:0 auto;border:2px solid #8a6a30;border-radius:12px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000;overflow:hidden}
 #wbp .wt{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 16px;border-bottom:1px solid #3a2c12;background:linear-gradient(#2a2110,#120d05)}
