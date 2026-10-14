@@ -1773,9 +1773,9 @@ function onShow(){const h=onTxt();onB.innerHTML=h;onB.classList.toggle('on',!!h)
 async function beat(){onLast=Date.now();if(onOff||!sb||!AF.user)return;/* 게스트는 접속자 수 요청도 보내지 않아요(로그인한 사람만 heartbeat) */
   try{const r=await sb.rpc('heartbeat');if(r.error)throw r.error;onErr=0;const n=+r.data;if(n>0){onN=n;onShow()}}
   catch(e){onErr++;const m=String((e&&e.message)||'');if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m))){onOff=1;onN=0;onShow();console.warn('접속자 수: heartbeat 함수가 없어요 (online_users.sql 실행 필요)')}}}
-function onLoop(){clearTimeout(onT);if(onOff||!AF.user)return;const base=(document.hidden?180000:120000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
+function onLoop(){clearTimeout(onT);if(onOff||!AF.user)return;const base=(document.hidden?360000:300000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
 window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user){beat();onLoop()}});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&!onOff&&Date.now()-onLast>40000){beat();onLoop()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AF.user&&!onOff&&Date.now()-onLast>120000){beat();onLoop()}});
 
 /* ===== 추천인 (서버 함수: referral_code · referral_use · referral_claim) =====
    · 내 코드는 설정 메뉴에서 보고 복사해요 · 신규 계정(가입 3일 이내)만 코드를 입력할 수 있어요 (서버가 판정)
@@ -2558,6 +2558,7 @@ function setInfo(id,extra){
   BD.forEach(x=>{const c=$('vcb-'+x.id);if(c)c.style.borderColor=x.id===id?'#ffd98a':''});
 }
 function go(x,id){
+  vact=performance.now();
   const from=curX(),to=clamp(x,MIN,MAX),dist=Math.abs(to-from),d=Math.max(.35,dist/SPD);
   const cc=curCam();cam0=cc;px0=from;px=to;pdur=d;t0=performance.now();if(Math.abs(to-from)>0.5)dir=to>from?1:-1;
   cam=clamp(to-Vw/2,0,Math.max(0,WORLD-Vw));
@@ -2573,7 +2574,7 @@ function onClick(e){
   if(b){go(+b.dataset.x,b.dataset.b);return}
   go(e.clientX/s+curCam(),'');
 }
-let hd=0,hiv=0;
+let hd=0,hiv=0,vact=performance.now();
 function hold(d){hd=d;clearInterval(hiv);const stp=()=>go(clamp(curX()+hd*220,MIN,MAX),'');stp();hiv=setInterval(stp,160);const b=$(d<0?'vpl':'vpr');if(b)b.classList.add('on')}
 function release(){if(!hd)return;hd=0;clearInterval(hiv);for(const i of ['vpl','vpr']){const b=$(i);if(b)b.classList.remove('on')}go(curX(),'')}
 function doll(){const c=me&&me.querySelector('.vdl');if(c&&AF.vl.doll)AF.vl.doll(c)}
@@ -2605,7 +2606,7 @@ function open(){
   if(r){flash(r);return false}
   const lite=matchMedia('(prefers-reduced-motion: reduce)').matches||(navigator.hardwareConcurrency||8)<=4||(navigator.deviceMemory||8)<=2||(AF.OPT&&!AF.OPT.fx);
   root.classList.toggle('lite',!!lite);
-  root.classList.add('on');chatUp(1);netStart();try{AF.CHAT.vlMode(true)}catch(e){}
+  vact=performance.now();root.classList.add('on');chatUp(1);netStart();try{AF.CHAT.vlMode(true)}catch(e){}
   fit(0);place(0);{const nm=me.querySelector('.vcm');if(nm)nm.textContent=String(AF.nk||'나').slice(0,12)}stat();count();
   clearInterval(iv);iv=setInterval(stat,1000);
   return true;
@@ -2636,10 +2637,15 @@ addEventListener('keydown',e=>{
   if(document.querySelector('.ov.on')||shown('shop')||shown('chr'))return;
   e.preventDefault();if(root&&root.classList.contains('on'))close();else open();
 });
-setInterval(()=>{const tm=$('tm');if(!AF.isAdmin&&root&&root.classList.contains('on'))close();/* 관리자가 아니게 되면(로그아웃·계정 변경) 마을을 닫아요 */const hide=!AF.isAdmin||!tm||tm.classList.contains('on');if(memo.h!==hide){memo.h=hide;btn.style.display=hide?'none':''}},500);
+/* 자리 비움: 마을에서 4분 동안 입력이 없으면 마을만 닫아요(연결 끊김 · 사냥은 그대로) */
+['pointerdown','pointermove','keydown','touchstart','wheel'].forEach(ev=>addEventListener(ev,()=>{vact=performance.now()},{capture:true,passive:true}));
+setInterval(()=>{const tm=$('tm');if(!AF.isAdmin&&root&&root.classList.contains('on'))close();if(root&&root.classList.contains('on')){if(hd!==0)vact=performance.now();else if(performance.now()-vact>240000){close();flash('자리 비움 · 마을에서 나왔어요')}}/* 관리자가 아니게 되면(로그아웃·계정 변경) 마을을 닫아요 */const hide=!AF.isAdmin||!tm||tm.classList.contains('on');if(memo.h!==hide){memo.h=hide;btn.style.display=hide?'none':''}},500);
 /* ===== 마을 실시간 (Supabase Broadcast · DB 저장 없음) =====
-   보내는 때: 입장 1번 · 걷기 시작/멈춤/클릭 이동 때만(걷는 중엔 0.5초에 1번 이하) · 가만히 있어도 20초에 1번 · 퇴장 1번
+   보내는 때: 입장 1번 · 걷기 시작/멈춤/클릭 이동 때만(걷는 중엔 0.5초에 1번 이하) · 가만히 있어도 60초에 1번 · 퇴장 1번
    받는 쪽은 '목표 위치'만 받아서 스스로 부드럽게 걸어요. 닉네임은 머리 위 이름표로 보여요. 방은 최대 20명이에요. */
+/* 마을 채널을 '비공개(private)'로: village_realtime_private.sql 을 Supabase SQL Editor 에서 먼저 실행한 뒤에만 true 로 바꾸세요.
+   (먼저 켜면 정책이 없어서 마을 연결이 거부돼요.) true 가 되면 로그인한 사람만 마을 채널에 붙고 보낼 수 있어요. */
+const VL_PRIVATE=true;
 const NET={ch:null,ok:0,last:0,pend:0,hold:0,tx:null,ka:0,gc:0,sx:1100,cl:{}};
 const NMAX=20;
 const nid=()=>AF.user?String(AF.user.id).slice(0,8):'';
@@ -2673,16 +2679,23 @@ function netChat(m){
   if(ppl[id])AF.vlPeople.say(id,t,4500);
 }
 AF.vlChat={send(t){if(!NET.ch||!NET.ok)return false;t=String(t).slice(0,60);netSend('c',{i:nid(),n:String(AF.nk||'모험가').slice(0,12),t:t});AF.vlPeople.say('me',t,4500);return true}};
+/* private 채널은 로그인 토큰을 실시간 연결에 먼저 확실히 넘긴 뒤에 붙어요(토큰이 늦게 전달돼 연결이 거부되는 걸 막아요) */
 function netStart(){
+  if(NET.ch||NET.st||!AF.sb||!AF.user||document.hidden)return;
+  if(!VL_PRIVATE){netStart0();return}
+  NET.st=1;
+  Promise.resolve().then(()=>AF.sb.auth.getSession()).then(r=>{const t=r&&r.data&&r.data.session&&r.data.session.access_token;if(t)AF.sb.realtime.setAuth(t)}).catch(()=>{}).then(()=>{NET.st=0;if(root&&root.classList.contains('on')&&!document.hidden)netStart0()})
+}
+function netStart0(){
   if(NET.ch||!AF.sb||!AF.user||document.hidden)return;
   NET.tx=px;
-  try{NET.ch=AF.sb.channel('village',{config:{broadcast:{self:false}}})
+  try{NET.ch=AF.sb.channel('village',{config:{broadcast:{self:false},private:VL_PRIVATE}})
     .on('broadcast',{event:'p'},netOn)
     .on('broadcast',{event:'c'},netChat)
     .on('broadcast',{event:'b'},m=>{const o=m&&m.payload;if(o&&o.i&&ppl[String(o.i).slice(0,8)])AF.vlPeople.del(String(o.i).slice(0,8))})
-    .subscribe(s=>{if(s==='SUBSCRIBED'){NET.ok=1;netSend('p',netPkt(NET.tx,1))}else if(s==='CLOSED'||s==='CHANNEL_ERROR'||s==='TIMED_OUT')NET.ok=0})}catch(e){NET.ch=null;return}
-  NET.ka=setInterval(()=>netSend('p',netPkt(NET.tx)),30000);
-  NET.gc=setInterval(()=>{const now=Date.now();for(const k of Object.keys(ppl))if(ppl[k].seen&&now-ppl[k].seen>95000)AF.vlPeople.del(k)},10000);
+    .subscribe(s=>{if(s==='SUBSCRIBED'){NET.ok=1;netSend('p',netPkt(NET.tx,1))}else if(s==='CLOSED'||s==='CHANNEL_ERROR'||s==='TIMED_OUT'){NET.ok=0;if(s!=='CLOSED'){try{console.warn('[village] 채널 연결 실패:',s,VL_PRIVATE?'(private: SQL 정책을 실행했는지 확인)':'')}catch(e){}}}})}catch(e){NET.ch=null;return}
+  NET.ka=setInterval(()=>netSend('p',netPkt(NET.tx)),60000);
+  NET.gc=setInterval(()=>{const now=Date.now();for(const k of Object.keys(ppl))if(ppl[k].seen&&now-ppl[k].seen>150000)AF.vlPeople.del(k)},10000);
 }
 function netStop(){
   if(!NET.ch)return;
@@ -2692,7 +2705,7 @@ function netStop(){
   setTimeout(()=>{try{AF.sb.removeChannel(c)}catch(e){}},300);
   for(const k of Object.keys(ppl))AF.vlPeople.del(k);NET.cl={};
 }
-document.addEventListener('visibilitychange',()=>{if(!root||!root.classList.contains('on'))return;if(document.hidden)netStop();else netStart()});
+document.addEventListener('visibilitychange',()=>{if(!root||!root.classList.contains('on'))return;if(document.hidden)netStop();else{vact=performance.now();netStart()}});
 /* 다른 유저 표시용 */
 AF.vlPeople={
   add(id,o){build();this.del(id);const w=document.createElement('div');w.innerHTML=chr({name:o.name||'모험가',body:o.body||'#4a5a52',hair:o.hair||'#2a1f0c',cape:o.cape||'#8a6a30'});const el=w.firstChild;el.style.transform='translate3d('+(clamp(o.x||1100,MIN,MAX)-20)+'px,0,0)';el.querySelector('.vf0').style.transform='scaleX('+(o.dir||1)+')';root.querySelector('#vppl').appendChild(el);ppl[id]={el,x:o.x||1100};count()},
