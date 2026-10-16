@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610161400">
+<meta name="build" content="202610161630">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -2061,8 +2061,8 @@ function banner(){if(shown)return;shown=1;const d=document.createElement('div');
   d.querySelector('button').onclick=()=>{try{if(A.st==1)A.save()}catch(e){}location.reload()};
   d.querySelector('i').onclick=()=>{d.remove();shown=0};document.body.appendChild(d)}
 async function chk(first){lastC=Date.now();try{const r=await fetch(location.pathname+'?_='+lastC,{cache:'no-store'});if(!r.ok)return;const t=await r.text(),m=RE.exec(t),rb=m?m[1]:'',h=fnv(t),diff=!!(B&&rb&&rb!==B);
-  if(first){if(diff&&!/<meta name="update" content="silent"/.test(t)){if(A.st!==1&&sessionStorage.getItem('afv')!==rb){sessionStorage.setItem('afv',rb);location.reload();return}banner();return}base=h;return}
-  if(base===null)base=h;if(/<meta name="update" content="silent"/.test(t)){base=h;return}/* 조용한 배포: 배포 파일에 이 메타가 있으면 새 버전 배너를 띄우지 않아요 */if(diff||h!==base)banner()}catch(e){}}
+  if(first){if(diff&&!/<meta name="update" content="silen[t]"/.test(t)){if(A.st!==1&&sessionStorage.getItem('afv')!==rb){sessionStorage.setItem('afv',rb);location.reload();return}banner();return}base=h;return}
+  if(base===null)base=h;if(/<meta name="update" content="silen[t]"/.test(t)){base=h;return}/* 조용한 배포: 배포 파일에 이 메타가 있으면 새 버전 배너를 띄우지 않아요 */if(diff||h!==base)banner()}catch(e){}}
 A.chkUpdate=()=>chk(false);chk(true);
 /* 가벼운 확인: 1분마다 HEAD 요청(본문 없음)으로 파일 버전표(ETag·수정시각)만 봐요. 바뀌면 그때만 전체 확인(chk)을 해서 배너를 띄워요 */
 let tag=null,hT=0;async function head(){hT=Date.now();try{const r=await fetch(location.pathname+'?_='+hT,{method:'HEAD',cache:'no-store'});if(!r.ok)return;const t=(r.headers.get('etag')||'')+'|'+(r.headers.get('last-modified')||'');if(t==='|')return;if(tag===null){tag=t;return}if(t!==tag){tag=t;chk(false)}}catch(e){}}
