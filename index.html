@@ -382,7 +382,31 @@ body #bossb small{font-size:10px;margin-left:3px}
 @keyframes vk-stepB{0%{transform:translateX(6px) rotate(-16deg)}100%{transform:translateX(-6px) rotate(16deg)}}
 @keyframes vk-capeW{0%{transform:skewX(-6deg) scaleX(1)}100%{transform:skewX(-20deg) scaleX(1.18)}}
 
-</style></head><body>
+</style><style>/* 마을 오목 */
+#gmk{z-index:20;background:#03060bf2;align-items:center;justify-content:center}
+#gmk .gmw{width:var(--gs,340px);display:flex;flex-direction:column;gap:10px}
+#gmk .gmh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#gmk .gmp{flex:1;min-width:0;display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid #2a3a40;border-radius:8px;background:#0b1014e6;font-size:15px;color:#9fb5b0}
+#gmk .gmp span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gmk .gmp.on{border-color:#ffd98a;color:#ffe7a8;box-shadow:0 0 10px #ffb84a55}
+#gmk .gms{flex:none;width:14px;height:14px;border-radius:50%}
+#gmk .gms.b{background:radial-gradient(circle at 35% 30%,#666,#0a0a0a);box-shadow:0 0 0 1px #888}
+#gmk .gms.w{background:radial-gradient(circle at 35% 30%,#fff,#cfcfc2)}
+#gmk .gmt{flex:none;min-width:40px;text-align:center;font-size:22px;color:#7dffe0}
+#gmk .gmt.warn{color:#ff7a5a}
+#gmk canvas{display:block;width:var(--gs,340px);height:var(--gs,340px);border-radius:6px;box-shadow:0 6px 24px #000b;touch-action:manipulation}
+#gmk .gmst{min-height:22px;text-align:center;font-size:15px;line-height:1.4;color:#f0d9a0}
+#gmk .gmbt{display:flex;gap:8px;justify-content:center}
+.gmb{padding:8px 18px;border:1px solid #6b5228;border-radius:8px;background:linear-gradient(#1c262d,#0a1013);color:#f0d9a0;font:16px 'Do Hyeon',sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.gmb.g{border-color:#3aa592;background:linear-gradient(#17332f,#0a1a18);color:#7dffe0}
+.gmb:disabled{opacity:.4;cursor:default}
+#gmkC{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 150px);z-index:9;display:none;min-width:220px;max-width:90vw;padding:12px 16px;border:1px solid #6b5228;border-radius:10px;background:#0b1014f2;color:#f0d9a0;font-family:'Do Hyeon',sans-serif;text-align:center;box-shadow:0 4px 18px #000a;-webkit-user-select:none;user-select:none}
+#gmkC.on{display:block}
+#gmkC .gmq{font-size:16px;margin-bottom:10px;line-height:1.4}
+#gmkC .gmq b{color:#ffe7a8;font-weight:400}
+#gmkC .gmr{display:flex;gap:8px;justify-content:center}
+</style>
+</head><body>
 <canvas id="c"></canvas>
 <div id="hud"><div class="orb hp" id="ohp"><i></i><b></b></div><div class="xp"><span id="lv">Lv.1</span><span id="cp"></span><div class="xb"><i id="xpf"></i></div><span id="xpt">0%</span></div><div class="hb"><div class="grp mv"><button class="sl" data-k="l"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button><button class="sl" data-k="r"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button></div><div class="grp"><button class="sl" data-k="a"><svg viewBox="0 0 24 24"><path d="M5 19 19 5M14 5h5v5M8 16l-3 3"/></svg><span>베기</span><kbd>Z</kbd></button><button class="sl" data-k="s"><svg viewBox="0 0 24 24"><path d="M6 5Q19 12 6 19 12 12 6 5z"/></svg><span>검기</span><kbd>X</kbd></button><button class="sl" data-k="u"><svg viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg><span>폭발</span><kbd>C</kbd></button><button class="sl" data-k="j"><svg viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6"/></svg><span>점프</span><kbd>Spc</kbd></button></div></div><div class="grp mn"><button class="sl sm on" data-k="auto"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2-5M19 4v4h-4"/></svg><span>자동</span><kbd>Q</kbd></button><button class="sl sm on" data-k="mute"><svg viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4zM16 9q3 3 0 6"/></svg><span>소리</span><kbd>M</kbd></button><button class="sl sm" data-k="chr"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg><span>장비</span><kbd>I</kbd></button><button class="sl sm" data-k="shop"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5zM9 8a3 3 0 0 1 6 0"/></svg><span>단련</span><kbd>B</kbd></button><button class="sl sm" data-k="ps"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span>절전</span><kbd>P</kbd></button><button class="sl sm" data-k="esc"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span><kbd>Esc</kbd></button></div><div class="orb mp" id="omp"><i></i><b></b></div><div id="sks"><button class="sl" data-k="k1"></button><button class="sl" data-k="k2"></button><button class="sl" data-k="k3"></button></div></div><button id="bossb" data-k="boss" style="display:none">보스 재도전 <small>R</small></button>
 <div id="shop"></div><div id="chr"></div>
@@ -1603,7 +1627,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026101707',d:'10/17',t:['월드보스 보상이 소폭 상향됐어요','마을: 다른 모험가도 장비·망토·탈것까지 실제 모습 그대로 보여요 (상대도 새 버전일 때) · 마을 버튼이 스킬 효과 시간 표시와 겹치던 것을 고쳤고, 마을을 나온 뒤 바로 다시 들어가려면 2~3초 기다려야 해요','스탯 포인트: 스탯마다 "전부" 버튼 추가 — 남은 포인트를 한 번에 그 스탯에 넣어요','마을 정식 오픈 — 이제 누구나 마을 버튼이나 V 키로 들어갈 수 있어요 · PC에서 STAGE 글자를 가리던 마을 버튼 위치도 고쳤어요','월드보스 교환소: 탈것 추가 — 코인으로 해금하고 강화할 수 있어요 (골드·경험치·공격력·체력·이동 속도 보너스 · 로그인 필요) · 망토 4종(새벽·서리·이끼숲·흑요석)과 프로필 테두리 3종(하늘·황금·심연)도 추가','능력치 상한 상향: 공격 속도 60% · 이동 속도 50% · 피해 감소 42% (꾸미기 효과가 상한에 묻히지 않게 했어요)']},
+{v:'2026101708',d:'10/17',t:['마을: 오목 추가 — 마을에서 다른 모험가를 눌러 오목을 신청할 수 있어요 (15x15 자유 오목 · 한 수 30초 · 마을을 나가면 기권 · 승패 보상 없음 · 상대도 새 버전일 때)','월드보스 보상이 소폭 상향됐어요','마을: 다른 모험가도 장비·망토·탈것까지 실제 모습 그대로 보여요 (상대도 새 버전일 때) · 마을 버튼이 스킬 효과 시간 표시와 겹치던 것을 고쳤고, 마을을 나온 뒤 바로 다시 들어가려면 2~3초 기다려야 해요','스탯 포인트: 스탯마다 "전부" 버튼 추가 — 남은 포인트를 한 번에 그 스탯에 넣어요','마을 정식 오픈 — 이제 누구나 마을 버튼이나 V 키로 들어갈 수 있어요 · PC에서 STAGE 글자를 가리던 마을 버튼 위치도 고쳤어요','월드보스 교환소: 탈것 추가 — 코인으로 해금하고 강화할 수 있어요 (골드·경험치·공격력·체력·이동 속도 보너스 · 로그인 필요) · 망토 4종(새벽·서리·이끼숲·흑요석)과 프로필 테두리 3종(하늘·황금·심연)도 추가','능력치 상한 상향: 공격 속도 60% · 이동 속도 50% · 피해 감소 42% (꾸미기 효과가 상한에 묻히지 않게 했어요)']},
 {v:'2026101601',d:'10/16',t:['단련: 치명 단련 추가 — 치명타 피해(기본 ×1.8)가 단계당 +0.01%p씩 올라요 (상한 없음 · 비용은 공격·체력 단련과 같아요)','자동 단련이 치명 단련도 함께 올려요','캐릭터 창: 치명타 피해 표시 추가 · 전투력·체력·공격력을 만/억 단위로 보여줘요 (랭킹·프로필·이어하기도 같아요)','보관함: 전체 화면에 "약한 장비 전체 정리" 버튼 추가 — 모든 부위에서 낀 장비보다 약한 보관 장비를 한 번에 팔아요 (보호한 장비는 제외)']}
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
@@ -1799,6 +1823,8 @@ function kakaoLogin(){if(!sb)return;if(location.protocol=='file:'){alert('로그
   sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+location.pathname,scopes:'profile_nickname profile_image'}}).then(r=>{if(r.error)alert('로그인 실패: '+r.error.message)})}
 /* ===== 클라우드 저장 (Supabase game_saves) ===== */
 const LS='ashen1',OW='ashen1u';let cloudOK=false,lastUp='',lastUpT=0,syncing=false,cloudHadProg=false,lockAt=0;/* lockAt: 마지막으로 '이 기기가 자리 주인' 임을 서버에서 확인한 시각 */
+/* 서버 진행도 보호: 서버 저장보다 STAGE·Lv 둘 다 낮은 저장은 사용자가 확인하기 전엔 서버에 올리지 않아요 */
+let cloudSrv=null,dgOK=false;const prg=x=>{try{const d=typeof x=='string'?JSON.parse(x):x;return d?{s:d.stage||1,l:d.lv||1}:null}catch(e){return null}},lowerP=(a,b)=>!!a&&!!b&&a.s<b.s&&a.l<b.l;
 const lsGet=()=>{try{return localStorage.getItem(LS)}catch(e){return null}},tsOf=x=>{try{return(JSON.parse(x)||{}).ts||0}catch(e){return 0}};
 function syncDone(err){syncing=false;AF.syncErr=err?1:0;AF.synced=err?0:1;if(!err){window.dispatchEvent(new Event('af-nick'));if(!AF.nk)setTimeout(()=>nkOpen(1),0)}if(tm.classList.contains('on')){buildTitle();focusFirst(tm)}}
 /* ===== 계정 정지 — 서버(my_ban)가 '정지 중'이라고 하면 게임을 막아요(접속할 때 한 번만 확인). 저장·채팅·우편은 서버(RLS)에서도 막혀 있어서 이 화면은 안내용이에요 ===== */
@@ -1815,33 +1841,35 @@ async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=tr
     const cloud=r.data&&r.data.data;let cs=cloud?JSON.stringify(cloud):null;const local=lsGet();let owner=null;try{owner=localStorage.getItem(OW)}catch(e){}
     let useCloud=false,wipe=false;
     if(owner&&owner!==u.id){try{if(local)localStorage.setItem(LS+'@'+owner,local)}catch(e){}if(cloud)useCloud=true;else wipe=true}
-    else if(cloud&&(!local||(!hasProg(local)&&hasProg(cs))||tsOf(cs)>tsOf(local)||(!owner&&hasProg(local))))useCloud=true;/* 서버에 진행이 있고 이 기기가 빈 Lv1이면 시간과 상관없이 서버 저장을 불러와요 */
+    else if(cloud&&(!local||(!hasProg(local)&&hasProg(cs))||tsOf(cs)>tsOf(local)||(!owner&&hasProg(local))||(hasProg(cs)&&hasProg(local)&&lowerP(prg(local),prg(cs)))))useCloud=true;/* 기기 저장이 더 최근이어도 진행도가 서버보다 낮으면 조용히 덮어쓰지 않고 아래에서 꼭 물어봐요 *//* 서버에 진행이 있고 이 기기가 빈 Lv1이면 시간과 상관없이 서버 저장을 불러와요 */
     {let ln='';try{ln=(JSON.parse(local)||{}).nk||''}catch(e){}if(useCloud&&cloud&&!cloud.nk&&ln){cloud.nk=ln;cs=JSON.stringify(cloud)}/* 서버 저장에 닉네임이 없으면 기기 닉네임을 이어 써요 */
       if(!useCloud&&!wipe&&cloud&&cloud.nk&&!ln&&!AF.nk){AF.nk=cloud.nk}}
     let keepLocal=false;if(useCloud&&!wipe&&local&&!(owner&&owner!==u.id)&&hasProg(local)){if(!(await ovrAsk(local,cs,!owner))){useCloud=false;keepLocal=true;
       try{const L=JSON.parse(local),C=JSON.parse(cs),Ls=L.stage||1,Cs=C.stage||1,Ll=L.lv||1,Cl=C.lv||1;
         if(Cs>Ls||Cl>Ll){if(!confirm('서버 저장이 더 많이 진행돼 있어요.\n서버 STAGE '+Cs+' · Lv.'+Cl+' / 이 기기 STAGE '+Ls+' · Lv.'+Ll+'\n이 기기 저장으로 바꾸면 서버의 진행은 사라져요. 정말 이 기기 저장으로 덮어쓸까요?')){useCloud=true;keepLocal=false}}}catch(e){}
-      if(keepLocal&&cs){try{localStorage.setItem(LS+'cb@'+u.id,cs)}catch(e){}}/* 덮어쓰기 직전 서버 저장 사본을 이 기기에 보관 */}}
+      if(keepLocal){dgOK=true;if(cs){try{localStorage.setItem(LS+'cb@'+u.id,cs)}catch(e){}}}/* 덮어쓰기 직전 서버 저장 사본을 이 기기에 보관 */}}
     try{localStorage.setItem(OW,u.id)}catch(e){}
     const afp=(sessionStorage.getItem('afr')||'').split('|'),afOn=afp[0]===u.id&&Date.now()-(+afp[1]||0)<60000;/* 방금(1분 안에) 같은 계정으로 새로고침했는데도 또 적용해야 하면 이상 상태예요 → 업로드를 켜지 않고 '불러오지 못했어요' 로 멈춰서 서버 저장이 기기 데이터로 덮이지 않게 해요 */
     if((useCloud||wipe)&&afOn){sessionStorage.removeItem('afr');syncDone(1);return}
     if(useCloud||wipe){AF.resetting=true;try{if(useCloud)localStorage.setItem(LS,cs);else localStorage.removeItem(LS)}catch(e){}sessionStorage.setItem('afr',u.id+'|'+Date.now());location.reload();return}
-    sessionStorage.removeItem('afr');cloudOK=true;cloudHadProg=!!cs&&hasProg(cs);if(cs)lastUp=JSON.stringify(Object.assign({},cloud,{ts:0}));
+    sessionStorage.removeItem('afr');cloudOK=true;cloudHadProg=!!cs&&hasProg(cs);cloudSrv=cs&&!dgOK?prg(cs):null;if(cs)lastUp=JSON.stringify(Object.assign({},cloud,{ts:0}));
     if(!useCloud&&!wipe&&local){if(!AF.nk&&cloud&&cloud.nk)AF.nk=cloud.nk;/* 이 기기 저장을 유지해도 서버의 닉네임은 이어 써요 */let ln2='';try{ln2=(JSON.parse(local)||{}).nk||''}catch(e){}if(keepLocal||(AF.nk&&!ln2)){try{AF.save()}catch(e){}}}
     if(local&&!useCloud&&!wipe&&(keepLocal||!cloud||tsOf(local)>tsOf(cs)))await cloudUp(true);
     syncDone(0)}catch(e){console.warn('cloud sync',e);syncDone(1)}}
-async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;if(cloudHadProg&&!hasProg(raw))return;/* 서버에 진행이 있으면 빈 Lv1 저장으로는 절대 덮어쓰지 않아요 */const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
+async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;if(cloudHadProg&&!hasProg(raw))return;if(!dgOK&&lowerP(prg(raw),cloudSrv))return;/* 서버보다 진행도가 낮은 저장은 자동으로 올리지 않아요 */
+/* 서버에 진행이 있으면 빈 Lv1 저장으로는 절대 덮어쓰지 않아요 */const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
   let o;try{o=JSON.parse(raw)}catch(e){return}const key=JSON.stringify(Object.assign({},o,{ts:0}));if(key===lastUp)return;
-  const pT=lastUpT;lastUpT=n;if(!(await lockOk())||!cloudOK){lastUpT=pT;return}/* 업로드 직전에 내 자리가 맞는지 확인(오래 멈췄다 깬 기기가 옛 저장으로 덮어쓰는 것 방지) */const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key;cloudHadProg=hasProg(raw)}
-async function cloudDel(){const u=AF.user;if(!sb||!u)return;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp='';cloudHadProg=false}
+  const pT=lastUpT;lastUpT=n;if(!(await lockOk())||!cloudOK){lastUpT=pT;return}/* 업로드 직전에 내 자리가 맞는지 확인(오래 멈췄다 깬 기기가 옛 저장으로 덮어쓰는 것 방지) */const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key;cloudHadProg=hasProg(raw);cloudSrv=dgOK?null:prg(o)}
+async function cloudDel(){const u=AF.user;if(!sb||!u)return;cloudSrv=null;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp='';cloudHadProg=false}
 AF.pubFlush=()=>{lastUpT=0;cloudUp(true).catch(()=>{})};
 AF.cloudUp=g=>cloudUp(false,g).catch(()=>{});AF.cloudDel=cloudDel;
 let csAt=0;AF.cloudSaveNow=async function(btn){const sm=btn&&btn.querySelector('small'),old=sm?sm.textContent:'',say=(t,c)=>{if(sm)sm.textContent=t;try{AF.chatSys(t,c||'#7dffe0')}catch(e){}if(sm)setTimeout(()=>{sm.textContent=old},2500)};
   const u=AF.user;if(!sb||!u||!cloudOK){say('서버 연결을 확인하는 중이에요. 잠시 후 다시 눌러 주세요','#ff9a8a');return}
   if(Date.now()-csAt<20000){say('방금 저장했어요 · 잠시 후 다시 눌러 주세요','#ffd98a');return}
   try{AF.save()}catch(e){}const raw=lsGet();let o;try{o=JSON.parse(raw)}catch(e){say('저장할 데이터를 읽지 못했어요','#ff9a8a');return}if(cloudHadProg&&!hasProg(raw)){say('서버에 진행 중인 저장이 있어서 빈 저장으로는 덮어쓰지 않아요','#ff9a8a');return}
+  if(!dgOK&&lowerP(prg(o),cloudSrv)){if(!confirm('서버 저장이 더 많이 진행돼 있어요.\n서버 STAGE '+cloudSrv.s+' · Lv.'+cloudSrv.l+' / 이 기기 STAGE '+(o.stage||1)+' · Lv.'+(o.lv||1)+'\n이 기기 저장으로 덮어쓰면 서버의 진행은 사라져요. 정말 덮어쓸까요?')){say('서버 저장을 지키려고 저장하지 않았어요','#ffd98a');return}dgOK=true}
   csAt=Date.now();if(sm)sm.textContent='저장 중…';if(!(await lockOk())||!cloudOK){csAt=0;say('다른 기기에서 접속 중이라 저장하지 않았어요','#ff9a8a');return}
-  try{const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error)throw r.error;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();cloudHadProg=hasProg(raw);say('☁ 서버에 저장했어요 · STAGE '+(o.stage||1)+' · Lv.'+(o.lv||1))}
+  try{const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error)throw r.error;lastUp=JSON.stringify(Object.assign({},o,{ts:0}));lastUpT=Date.now();cloudHadProg=hasProg(raw);cloudSrv=dgOK?null:prg(o);say('☁ 서버에 저장했어요 · STAGE '+(o.stage||1)+' · Lv.'+(o.lv||1))}
   catch(e){csAt=0;console.warn('manual save',e);say('서버 저장에 실패했어요 · 잠시 후 다시 시도해 주세요','#ff9a8a')}};
 setInterval(()=>{if(AF.st==1&&!document.hidden)AF.cloudUp(600000)},20000);/* 서버 자동 저장: 켜져 있으면 약 10분마다 */
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&AF.st==1){try{AF.save()}catch(e){}cloudUp(true,300000).catch(()=>{})}});/* 탭 전환 저장: 마지막 서버 저장 후 최소 5분 간격 */
@@ -2228,7 +2256,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now(
 </script>
 <script>
 (function(){const AF=window.AF;if(!AF||!AF.WB)return;
-let ST=null,err='',busy=0;const W=AF.WB,DO={v:0},NW=()=>Date.now()+DO.v,EXP=Infinity,/* EXP: 미수령 보상 보관 일수 (Infinity=안 사라짐, 3으로 바꾸면 3일) */KEY='wbmock',HP0=2e10,FHP=1e13,/* HP0=공용 목표 200억: 실측 도전 1회 피해≈전투력×100 → 상위 2명(1200만) 하루 ~70억 + 평균 300만 유저 1인 하루 ~7억 기준, 10명 64%·15명 82%·20명 처치. FHP=개인 도전 보스 HP(상한 방지) */wk=()=>Math.floor((NW()+324e5)/864e5),wkw=()=>Math.floor((NW()+324e5-3456e5)/6048e5),dy=()=>ST?ST.d:'';/* 한국 시간 기준: 보스·도전 횟수·정산은 매일 0시, 교환소 주간 한도는 월요일 0시에 리셋 */
+let ST=null,err='',busy=0;const W=AF.WB,DO={v:0},NW=()=>Date.now()+DO.v,EXP=Infinity,/* EXP: 미수령 보상 보관 일수 (Infinity=안 사라짐, 3으로 바꾸면 3일) */KEY='wbmock',HP0=2e10,FHP=2e13,/* HP0=공용 목표 200억: 실측 도전 1회 피해≈전투력×100 → 상위 2명(1200만) 하루 ~70억 + 평균 300만 유저 1인 하루 ~7억 기준, 10명 64%·15명 82%·20명 처치. FHP=개인 도전 보스 HP(상한 방지) */wk=()=>Math.floor((NW()+324e5)/864e5),wkw=()=>Math.floor((NW()+324e5-3456e5)/6048e5),dy=()=>ST?ST.d:'';/* 한국 시간 기준: 보스·도전 횟수·정산은 매일 0시, 교환소 주간 한도는 월요일 0시에 리셋 */
 const kf=n=>n>=99995000?(+(n/1e8).toFixed(n>=1e9?1:2))+'억':n>=1e4?Math.round(n/1e4).toLocaleString()+'만':String(Math.round(n));
 const SLN={w:'무기',a:'갑옷',h:'투구',r:'반지',n:'목걸이',f:'장화'},MS=[[.25,'25%',2],[.5,'50%',2],[.75,'75%',3],[1,'처치',8]],/* 협동 마일스톤: 공용 HP가 이만큼 깎이면 참여자 전원에게 코인 */BOX=[[2,'희귀',20,3],[3,'영웅',60,2],[4,'전설',300,1]];
 /* ※ 지금은 브라우저에 저장하는 '가짜 서버'예요. 나중에 Supabase RPC로 같은 함수 4개(get/hit/settle/claim)만 바꾸면 돼요 */
@@ -2718,7 +2746,7 @@ function setInfo(id,extra){
   const t=$('vit'),d=$('vid');
   const ib=root&&root.querySelector('.vinfo');if(ib){clearTimeout(setInfo.t);if(extra){ib.classList.add('on');setInfo.t=setTimeout(()=>ib.classList.remove('on'),3500)}else ib.classList.remove('on')}/* 설명 카드는 안내 문구가 있을 때만 잠깐 보여요 */
   t.textContent=b?b.n:'잿빛 숲 야영지';t.style.color=b?b.c:'#f0d9a0';
-  d.textContent=extra||(b?b.d:'◀ ▶ 버튼·A/D 키·바닥 터치로 걸어요. 건물을 누르면 그 앞까지 가서 열려요.');
+  d.textContent=extra||(b?b.d:'◀ ▶ 버튼·A/D 키·바닥 터치로 걸어요. 건물을 누르면 그 앞까지 가서 열려요. 다른 사람을 누르면 오목을 신청할 수 있어요.');
   BD.forEach(x=>{const c=$('vcb-'+x.id);if(c)c.style.borderColor=x.id===id?'#ffd98a':''});
 }
 function go(x,id){
@@ -2732,7 +2760,7 @@ function go(x,id){
   const tok=++mt;clearTimeout(go.t);
   go.t=setTimeout(()=>{if(tok!==mt)return;me.classList.remove('walk');if(id)act(id)},d*1000);
 }
-function onClick(e){
+function onClick(e){if(!e.target.closest('.vui')&&gmPick(e))return;
   if(e.target.closest('.vui'))return;
   const b=e.target.closest('[data-b]');
   if(b){go(+b.dataset.x,b.dataset.b);return}
@@ -2779,7 +2807,7 @@ function open(){
 function close(){
   if(!root||!root.classList.contains('on'))return;
   clearInterval(iv);clearInterval(hiv);hd=0;clearTimeout(go.t);mt++;me.classList.remove('walk');
-  vcl=Date.now();root.classList.remove('on');chatUp(0);netStop();try{AF.CHAT.vlMode(false)}catch(e){}AF.vl.exit();
+  vcl=Date.now();root.classList.remove('on');chatUp(0);gmAbort();netStop();try{AF.CHAT.vlMode(false)}catch(e){}AF.vl.exit();
 }
 addEventListener('keydown',e=>{
   if(!root||!root.classList.contains('on')||e.ctrlKey||e.metaKey||e.altKey||e.code==='KeyV'||/^F\d+$/.test(e.code))return;
@@ -2860,8 +2888,9 @@ function netStart0(){
   try{NET.ch=AF.sb.channel('village',{config:{broadcast:{self:false},private:VL_PRIVATE}})
     .on('broadcast',{event:'p'},netOn)
     .on('broadcast',{event:'c'},netChat)
+    .on('broadcast',{event:'g'},gmOn)
     .on('broadcast',{event:'b'},m=>{const o=m&&m.payload;if(o&&o.i&&ppl[String(o.i).slice(0,8)])AF.vlPeople.del(String(o.i).slice(0,8))})
-    .subscribe(s=>{if(s==='SUBSCRIBED'){NET.ok=1;netSend('p',netPkt(NET.tx,1))}else if(s==='CLOSED'||s==='CHANNEL_ERROR'||s==='TIMED_OUT'){NET.ok=0;if(s!=='CLOSED'){try{console.warn('[village] 채널 연결 실패:',s,VL_PRIVATE?'(private: SQL 정책을 실행했는지 확인)':'')}catch(e){}}}})}catch(e){NET.ch=null;return}
+    .subscribe(s=>{if(s==='SUBSCRIBED'){NET.ok=1;netSend('p',netPkt(NET.tx,1));gmResync()}else if(s==='CLOSED'||s==='CHANNEL_ERROR'||s==='TIMED_OUT'){NET.ok=0;if(s!=='CLOSED'){try{console.warn('[village] 채널 연결 실패:',s,VL_PRIVATE?'(private: SQL 정책을 실행했는지 확인)':'')}catch(e){}}}})}catch(e){NET.ch=null;return}
   NET.ka=setInterval(()=>netSend('p',netPkt(NET.tx)),60000);
   NET.gc=setInterval(()=>{const now=Date.now();for(const k of Object.keys(ppl))if(ppl[k].seen&&now-ppl[k].seen>150000)AF.vlPeople.del(k)},10000);
 }
@@ -2882,6 +2911,218 @@ AF.vlPeople={
   say(id,text,ms){const p=ppl[id]||(id==='me'?{el:me}:null);if(!p)return;const b=p.el.querySelector('.vsay');b.textContent=String(text).slice(0,60);clearTimeout(p.s);p.s=setTimeout(()=>{b.textContent=''},ms||4000)},
   del(id){const p=ppl[id];if(!p)return;clearTimeout(p.t);clearTimeout(p.s);p.el.remove();delete ppl[id];count()}
 };
+/* ===== 마을 오목 (재미용 · 서버 저장 없음 · 승패 보상 없음) =====
+   마을에서 다른 사람을 눌러 신청 → 수락하면 시작해요. 같은 마을 채널의 'g' 이벤트로 주고받아요.
+   15x15 자유 오목(5목 이상) · 한 수 30초 · 흑백은 수락할 때 랜덤 · 마을을 나가면 기권이에요.
+   수 목록 전체를 매번 보내서, 패킷이 하나 빠져도 다음 전송에서 맞춰져요. */
+const GM_N=15,GM_T=30000,GM_INV=20000;
+let gm=null,gmI=null,gmR=null,gmC=null,gmEl=null,gmCv=null,gmCe=null,gmSel=-1,gmTk=0,gmBt=0,gmS=340;
+const gmCool={};
+const gmRid=()=>Math.random().toString(36).slice(2,8);
+const gmMe=()=>String(AF.nk||'나').slice(0,12);
+function gmMsg(t){try{toast(t,'#7dffe0')}catch(e){try{setInfo('',t)}catch(x){}}}
+function gmSend(to,k,g,x){const o=x||{};o.i=nid();o.to=to;o.k=k;o.g=g;netSend('g',o)}
+
+/* --- 다른 사람을 눌렀는지 --- */
+function gmPick(e){
+  if(gm)return true;
+  gmC=null;
+  for(const id in ppl){
+    const el=ppl[id].el,t=el.querySelector('.vdl'),r=(t||el).getBoundingClientRect(),px=t?0:14;
+    if(e.clientX>=r.left-px&&e.clientX<=r.right+px&&e.clientY>=r.top-34&&e.clientY<=r.bottom+8){
+      gmC={id:id,name:(el.querySelector('.vco')||{}).textContent||'모험가'};gmCard();return true}
+  }
+  gmCard();return false;
+}
+
+/* --- 신청 · 수락 카드 --- */
+function gmCard(){
+  if(!gmCe){
+    gmCe=document.createElement('div');gmCe.id='gmkC';document.body.appendChild(gmCe);
+    gmCe.addEventListener('click',e=>{
+      const a=e.target&&e.target.dataset&&e.target.dataset.a;if(!a)return;e.stopPropagation();
+      if(a==='inv')gmInvite();else if(a==='x')gmC=null;else if(a==='cn')gmCancel();else if(a==='ok')gmAccept();else if(a==='no')gmDecline();
+      gmCard();
+    });
+  }
+  let h='';
+  if(gm)h='';
+  else if(gmR)h='<div class="gmq"><b>'+esc(gmR.name)+'</b> 님이 오목을 신청했어요</div><div class="gmr"><button type="button" class="gmb g" data-a="ok">수락</button><button type="button" class="gmb" data-a="no">거절</button></div>';
+  else if(gmI)h='<div class="gmq"><b>'+esc(gmI.name)+'</b> 님의 답을 기다리는 중…</div><div class="gmr"><button type="button" class="gmb" data-a="cn">취소</button></div>';
+  else if(gmC)h='<div class="gmq"><b>'+esc(gmC.name)+'</b></div><div class="gmr"><button type="button" class="gmb g" data-a="inv">오목 신청</button><button type="button" class="gmb" data-a="x">닫기</button></div>';
+  gmCe.innerHTML=h;gmCe.classList.toggle('on',!!h);
+}
+function gmInvite(){
+  if(!gmC||gm||gmI||gmR)return;
+  if(!NET.ok||!ppl[gmC.id]){gmMsg('상대가 보이지 않아요.');gmC=null;return}
+  const g=gmRid(),id=gmC.id;
+  gmI={to:id,g:g,name:gmC.name,t:setTimeout(()=>{if(gmI&&gmI.g===g){gmSend(id,'cn',g);const n=gmI.name;gmI=null;gmMsg(n+' 님이 응답하지 않았어요.');gmCard()}},GM_INV)};
+  gmC=null;gmSend(id,'inv',g,{n:gmMe()});
+}
+function gmCancel(){if(!gmI)return;clearTimeout(gmI.t);gmSend(gmI.to,'cn',gmI.g);gmI=null}
+function gmAccept(){
+  if(!gmR)return;clearTimeout(gmR.t);const r=gmR;gmR=null;
+  const b=Math.random()<.5?nid():r.from;
+  gmSend(r.from,'acc',r.g,{b:b});gmStart(r.from,r.name,r.g,b===nid());
+}
+function gmDecline(why){if(!gmR)return;clearTimeout(gmR.t);gmSend(gmR.from,'dec',gmR.g,{r:why||''});gmR=null}
+
+/* --- 받은 메시지 --- */
+function gmOn(m){
+  const o=m&&m.payload,me=nid();if(!o||!o.i||!me||o.to!==me)return;
+  const from=String(o.i).slice(0,8),k=o.k,g=typeof o.g==='string'?o.g.slice(0,8):'';
+  if(from===me||!g)return;
+  if(k==='inv'){
+    const now=Date.now();if(now-(gmCool[from]||0)<4000)return;gmCool[from]=now;
+    if(gm||gmI||gmR){gmSend(from,'dec',g,{r:'busy'});return}
+    gmR={from:from,g:g,name:String(o.n||'모험가').slice(0,12),t:setTimeout(()=>{if(gmR&&gmR.g===g){gmR=null;gmCard()}},GM_INV)};
+    gmC=null;try{navigator.vibrate&&navigator.vibrate(50)}catch(e){}gmCard();
+  }else if(k==='cn'){
+    if(gmR&&gmR.from===from&&gmR.g===g){clearTimeout(gmR.t);gmR=null;gmCard()}
+  }else if(k==='dec'){
+    if(gmI&&gmI.to===from&&gmI.g===g){clearTimeout(gmI.t);const n=gmI.name;gmI=null;gmMsg(o.r==='busy'?n+' 님은 지금 다른 일을 하고 있어요.':n+' 님이 거절했어요.');gmCard()}
+  }else if(k==='acc'){
+    if(gmI&&gmI.to===from&&gmI.g===g&&!gm){const b=String(o.b||'');if(b!==me&&b!==from)return;clearTimeout(gmI.t);const n=gmI.name;gmI=null;gmStart(from,n,g,b===me)}
+  }else if(gm&&gm.opp===from&&gm.g===g){
+    if(k==='mv')gmRecv(o);
+    else if(k==='syn'){if(gm.moves.length)gmSendMv()}
+    else if(k==='end'){
+      if(gm.over)return;const w=String(o.w||'');if(w!==me&&w!==from)return;
+      const r=String(o.r||'');gmEnd(w===me?'win':'lose',r==='time'?'time':r==='left'?'left':'resign');
+    }
+  }
+}
+function gmResync(){if(gm&&!gm.over)gmSend(gm.opp,'syn',gm.g)}
+
+/* --- 대국 --- */
+function gmStart(opp,name,g,black){
+  gm={g:g,opp:opp,oppName:name,role:black?'b':'w',bd:new Int8Array(GM_N*GM_N),moves:[],turn:'b',dl:Date.now()+GM_T+3000,over:0,res:'',why:'',win:null,last:-1,ls:0};
+  gmSel=-1;gmC=null;gmCard();gmBuild();
+  const rs=$('gmrs');if(gmBt){clearTimeout(gmBt);gmBt=0}rs.textContent='기권';
+  gmEl.classList.add('on');gmFit();gmUi();
+  clearInterval(gmTk);gmTk=setInterval(gmTick,250);
+}
+function gmExit(){clearInterval(gmTk);gmTk=0;if(gmBt){clearTimeout(gmBt);gmBt=0}gm=null;gmSel=-1;if(gmEl)gmEl.classList.remove('on');gmCard()}
+/* 마을을 나가면 기권 · 대기 중인 신청도 정리해요 */
+function gmAbort(){
+  if(gmR)gmDecline('');
+  if(gmI)gmCancel();
+  if(gm&&!gm.over)gmSend(gm.opp,'end',gm.g,{w:gm.opp,r:'left'});
+  if(gm)gmExit();
+  gmC=null;gmCard();
+}
+function gmWin(idx,col){
+  const N=GM_N,r=(idx/N)|0,c=idx%N;
+  for(const [dr,dc] of [[0,1],[1,0],[1,1],[1,-1]]){
+    const line=[idx];
+    for(const sg of [1,-1]){let rr=r+dr*sg,cc=c+dc*sg;while(rr>=0&&rr<N&&cc>=0&&cc<N&&gm.bd[rr*N+cc]===col){line.push(rr*N+cc);rr+=dr*sg;cc+=dc*sg}}
+    if(line.length>=5)return line;
+  }
+  return null;
+}
+function gmApply(idx,col){
+  gm.bd[idx]=col;gm.moves.push(idx);gm.last=idx;gmSel=-1;
+  const w=gmWin(idx,col),mine=col===(gm.role==='b'?1:2);
+  if(w){gm.win=w;gmEnd(mine?'win':'lose','five')}
+  else if(gm.moves.length>=GM_N*GM_N)gmEnd('draw','full');
+  else{gm.turn=gm.turn==='b'?'w':'b';gm.dl=Date.now()+GM_T;gmUi();gmDraw()}
+}
+function gmEnd(res,why){if(!gm||gm.over)return;gm.over=1;gm.res=res;gm.why=why;gmSel=-1;gmUi();gmDraw()}
+function gmSendMv(){if(!gm)return;gmSend(gm.opp,'mv',gm.g,{m:gm.moves.join(',')});gm.ls=Date.now()}
+function gmPlace(idx){
+  if(!gm||gm.over||gm.turn!==gm.role||gm.bd[idx])return;
+  const g=gm.g;gmApply(idx,gm.role==='b'?1:2);gmSendMv();
+  if(gm.over&&gm.res==='win'){[900,2200].forEach(d=>setTimeout(()=>{if(gm&&gm.g===g)gmSendMv()},d))}
+}
+function gmRecv(o){
+  if(gm.over||gm.turn===gm.role||!o.m)return;
+  const a=String(o.m).split(',').map(Number);
+  if(a.length!==gm.moves.length+1||a.length>GM_N*GM_N)return;
+  for(let i=0;i<gm.moves.length;i++)if(a[i]!==gm.moves[i])return;
+  const idx=a[a.length-1];if(!Number.isInteger(idx)||idx<0||idx>=GM_N*GM_N||gm.bd[idx])return;
+  gmApply(idx,gm.role==='b'?2:1);
+}
+function gmTick(){
+  if(!gm||gm.over)return;
+  const left=gm.dl-Date.now(),mine=gm.turn===gm.role;
+  if(mine&&left<=0){gmSend(gm.opp,'end',gm.g,{w:gm.opp,r:'time'});gmEnd('lose','time');return}
+  if(!mine&&left<-8000){gmSend(gm.opp,'end',gm.g,{w:nid(),r:'time'});gmEnd('win','time');return}
+  if(!mine&&gm.moves.length&&Date.now()-gm.ls>4000)gmSendMv();/* 상대가 내 수를 놓쳤을 때를 위해 다시 알려요 */
+  gmUi();
+}
+
+/* --- 화면 --- */
+function gmBuild(){
+  if(gmEl)return;
+  gmEl=document.createElement('div');gmEl.id='gmk';gmEl.className='ov';
+  gmEl.innerHTML='<div class="gmw"><div class="gmh"><div class="gmp" id="gmpb"><i class="gms b"></i><span></span></div><div class="gmt" id="gmt"></div><div class="gmp" id="gmpw"><i class="gms w"></i><span></span></div></div><canvas id="gmc"></canvas><div class="gmst" id="gmst"></div><div class="gmbt"><button type="button" class="gmb g" id="gmok">두기</button><button type="button" class="gmb" id="gmrs">기권</button><button type="button" class="gmb g" id="gmx" hidden>닫기</button></div></div>';
+  document.body.appendChild(gmEl);
+  gmCv=$('gmc');
+  gmCv.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    if(!gm||gm.over||gm.turn!==gm.role)return;
+    const r=gmCv.getBoundingClientRect(),u=r.width/GM_N,c=Math.floor((e.clientX-r.left)/u),w=Math.floor((e.clientY-r.top)/u);
+    if(c<0||c>=GM_N||w<0||w>=GM_N)return;
+    const idx=w*GM_N+c;if(gm.bd[idx])return;
+    if(gmSel===idx){gmPlace(idx);return}
+    gmSel=idx;gmDraw();gmUi();
+  });
+  $('gmok').addEventListener('click',()=>{if(gmSel>=0)gmPlace(gmSel)});
+  $('gmrs').addEventListener('click',()=>{
+    if(!gm||gm.over)return;const b=$('gmrs');
+    if(gmBt){clearTimeout(gmBt);gmBt=0;b.textContent='기권';gmSend(gm.opp,'end',gm.g,{w:gm.opp,r:'resign'});gmEnd('lose','resign')}
+    else{b.textContent='정말 기권?';gmBt=setTimeout(()=>{gmBt=0;b.textContent='기권'},3000)}
+  });
+  $('gmx').addEventListener('click',gmExit);
+  addEventListener('resize',()=>{if(gm)gmFit()});
+}
+function gmFit(){
+  const S=Math.max(240,Math.floor(Math.min(innerWidth*.94,innerHeight-200,560))),d=window.devicePixelRatio||1;
+  gmS=S;gmEl.style.setProperty('--gs',S+'px');gmCv.width=Math.round(S*d);gmCv.height=Math.round(S*d);gmDraw();
+}
+function gmDraw(){
+  if(!gmCv||!gm)return;
+  const N=GM_N,S=gmS,u=S/N,c=gmCv.getContext('2d');
+  c.setTransform(gmCv.width/S,0,0,gmCv.width/S,0,0);c.clearRect(0,0,S,S);
+  c.fillStyle='#c99a52';c.fillRect(0,0,S,S);
+  c.strokeStyle='#4a3512';c.lineWidth=1;c.beginPath();
+  for(let i=0;i<N;i++){const p=(i+.5)*u;c.moveTo(p,.5*u);c.lineTo(p,(N-.5)*u);c.moveTo(.5*u,p);c.lineTo((N-.5)*u,p)}
+  c.stroke();
+  c.fillStyle='#4a3512';for(const [a,b] of [[3,3],[3,11],[7,7],[11,3],[11,11]]){c.beginPath();c.arc((a+.5)*u,(b+.5)*u,u*.1,0,7);c.fill()}
+  const xy=i=>[(i%N+.5)*u,(((i/N)|0)+.5)*u];
+  const stone=(i,col,al)=>{
+    const [x,y]=xy(i),r=u*.44,g=c.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);
+    c.globalAlpha=al||1;
+    if(col===1){g.addColorStop(0,'#5a5a5a');g.addColorStop(1,'#0a0a0a')}else{g.addColorStop(0,'#ffffff');g.addColorStop(1,'#cbc7b8')}
+    c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.lineWidth=1;c.strokeStyle=col===1?'#000':'#8a7a5a';c.stroke();c.globalAlpha=1;
+  };
+  for(let i=0;i<N*N;i++)if(gm.bd[i])stone(i,gm.bd[i]);
+  if(gm.last>=0){const [x,y]=xy(gm.last);c.strokeStyle='#ff5a2a';c.lineWidth=2;c.beginPath();c.arc(x,y,u*.18,0,7);c.stroke()}
+  if(gm.win){c.strokeStyle='#ffb84a';c.lineWidth=3;for(const i of gm.win){const [x,y]=xy(i);c.beginPath();c.arc(x,y,u*.48,0,7);c.stroke()}}
+  if(gmSel>=0&&!gm.over&&gm.turn===gm.role&&!gm.bd[gmSel])stone(gmSel,gm.role==='b'?1:2,.55);
+}
+const GM_TXT={
+  win:{five:'다섯 줄을 먼저 완성했어요. 승리!',time:'상대가 시간 안에 두지 않았어요. 승리!',left:'상대가 나갔어요. 승리!',resign:'상대가 기권했어요. 승리!'},
+  lose:{five:'상대가 다섯 줄을 완성했어요. 패배',time:'시간이 초과됐어요. 패배',resign:'기권했어요. 패배'},
+  draw:{full:'판이 가득 찼어요. 무승부'}
+};
+function gmUi(){
+  if(!gmEl||!gm)return;
+  const mine=gm.turn===gm.role,black=gm.role==='b',set=(el,t)=>{if(el.textContent!==t)el.textContent=t};
+  set($('gmpb').querySelector('span'),black?gmMe()+' (나)':gm.oppName);
+  set($('gmpw').querySelector('span'),black?gm.oppName:gmMe()+' (나)');
+  $('gmpb').classList.toggle('on',!gm.over&&gm.turn==='b');$('gmpw').classList.toggle('on',!gm.over&&gm.turn==='w');
+  const left=Math.max(0,Math.ceil((gm.dl-Date.now())/1000)),t=$('gmt');
+  set(t,gm.over?'':String(left));t.classList.toggle('warn',!gm.over&&left<=8);
+  let st;
+  if(gm.over)st=(GM_TXT[gm.res]&&GM_TXT[gm.res][gm.why])||'대국이 끝났어요.';
+  else if(mine)st=gmSel>=0?'같은 칸을 한 번 더 누르거나 [두기]를 누르세요.':'내 차례예요. 놓을 칸을 눌러 고르세요.';
+  else st='상대가 두는 중이에요…';
+  set($('gmst'),st);
+  $('gmok').hidden=!!gm.over;$('gmrs').hidden=!!gm.over;$('gmx').hidden=!gm.over;
+  $('gmok').disabled=!mine||gmSel<0;
+}
+
 AF.vlOpen=open;AF.vlClose=close;
 })();
 </script></body></html>
