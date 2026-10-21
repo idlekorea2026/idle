@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610201200">
+<meta name="build" content="202610211600">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -616,7 +616,7 @@ const ENH={k:18,st:.12,fl:.2,auto:5},EN={w:0,a:0,h:0,r:0,n:0,f:0};
    아이템은 그 드롭 수만큼 등급 확률대로 만들어서 자동 처리해요(더 좋으면 장착, 아니면 판매). minw초 미만 플레이한 저장 데이터는 예전 방식(골드만)으로 계산해요.
    eff 를 올리면 방치가 후해지고, 내리면 짜져요. */
 /* xe: 방치 경험치에만 추가로 곱하는 배율(골드·아이템은 eff만 적용). 방치로 레벨이 너무 빨리 오르면 낮추세요 */
-const OFF={max:43200,eff:.7,xe:.6,win:1800,minw:300},IR={g:0,x:0,n:0,b:0,w:0,k:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0,chrIt=null,chrLv=0,shT=0,shG=-1,ptrT=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
+const OFF={max:43200,eff:.7,xe:.85,win:1800,win2:14400,minw:300},IR={g:0,x:0,n:0,b:0,w:0,k:0},IR2={g:0,x:0,n:0,b:0,w:0,k:0};AF.OFF=Object.freeze(OFF);let DG=0,DGS=null,DGD={d:0},dgBusy=0,chrIt=null,chrLv=0,shT=0,shG=-1,ptrT=0;let ot=0,OR=null,ogs='',lts=0,CSK=0;const tnow=()=>Date.now()+CSK;
 /* 후퇴: 같은 스테이지에서 d번 연속 죽으면 한 단계 아래에서 반복 사냥 → 전투력이 후퇴 시점의 up배가 되거나 max번 클리어하면 원래 스테이지로 복귀 */
 const RT={d:2,up:1.1,max:6,cap:48};
 /* 보스 제한시간(초): 컷신이 끝난 뒤부터 세요. 넘기면 쓰러진 것과 같이 처리돼서 연속 실패 2번이면(RT.d) 후퇴해요. mini 는 5의 배수가 아닌 중간 보스, last 는 5/5 보스 */
@@ -655,7 +655,7 @@ const SKT=[
 {id:'rally',k:'rally',n:'전투 함성',cls:'공용',mp:30,cd:20,p:0,g:0,col:'#ffd84a',ic:'<path d="M12 3l2.5 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/>'},
 {id:'ward',k:'ward',n:'강철 의지',cls:'공용',mp:30,cd:20,p:0,g:0,col:'#86ccff',ic:'<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/>'},
 {id:'focus',k:'focus',n:'정신 집중',cls:'공용',mp:0,cd:25,p:0,g:0,col:'#9ab8ff',ic:'<circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>'}];
-const TN=['일반','고급','희귀'],TC=['#9fb5b0','#5ac8ff','#c78bff'],TMIN=[80,200,300],TDP=[.25,.1];/* 드랍 등급: 스킬북이 나올 때 고급 25% · 희귀 10% (해금 스테이지는 신화·초월 장비와 같아요) *//* 등급: 이름·이펙트는 일반과 같고 위력만 커요 · 고급/희귀는 마나를 최대 마나의 %로 쓰고, 장착하면 마나 회복이 느려져요 */
+const TN=['일반','고급','희귀'],TC=['#9fb5b0','#5ac8ff','#c78bff'],TMIN=[80,200,300],TDP=[.25,.15];/* 드랍 등급: 스킬북이 나올 때 고급 25% · 희귀 15% (해금 스테이지는 신화·초월 장비와 같아요) *//* 등급: 이름·이펙트는 일반과 같고 위력만 커요 · 고급/희귀는 마나를 최대 마나의 %로 쓰고, 장착하면 마나 회복이 느려져요 */
 const TB={spin:[.06,.08],pierce:[.07,.095],slam:[.1,.13],flurry:[.08,.105],drain:[.07,.095],heal:[.09,.12],rally:[.08,.105],ward:[.08,.105],focus:[0,0]};
 SKT.forEach(z=>{z.t=0;z.m=1});
 SKT.slice().forEach(b=>{for(let t=1;t<3;t++){const f=[1,1.35,1.8][t];SKT.push(Object.assign({},b,{id:b.id+t,t,m:[1,1.2,1.4][t],p:b.p*f,g:b.g*f,mpp:TB[b.k][t-1]}))}});
@@ -695,7 +695,7 @@ sfx(784,.3,'triangle',.06,1.6);save();if(chrOpen)buildChr()}
 function skGainQ(id){let o=SKS.own[id];psSk(id,!o);if(!o){SKS.own[id]={lv:1,c:0};for(let i=0;i<3;i++)if(!SKS.eq[i]&&P.lv>=SKL[i]&&!skDup(id)){SKS.eq[i]=id;break}}else{o.c++;while(o.lv<5&&o.c>=SKN[o.lv-1]){o.c-=SKN[o.lv-1];o.lv++}}}
 function skPick(){return skRoll()}
 const SKMIN=80;/* 스킬북은 이 스테이지부터만 떨어져요 */
-function skDrop(e){if(stage<SKMIN)return;const isBoss=e.t=='g',pr=isBoss?(e.mini?.01:.03):e.el?.003:0;if(pr)IR.k+=pr;if(!pr||R()>=pr)return;const id=skRoll();if(id)skGain(id)}
+function skDrop(e){if(stage<SKMIN)return;const isBoss=e.t=='g',pr=isBoss?(e.mini?.01:.03):e.el?.003:0;if(pr){IR.k+=pr;IR2.k+=pr}if(!pr||R()>=pr)return;const id=skRoll();if(id)skGain(id)}
 function skEq(id){if(P.lv<SKL[chrSK]||!SKS.own[id])return;const c=SKS.eq.indexOf(id);if(c==chrSK)SKS.eq[chrSK]=null;else{if(c>=0)SKS.eq[c]=null;const kk=SKT.find(z=>z.id==id).k;SKS.eq.forEach((q,j)=>{if(q&&j!=chrSK&&SKT.find(z=>z.id==q).k==kk)SKS.eq[j]=null});SKS.eq[chrSK]=id}}
 const SKB=[...document.querySelectorAll('#sks .sl')];let skg=['','',''];
 function sksUp(){for(let i=0;i<3;i++){const b=SKB[i],id=SKS.eq[i],s=id&&SKT.find(z=>z.id==id),o=s&&SKS.own[id],lk=P.lv<SKL[i],key=lk?'L'+SKL[i]:s?id+o.lv:'E';
@@ -913,7 +913,7 @@ if(u==null)for(let i=0;i<OC[ri];i++){const t=ks.splice(rn(0,ks.length)|0,1)[0];o
 return{sl,ri,k,o,u,p:M.round(pw),v:M.round(pw*TM[ri]*SL[sl][2]*(.9+R()*.2)),n:n||TIERS[ri].pre+b[k]}}/* 기본 능력치 ±10% 랜덤 */
 /* 천상 이상은 등급마다 따로 굴려요(p = 그 등급 자체의 확률). 새 등급이 해금돼도 아래 등급 확률이 줄지 않아요. 초월 이하는 예전처럼 누적 판정 */
 function rr(b){const k=1+b*8,T0=TIERS.findIndex(t=>t.n=='천상');for(let q=TIERS.length-1;q>=T0;q--){if(stage>=RMIN[q]&&R()/k<TIERS[q].p*evM(q))return q}const r=R()/k;let q=T0-1;while(q>0&&r>=TIERS[q].p*evM(q))q--;while(q>0&&stage<RMIN[q])q--;return q}
-function drop(e){skDrop(e);const isBoss=e.t=='g',n=isBoss?(e.mini?2:3):e.el?2:(R()<.1&&e.t!='m'?1:0);if(isBoss||e.el)IR.b+=n;else IR.n+=n;for(let i=0;i<n;i++)LT.push({x:M.max(60,M.min(WORLD-60,e.x)),y:e.y-e.h/2,vx:rn(-130,130),vy:rn(-560,-400),t:0,l:0,it:mk(SK[rn(0,SK.length)|0],rr(isBoss||e.el?.08:0),3+stage*4+P.lv*1.2)})}
+function drop(e){skDrop(e);const isBoss=e.t=='g',n=isBoss?(e.mini?2:3):e.el?2:(R()<.1&&e.t!='m'?1:0);if(isBoss||e.el){IR.b+=n;IR2.b+=n}else{IR.n+=n;IR2.n+=n}for(let i=0;i<n;i++)LT.push({x:M.max(60,M.min(WORLD-60,e.x)),y:e.y-e.h/2,vx:rn(-130,130),vy:rn(-560,-400),t:0,l:0,it:mk(SK[rn(0,SK.length)|0],rr(isBoss||e.el?.08:0),3+stage*4+P.lv*1.2)})}
 function land(o){const r=o.it.ri;o.ld=T;if(TIERS[r].fx&&OPT.fx){const q=r-3,cc=icol(o.it);nz(.55,250,2400+q*500,'bandpass',.05+q*.008,2);if(q>=3)for(let i=0;i<3+q;i++)setTimeout(()=>sfx(2600+R()*2600,.25,'sine',.025),250+i*70);for(let i=0;i<10+q*5;i++)FX.push({x:o.x+rn(-14,14),y:GY-8,vx:rn(-40,40),vy:-rn(180,460),l:rn(.5,1.1),c:cc})}if(r>=3)csys(TIERS[r].n+(o.it.u!=null?' 유니크':'')+' 아이템 드랍: '+o.it.n,icol(o.it));burst(o.x,GY-8,8,'#c8b89a');sfx(110,.15,'sine',.12,.5);TIERS[r].snd.concat(o.it.u!=null?[1318]:[]).forEach((f,i)=>setTimeout(()=>sfx(f,.25,'triangle',.06),i*110));if(TIERS[r].ann){sfx(65,.45,'sine',.12,.6);setTimeout(()=>{sfx(2093,.7,'sine',.04,1.01);nz(.5,9000,4000,'highpass',.03,1)},TIERS[r].snd.length*110);shake=10;TX.push({x:o.x,y:GY-120,t:o.it.u!=null?'유니크 아이템!':TIERS[r].n+' 아이템!',l:1.8,c:icol(o.it)})}}
 /* 자동 장착 판정: 세트 부위는 같은 세트를 이미 낀 개수(자기 포함)만큼 종합 점수를 SETW씩 가산해요. 세트를 맞추려는 장비가 점수 조금 낮다고 팔리거나 밀려나지 않게 해요 (SETW 를 올리면 세트를 더 우선해요) */
 const SETW=.15,sscr=(x,e)=>{let m=1;if(x.u!=null&&UQ[x.u][2]>=0){const si=UQ[x.u][2],q=e||EQ;let n=1;for(const k of SK){const y=q[k];if(y&&k!=x.sl&&y.u!=null&&UQ[y.u][2]==si)n++}m=1+SETW*n}return scr(x)*m};
@@ -933,7 +933,7 @@ function swapMsg(it,c,v,did,kp){try{const d=v.a?(v.b-v.a)/v.a*100:0,ds=(d>=0?'+'
 if(did)csys(nm+' 교체: '+it.n+' · 전투력 '+ds+ls,d>=0?'#8fe3a0':'#ffb36b');
 else{const t=Date.now();if(t-(HT[it.sl]||0)<10000)return;HT[it.sl]=t;csys(nm+' 유지('+LKN[LK[it.sl]]+'): '+it.n+'이(가) 나왔지만 바꾸지 않았어요 · 전투력 '+ds+ls+(kp?' · 보관함에 보관':''),'#9fb5b0')}}catch(x){}}
 let bigAt=-1e9;/* 큰 상승 소리는 0.5초에 한 번만 (스테이지 끝 일괄 습득 때 겹치지 않게) */
-function coinG(){const cg=M.round((4+stage*2+(P.lv>>1))*(1+bon('gd')/100)*(1+evG()));gold+=cg;IR.g+=cg;return cg}
+function coinG(){const cg=M.round((4+stage*2+(P.lv>>1))*(1+bon('gd')/100)*(1+evG()));gold+=cg;IR.g+=cg;IR2.g+=cg;return cg}
 function coinAll(){let n=0;for(const o of OB)if(o.t=='c'){coinG();n++}OB=OB.filter(o=>o.t!='c');if(n)TX.push({x:P.x,y:P.y-150,t:'동전 '+n+'개 자동 획득',l:.9,c:'#ffcf4a'})}
 /* 절전 중 획득 기록: 교체할 때마다 쌓지 않고 '슬롯별 교체 횟수'와 '스킬북 종류별 개수'만 숫자로 모아요 (많이 얻어도 메모리·화면이 늘지 않아요) */
 /* ===== 보관함: 판매할 장비 중 등급이 INVT 이상(그 등급 포함, 기본 2=희귀)이면 팔지 않고 슬롯별 INVC칸까지 보관해요 (9=꺼짐) · 가득 차면 등급→유니크 여부→점수 순으로 가장 낮은 '보호' 안 한 것부터 판매 ===== */
@@ -970,7 +970,7 @@ if(better(it,c)){psRec(it,1);invV++;const v=c?swapV(it,c):null;EQ[it.sl]=it;if(c
 let resetting=false,svAt=-1e9;
 /* 자동 저장은 마지막 저장 후 2.5초가 지났을 때만 (백그라운드 틱·타이머가 겹쳐도 한 번만) */
 function autoSave(){if(performance.now()-svAt>=2500)save()}
-function save(){if(resetting)return;svAt=performance.now();try{localStorage.setItem('ashen1',JSON.stringify({nk:NK,stage:DG?DGS.stage:stage,best,farm:DG?DGS.farm:farm,mute,ab,ae,lk:LK,atr,frm:DG?DGS.frm:frm,dg:DGD,vol:VOL,ts:(st==0&&ot?lts:tnow()),lv:P.lv,xp:P.xp,gold,up,hu,cdu,EQ,en:EN,pt:PT,ps:PS,pu:PU,ir:DG?DGS.ir:IR,fr:frs,sk:SKS,pv:mkPv(),wb:WB,inv:INV.map(({iid,...r})=>r),invt:INVT,tv:SAVE_V}))}catch(e){}}
+function save(){if(resetting)return;svAt=performance.now();try{localStorage.setItem('ashen1',JSON.stringify({nk:NK,stage:DG?DGS.stage:stage,best,farm:DG?DGS.farm:farm,mute,ab,ae,lk:LK,atr,frm:DG?DGS.frm:frm,dg:DGD,vol:VOL,ts:(st==0&&ot?lts:tnow()),lv:P.lv,xp:P.xp,gold,up,hu,cdu,EQ,en:EN,pt:PT,ps:PS,pu:PU,ir:DG?DGS.ir:IR,ir2:DG?DGS.ir2:IR2,fr:frs,sk:SKS,pv:mkPv(),wb:WB,inv:INV.map(({iid,...r})=>r),invt:INVT,tv:SAVE_V}))}catch(e){}}
 /* ===== 세이브 불러오기: migrate(옛 버전 → 최신 모양) → sane(타입·범위 정리) → applySave(게임 변수에 넣기) =====
    새 저장 형식을 만들 땐 SAVE_V 를 올리고, migrate 에 '이전 버전 → 새 버전' 단계를 하나 추가하세요. */
 const SAVE_V=5;
@@ -991,16 +991,16 @@ if(ob(d.pt)){const o={};for(const k of['str','vit','dex','wis','free'])if(k in d
 const pi=v=>Number.isInteger(v)&&!!PV[v];
 if(Array.isArray(d.ps))d.ps=[0,1,2].map(i=>pi(d.ps[i])?d.ps[i]:null);else delete d.ps;
 if(Array.isArray(d.pu))d.pu=d.pu.filter(pi);else delete d.pu;
-if(ob(d.ir)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir)o[k]=n(d.ir[k],0,1e12,0);d.ir=o}else delete d.ir;
+if(ob(d.ir)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir)o[k]=n(d.ir[k],0,1e12,0);d.ir=o}else delete d.ir; if(ob(d.ir2)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir2)o[k]=n(d.ir2[k],0,1e12,0);d.ir2=o}else delete d.ir2;
 let lc=0;const ic={};d.inv=Array.isArray(d.inv)?d.inv.map(x=>x&&SK.includes(x.sl)?it(x,x.sl):null).filter(Boolean).filter(x=>(ic[x.sl]=(ic[x.sl]||0)+1)<=INVC).map(x=>{x.lk=x.lk&&lc<INVLK?(lc++,1):0;return x}):[];d.invt=[0,1,2,3,9].includes(+d.invt)?+d.invt:2;
 return d}
-function applySave(d){INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}PUB=!(d.pv&&d.pv.sh===0);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});else{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
+function applySave(d){INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}PUB=!(d.pv&&d.pv.sh===0);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});else{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.ir2)Object.assign(IR2,d.ir2);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
 function load(){let d;try{d=JSON.parse(localStorage.getItem('ashen1'))}catch(e){return}if(!d||typeof d!='object'||Array.isArray(d))return;try{applySave(sane(migrate(d)))}catch(e){console.warn('load',e)}}
 function offCalc(){if(ot<60)return;const w=IR.w;
 if(!(w>=OFF.minw)){og=M.round(ot*(.2+stage*.05));return}
-const t=ot*OFF.eff,cg=M.round(IR.g/w*t),xp=M.round(IR.x/w*t*OFF.xe),cnt=x=>M.floor(x)+(R()<x%1?1:0),items=[],pw=3+stage*4+P.lv*1.2,sk=stage>=SKMIN?cnt((IR.k||0)/w*t):0;
-for(let i=M.min(20000,cnt(IR.n/w*t));i>0;i--)items.push(mk(SK[rn(0,SK.length)|0],rr(0),pw));
-for(let i=M.min(20000,cnt(IR.b/w*t));i>0;i--)items.push(mk(SK[rn(0,SK.length)|0],rr(.08),pw));
+const w2=IR2.w,lo=w2>=OFF.minw,rt=(a,b)=>lo?M.min(a/w,b/w2):a/w;/* 속도 = 최근 30분 기준과 최근 약 4시간 기준 중 낮은 쪽 (로그아웃 직전에 몰아서 사냥해도 오프 보상이 부풀지 않아요) */ const t=ot*OFF.eff,cg=M.round(rt(IR.g,IR2.g)*t),xp=M.round(rt(IR.x,IR2.x)*t*OFF.xe),cnt=x=>M.floor(x)+(R()<x%1?1:0),items=[],pw=3+stage*4+P.lv*1.2,sk=stage>=SKMIN?cnt(rt(IR.k||0,IR2.k||0)*t):0;
+for(let i=M.min(20000,cnt(rt(IR.n,IR2.n)*t));i>0;i--)items.push(mk(SK[rn(0,SK.length)|0],rr(0),pw));
+for(let i=M.min(20000,cnt(rt(IR.b,IR2.b)*t));i>0;i--)items.push(mk(SK[rn(0,SK.length)|0],rr(.08),pw));
 OR={g:cg,x:xp,items,sk,h:ot/3600};og=cg;ogs='+'+cg.toLocaleString()+'G · 경험치 +'+xp.toLocaleString()+' · 아이템 '+items.length.toLocaleString()+'개'}
 let ADP=null;
 function adiag(){if(ADP)return;const d=document.createElement('div');ADP=d;
@@ -1091,10 +1091,10 @@ if(vlv&&AF.vlClose)AF.vlClose();dgBusy=1;let k=n.k;/* 서버가 하루 1번을 �
 try{if(AF.sb&&AF.user){const r=await AF.sb.rpc('dungeon_enter');if(r.error)throw r.error;const v=+r.data;if(!v){DGD={d:n.k};AF.dgT=0;save();toast('오늘 던전은 이미 입장했어요','#ff7a7a');if(shopOpen)buildShop();return}k=v;if(tk){AF.dgT=M.max(0,(AF.dgT|0)-1);toast('던전 입장권 1장을 썼어요 (남은 '+AF.dgT+'장)','#9fe8c0')}if(AF.atdRefresh)setTimeout(AF.atdRefresh,800)}}
 catch(e){const m=String((e&&e.message)||'');if(!(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))){toast('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요','#ff7a7a');return}}finally{dgBusy=0}
 if(DG||WBM||st!=1||ci>0||bossLock()){toast('지금은 시작할 수 없어요. 입장 기록은 남았어요','#ff7a7a');DGD={d:k};save();return}
-const w=dgWk(k);DGD={d:k};DGS={stage,farm,frm,bk,dc,w,ir:{...IR}};DG=1;stage=dgStage();farm=false;frm=false;bk=null;dc=0;if(shopOpen)toggleShop();
+const w=dgWk(k);DGD={d:k};DGS={stage,farm,frm,bk,dc,w,ir:{...IR},ir2:{...IR2}};DG=1;stage=dgStage();farm=false;frm=false;bk=null;dc=0;if(shopOpen)toggleShop();
 spawn();P.hp=mhp();P.mp=mmp();P.inv=2;BB.innerHTML='던전 포기 <small>R</small>';TX.push({x:P.x,y:P.y-150,t:DGT[w][0]+'요일 던전 · STAGE '+stage,l:3,c:'#c9a0ff'});save()}
 function dgEnd(ok){if(!DG)return;LT.slice().forEach(o=>pick(o.it));coinAll();const S=stage,w=DGS.w,r=[],pw=3+S*4+P.lv*1.2;
-stage=DGS.stage;farm=DGS.farm;frm=DGS.frm;bk=DGS.bk;dc=DGS.dc;Object.assign(IR,DGS.ir);DG=0;DGS=null;BB.innerHTML='보스 재도전 <small>R</small>';
+stage=DGS.stage;farm=DGS.farm;frm=DGS.frm;bk=DGS.bk;dc=DGS.dc;Object.assign(IR,DGS.ir);Object.assign(IR2,DGS.ir2);DG=0;DGS=null;BB.innerHTML='보스 재도전 <small>R</small>';
 if(ok){const all=w==0,cg=4+S*2+(P.lv>>1),gd=Math.round(cg*(1+bon('gd')/100)*(all?120:w<3?300:0)),xp=Math.round(need()*(all?.3:w==3||w==4?.8:0)),ni=w==5?3:all?1:0;
 if(gd){gold+=gd;r.push(gd.toLocaleString()+'G')}if(xp){P.xp+=xp;r.push('경험치 +'+xp.toLocaleString())}
 for(let i=0;i<ni;i++){const it=mk(SK[rn(0,SK.length)|0],rr(w==5?.3:.15),pw);r.push(iname(it)+' '+it.n);pick(it)}
@@ -1153,11 +1153,11 @@ function splitD(e){const b=M.max(1,M.floor(e.mh/(e.el?4:1)*.3));for(const d of[-
 function kn(n){n=+n;if(!isFinite(n))return String(n);const a=M.abs(n);if(a<1e4)return String(M.trunc(n));const U=['','만','억','조','경','해'];let i=0,v=a;while(v>=1e4&&i<5){v/=1e4;i++}const s=v<10?M.floor(v*100)/100:v<100?M.floor(v*10)/10:M.floor(v);return(n<0?'-':'')+s+U[i]}
 function hit(e,d,kx,nb){if(e.dead||e.ni>0||(e.t=='g'&&ci>0))return;if(e.gh){TX.push({x:e.x,y:e.y-e.h,t:'회피',l:.5,c:'#9aa6b2',s:22});return}d*=dmg(e);let bl=0;if(e.t=='k'&&e.gu&&!nb){d*=.25;bl=1;sfx(1800,.05,'square',.04);burst(e.x+kx*-20,e.y-30,4,'#cfd8e0')}const cr=R()<M.min(.8,.15+bon('cr')/100);d=M.floor(d*(.9+R()*.2)*(cr?CDM():1));if(OPT.fx){const f0=e.hp/e.mh;if(e.tr==null||e.tr<f0)e.tr=f0;e.th=.3;e.hf=1}e.hp-=d;{const l=M.min(CAP.ls,bon('ls'));if(l)P.hp=M.min(mhp(),P.hp+M.min(d*l/100,mhp()*l*.001))}if(AC&&AC.currentTime-lht>.035){hitSnd(cr)}e.fl=.12;if(cr){slw=.07;slf=.3;zm=M.max(zm,1.025)}e.x+=kx*(e.t=='g'||e.t=='o'?4:bl?3:14);
 TX.push({x:e.x,y:e.y-e.h,t:cr?kn(d)+'!':kn(d),l:.8,c:bl?'#9aa6b2':cr?'#ff9a3a':'#ffe08a',s:cr?46:bl?22:26});burst(e.x,e.y-e.h/2,6,'#ffd27a');shake=M.max(shake,4);hs=.04;
-if(e.hp<=0){sfx(700,.12,'sine',.05,1.8);e.dead=1;if(e.t=='d')splitD(e);{const xg=M.round(e.xp*(1+bon('xp')/100));P.xp+=xg;IR.x+=xg}burst(e.x,e.y-e.h/2,18,'#9fe8d8');burst(e.x,e.y-e.h/2,e.el?30:14,e.t=='g'?th.bs:th.sl);if(e.el)burst(e.x,e.y-e.h/2,20,'#ffd84a');drop(e);const n=e.t=='g'?14:e.t=='m'?1:3;
+if(e.hp<=0){sfx(700,.12,'sine',.05,1.8);e.dead=1;if(e.t=='d')splitD(e);{const xg=M.round(e.xp*(1+bon('xp')/100));P.xp+=xg;IR.x+=xg;IR2.x+=xg}burst(e.x,e.y-e.h/2,18,'#9fe8d8');burst(e.x,e.y-e.h/2,e.el?30:14,e.t=='g'?th.bs:th.sl);if(e.el)burst(e.x,e.y-e.h/2,20,'#ffd84a');drop(e);const n=e.t=='g'?14:e.t=='m'?1:3;
 for(let i=0;i<n;i++)OB.push({x:e.x,y:e.y-e.h/2,vx:rn(-120,120),vy:rn(-350,-150),t:R()<HO?'h':'c'});
 while(P.xp>=need()){P.xp-=need();P.lv++;gainPts(3);csys('레벨 '+P.lv+' 달성!','#7dffe0');if(PSL.includes(P.lv))TX.push({x:P.x,y:P.y-130,t:'패시브 슬롯 해금! (I 키)',l:2.5,c:'#ffd84a'});if(SKL.includes(P.lv))TX.push({x:P.x,y:P.y-160,t:'스킬 슬롯 해금! (I 키)',l:2.5,c:'#c9a0ff'});P.hp=mhp();P.mp=mmp();TX.push({x:P.x,y:P.y-100,t:'LEVEL UP!',l:1.6,c:'#7dffe0'});[523,659,784,1046].forEach((f,i)=>setTimeout(()=>sfx(f,.2,'triangle',.06),i*90));burst(P.x,P.y-40,40,'#7dffe0')}
 if(e.t=='g'){slw=.8;slf=.2;zm=1.14;shake=16;burst(e.x,e.y-e.h/2,70,th.gl);burst(e.x,e.y-e.h/2,40,th.bs);clr=3.2;[392,494,587,784,988].forEach((f,i)=>setTimeout(()=>sfx(f,.5,'triangle',.07),i*140));TX.push({x:P.x,y:P.y-120,t:'보스 격파!',l:1.6,c:'#ffb84a'});csys('STAGE '+stage+' 보스를 처치했어요.','#ffb84a');pgrant(stage);gnudge()}}}
-function upd(dt){T+=dt;{const k=M.exp(-dt/OFF.win);IR.g*=k;IR.x*=k;IR.n*=k;IR.b*=k;IR.k*=k;IR.w=IR.w*k+dt}
+function upd(dt){T+=dt;{const k=M.exp(-dt/OFF.win);IR.g*=k;IR.x*=k;IR.n*=k;IR.b*=k;IR.k*=k;IR.w=IR.w*k+dt;const k2=M.exp(-dt/OFF.win2);IR2.g*=k2;IR2.x*=k2;IR2.n*=k2;IR2.b*=k2;IR2.k*=k2;IR2.w=IR2.w*k2+dt}
 if(clr>0){clr-=dt;if(clr<=0){if(DG){dgEnd(1);return}if(WBM){wbEnd();return}LT.slice().forEach(o=>pick(o.it));coinAll();dc=0;let ret=0;if(bk){bk.n++;if(cp()>=bk.c*RT.up||bk.n>=bk.m){stage=bk.s;bk=null;ret=1;frm=true}}else if(!farm&&!frm)stage++;clr=0;spawn();P.hp=mhp();P.mp=mmp();if(ret)TX.push({x:P.x,y:P.y-130,t:'STAGE '+stage+' 복귀! 보스 재도전 버튼으로 도전하세요',l:2.5,c:'#7dffe0'});return}}
 if(frm&&!WBM&&!DG){if(frt>0){frt-=dt;if(frt<=0){LT.slice().forEach(o=>pick(o.it));coinAll();dc=0;spawn(0,1);P.hp=mhp();P.mp=mmp();return}}else if(ci<=0){const al=E.reduce((a,e)=>a+(e.dead?0:1),0);if(!al)frt=1.2;else if(al!=fal){fal=al;fft=0}else if((fft+=dt)>40)frt=.1}}
 bn-=dt;
@@ -1392,17 +1392,32 @@ const pfx=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 #pf .pt{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 16px;border-bottom:1px solid #3a2c12;background:linear-gradient(#2a2110,#120d05)}#pf .pt h2{margin:0;flex:1;font-weight:400;font-size:20px;color:#ffd98a}#pf .pt small{color:#9fb5b0}
 #pf .px{width:36px;height:36px;font-size:16px}#pf .pb{padding:12px 14px;display:flex;flex-direction:column;gap:10px}#pf canvas{align-self:center;width:220px;height:260px;border:1px solid #3a2c12;border-radius:10px;background:radial-gradient(circle at 50% 55%,#24333d,#080d10)}
 #pf .ps{display:flex;justify-content:space-around;font-size:16px}#pf .ps span{color:#9fb5b0}#pf .ps b{font-weight:400;color:#ffe7a8;margin-left:4px}
-#pf .pi{padding:6px 0;border-top:1px solid #ffffff12;font-size:15px}#pf .pi .l{display:flex;justify-content:space-between;gap:8px}#pf .pi small{display:block;color:#9fb5b0}#pf .pi.em{opacity:.45}#pf .pn{text-align:center;color:#9fb5b0;padding:24px 8px;line-height:1.6}`;document.head.appendChild(st)})();
-const PFC=new Map();let pfEl=null,pfRaf=0,pfTok=0;
+#pf .pi{padding:6px 0;border-top:1px solid #ffffff12;font-size:15px}#pf .pi .l{display:flex;justify-content:space-between;gap:8px}#pf .pi small{display:block;color:#9fb5b0}#pf .pi.em{opacity:.45}#pf .pn{text-align:center;color:#9fb5b0;padding:24px 8px;line-height:1.6}
+#pf .pbk{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid #3a2c12}#pf .pbk button{flex:1;width:auto;height:40px;border-radius:8px;font-size:16px}#pf .pbk .pbq{flex:2;color:#ffb0b0;font-size:15px;line-height:1.3}#pf .pbk .dg,#pf .bu.dg{border-color:#ff7a7a88;color:#ff9a9a}#pf .pi .bu{flex:none;width:auto;height:34px;border-radius:8px;padding:0 14px;font-size:15px}`;document.head.appendChild(st)})();
+const PFC=new Map();let pfEl=null,pfRaf=0,pfTok=0,pfWho=null;/* pfWho: 지금 정보창에 떠 있는 상대 {uid,name} — 있으면 맨 아래에 차단 버튼이 붙어요 */
 function pfClose(){pfTok++;cancelAnimationFrame(pfRaf);if(pfEl)pfEl.classList.remove('on')}
-function pfShow(title,body,sub){if(!pfEl){pfEl=document.createElement('div');pfEl.id='pf';document.body.appendChild(pfEl);pfEl.addEventListener('click',e=>{if(e.target===pfEl||e.target.closest('.px'))pfClose()});['keydown','keyup'].forEach(t=>pfEl.addEventListener(t,e=>e.stopPropagation()));addEventListener('keydown',e=>{if(e.key==='Escape'&&pfEl.classList.contains('on')){e.preventDefault();e.stopPropagation();pfClose()}},true)}
-cancelAnimationFrame(pfRaf);pfEl.innerHTML=`<div class="pc"><div class="pt"><h2>${pfx(title)}</h2>${sub?`<small>${pfx(sub)}</small>`:''}<button class="px" aria-label="닫기">✕</button></div><div class="pb">${body}</div></div>`;pfEl.classList.add('on')}
+function blkRow(){const C=AF.CHAT;if(!pfWho||!C||!C.block||pfWho.uid===(C.me&&C.me.id))return '';const on=C.isBlocked(pfWho.uid);return `<div class="pbk"><button${on?'':' class="dg"'} data-pb="${on?'ublk':'blk'}">${on?'차단 해제':'이 유저 차단'}</button></div>`}
+function pfBAct(e){const b=e.target.closest&&e.target.closest('[data-pb]');if(!b)return;const C=AF.CHAT,a=b.dataset.pb;if(!C||!C.block)return;
+ if(a==='bl-u'){C.unblock(b.dataset.k);AF.pfBlockList();return}
+ const bx=pfEl.querySelector('.pbk');if(!pfWho||!bx)return;
+ if(a==='blk'){bx.innerHTML=`<span class="pbq">${pfx(pfWho.name||'이 유저')} 님을 차단할까요?</span><button class="dg" data-pb="blk2">차단</button><button data-pb="blkx">취소</button>`;return}
+ if(a==='blkx'){bx.outerHTML=blkRow();return}
+ if(a==='blk2'){const er=C.block(pfWho.uid,pfWho.name);if(er){bx.innerHTML=`<span class="pbq">${pfx(er)}</span><button data-pb="blkx">확인</button>`;return}pfClose();return}
+ if(a==='ublk'){C.unblock(pfWho.uid);bx.outerHTML=blkRow()}}
+/* 설정 → 차단 목록 */
+AF.pfBlockList=function(){pfTok++;pfWho=null;const C=AF.CHAT,L=C&&C.blocks?C.blocks():[],mx=(C&&C.max)||50;
+ const dt=t=>{if(!t)return '이름 기준 차단 · 상대가 채팅하면 자동으로 정리돼요';const d=new Date(t);return d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate()+' 차단'};
+ pfShow('차단 목록',L.length?L.map(x=>`<div class="pi"><div class="l"><span>${pfx(x.name)}<small>${dt(x.t)}</small></span><button class="bu" data-pb="bl-u" data-k="${pfx(x.key)}">해제</button></div></div>`).join('')+'<small style="color:#9fb5b0">차단한 사람의 채팅은 보이지 않아요. 해제하면 그 뒤에 올라오는 채팅부터 다시 보여요.</small>':'<div class="pn">차단한 사람이 없어요.<br><small>채팅에서 닉네임을 눌러 차단할 수 있어요.</small></div>',L.length+' / '+mx)};
+function pfShow(title,body,sub){if(!pfEl){pfEl=document.createElement('div');pfEl.id='pf';document.body.appendChild(pfEl);pfEl.addEventListener('click',e=>{if(e.target===pfEl||e.target.closest('.px'))pfClose()});pfEl.addEventListener('click',pfBAct);['keydown','keyup'].forEach(t=>pfEl.addEventListener(t,e=>e.stopPropagation()));addEventListener('keydown',e=>{if(e.key==='Escape'&&pfEl.classList.contains('on')){e.preventDefault();e.stopPropagation();pfClose()}},true)}
+cancelAnimationFrame(pfRaf);pfEl.innerHTML=`<div class="pc"><div class="pt"><h2>${pfx(title)}</h2>${sub?`<small>${pfx(sub)}</small>`:''}<button class="px" aria-label="닫기">✕</button></div><div class="pb">${body}${blkRow()}</div></div>`;pfEl.classList.add('on')}
 function pfView(d,name,me){const nm=String(d.nk||name||'모험가').slice(0,12),eq={},en=d.en&&typeof d.en=='object'?d.en:{};for(const k of['w','a','h','r','n','f'])eq[k]=PCL(d.eq&&d.eq[k],k);
+if(!me&&pfWho&&!pfWho.name)pfWho.name=nm;
 const row=k=>{const x=eq[k];if(!x)return `<div class="pi em"><div class="l"><span>${SL[k][0]}</span><span>비어 있음</span></div></div>`;const e=M.max(0,M.min(999,en[k]|0)),v=M.round(x.v*(1+ENH.st*e));
 return `<div class="pi"><div class="l"><span style="color:${icol(x)}">${e?'+'+e+' ':''}${pfx(x.n)}</span><b style="font-weight:400;color:#ffe7a8">${SL[k][1]} +${v}</b></div><small>${iname(x)} ${SL[k][0]}${sn(x)?' · '+pfx(sn(x))+' 세트':''}</small>${x.o.length?`<small>${pfx(ots(x))}</small>`:''}</div>`};
 pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas><div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${kn(+d.cp||0)}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>`,me?'내 정보':'');
 const c2=pfEl.querySelector('canvas'),t0=++pfTok;(function lp(){if(t0!==pfTok||!pfEl.classList.contains('on'))return;drawDoll(c2,eq,me?WB.bd:(d.bd|0),me?WB.cape:(d.cape|0),me?(WB.mv?WB.mt|0:0):(d.mt|0));pfRaf=requestAnimationFrame(lp)})()}
-AF.showProfile=async function(uid,name){if(!uid||(!AF.user&&uid!=='me'))return;const tk=++pfTok;
+AF.showProfile=async function(uid,name){if(!uid)return;const tk=++pfTok;pfWho=(uid==='me'||uid===(AF.user&&AF.user.id))?null:{uid,name:String(name||'').slice(0,12)};
+ if(!AF.user&&uid!=='me'){pfShow(name,'<div class="pn">로그인하면 다른 모험가의 정보를 볼 수 있어요.</div>');return}
  if(uid==='me'||uid===(AF.user&&AF.user.id)){pfView({nk:NK||name,lv:P.lv,st:stage,cp:cp(),eq:EQ,en:EN},name,1);return}
  if(!AF.pub){pfShow(name,'<div class="pn">내 정보를 공개해야 다른 모험가의 정보를 볼 수 있어요.<br><small>설정 → 공개에서 "내 정보 공개"를 켜 주세요.</small></div>');return}
  const hit=PFC.get(uid);if(hit&&Date.now()-hit.t<60000){pfView(hit.d,name,0);return}
@@ -1412,15 +1427,16 @@ AF.showProfile=async function(uid,name){if(!uid||(!AF.user&&uid!=='me'))return;c
   if(d.hidden){pfShow(name,'<div class="pn">이 모험가는 정보를 공개하지 않았어요.</div>');return}
   PFC.set(uid,{t:Date.now(),d});pfView(d,name,0)}catch(e){if(tk===pfTok)pfShow(name,'<div class="pn">정보를 불러오지 못했어요.<br>잠시 후 다시 시도해 주세요.</div>')}};
 function toggleChr(){if(st!=1&&!chrOpen)return;if(chrOpen)return closeChr();if(bossLock())return;if(shopOpen)toggleShop();chrOpen=true;chrMsg='';const s=document.getElementById('chr');s.style.display='block';s.scrollTop=0;buildChr()}
-function closeChr(){chrOpen=false;document.getElementById('chr').style.display='none'}
+function closeChr(){RRC={k:'',j:-1,t:0};chrOpen=false;document.getElementById('chr').style.display='none'}
+let RRC={k:'',j:-1,t:0};
 function buildChr(){const k=chrSel,x=EQ[k],pc=M.min(100,P.xp/need()*100)|0,cn=sb(),sr=(a,b)=>`<span>${a}</span><b>${b}</b>`;
 const eq=z=>{const y=EQ[z],e=EN[z]|0;return `<button class="eq${y?'':' em'}${k==z?' sel':''}" data-sl="${z}" style="--rc:${y?icol(y):'#4a5a5a'};grid-area:${z}" aria-label="${SL[z][0]}"><svg viewBox="0 0 24 24">${CIC[z]}</svg><span>${SL[z][0]}${LK[z]==2?' 🔒':''}</span>${e?`<i class="pl">+${e}</i>`:''}</button>`};
 const e=EN[k]|0,c=ec(e),ebs=SK.filter(z=>EQ[z]),ebm=ebs.length?M.min(...ebs.map(z=>EN[z]|0)):-1,ebd=ebm<0||gold<ec(ebm),enr=`<div class="cw-ln"><span>슬롯 강화 +${e} → +${e+1}</span><small>성공 ${M.round(er(e)*100)}%</small><button class="ac" data-c="e" ${gold<c?'disabled':''}>${c}G</button></div><div class="cw-ln"><span>일괄 강화 <small>장착 슬롯을 낮은 단계부터 골고루</small></span><button class="ac" data-c="eb" ${ebd?'disabled':''}>일괄</button></div>`;
 let d;if(!x)d=`<div class="cw-nm">${SL[k][0]}</div><small>착용한 장비가 없어요. 몬스터가 떨어뜨려요.</small>`+enr;
-else{const q=rc(x);d=`<div class="cw-nm" style="color:${icol(x)}">${e?'+'+e+' ':''}${x.n}</div><small>${x.u!=null?'<span style="color:'+UC+'">'+iname(x)+'</span>':iname(x)} ${SL[k][0]}${sn(x)?' · '+sn(x)+' 세트':''}</small><div class="cw-ln"><span>${SL[k][1]}</span><b>+${iv(x)}${e?` <small>(기본 ${x.v})</small>`:''}${x.p?` <small>· 롤 ${M.max(0,M.min(100,M.round(((x.v/(x.p*TM[x.ri]*SL[x.sl][2])-.9)/.2)*100)))}%</small>`:''}</b></div>`
-+(x.o||[]).map((o,j)=>`<div class="cw-ln"><span>${OP[o[0]][0]}</span><b>+${o[1]}${OP[o[0]][3]} <small>(최대 ${omx(o,x)}${OP[o[0]][3]})</small></b><button class="ac" data-c="r${j}" ${gold<q&&!WB.rr?'disabled':''}>재굴림 ${WB.rr?'쿠폰':q+'G'}</button></div>`).join('')
+else{const q=rc(x);d=`<div class="cw-nm" style="color:${icol(x)}">${e?'+'+e+' ':''}${x.n}</div><small>${x.u!=null?'<span style="color:'+UC+'">'+iname(x)+'</span>':iname(x)} ${SL[k][0]}${sn(x)?' · '+sn(x)+' 세트':''}</small><div class="cw-ln"><span>${SL[k][1]}</span><b>+${iv(x)}${e?` <small>(기본 ${x.v})</small>`:''}${x.p?` <small>· 롤 ${M.max(0,M.min(100,M.round(((x.v/(x.p*TM[x.ri]*SL[x.sl][2])-.9)/.2)*100)))}%</small>`:''}</b></div>`+enr
++(x.o||[]).map((o,j)=>`<div class="cw-ln"><span>${OP[o[0]][0]}</span><b>+${o[1]}${OP[o[0]][3]} <small>(최대 ${omx(o,x)}${OP[o[0]][3]})</small></b><button class="ac" data-c="r${j}" ${gold<q&&!WB.rr?'disabled':''}>${RRC.k==k&&RRC.j===j?'정말? 한 번 더':'재굴림 '+(WB.rr?'쿠폰':q+'G')}</button></div>`).join('')
 
-+`<div class="cw-ln"><span>자동 교체 방식 <small>${['등급과 상관없이 전투력이 오르면 교체','상위 등급이면서 전투력도 오를 때만 교체','빈 슬롯만 채우고, 이후엔 어떤 장비가 나와도 유지 (세팅 고정)','같은 등급 이상이면서 전투력도 오를 때만 교체'][LK[k]]+(ae?'':' · 자동 교체가 꺼져 있어서 지금은 빈 슬롯만 채워요')}</small></span><button class="ac" data-c="lk">${LKN[LK[k]]}</button></div>`+enr}
++`<div class="cw-ln"><span>자동 교체 방식 <small>${['등급과 상관없이 전투력이 오르면 교체','상위 등급이면서 전투력도 오를 때만 교체','빈 슬롯만 채우고, 이후엔 어떤 장비가 나와도 유지 (세팅 고정)','같은 등급 이상이면서 전투력도 오를 때만 교체'][LK[k]]+(ae?'':' · 자동 교체가 꺼져 있어서 지금은 빈 슬롯만 채워요')}</small></span><button class="ac" data-c="lk">${LKN[LK[k]]}</button></div>`}
 const sets=ST.map((z,i)=>{const n=cn[i]|0;return `<div class="cw-set"><div>${z[0]} <small>${n}/4</small></div>${z[1].map(b=>`<small class="${n>=b[0]?'act':''}">${b[0]}세트 · ${b[1].map(o=>OP[o[0]][0]+' +'+o[1]+OP[o[0]][3]).join(', ')}</small>`).join('')}</div>`}).join('');
 const SNM=[['str','힘','공격력',1],['vit','활력','최대 체력',1.5],['dex','민첩','치명타 확률',.1],['wis','지혜','최대 마나·회복',2]];
 const stt=`<div class="cw-sets"><h3>스탯 포인트 <small>남은 ${PT.free}점</small></h3><div class="cw-set">${SNM.map(([k,n,dd,u])=>`<div class="cw-ln"><span>${n} ${PT[k]} <small>${k=='wis'?'최대 마나 +'+(PT[k]*2).toFixed(1)+'% · 마나 회복 +'+(PT[k]*1.5).toFixed(1)+'%':dd+' +'+(PT[k]*u).toFixed(1)+'%'}</small></span><button class="ac" data-c="p:${k}:1" ${PT.free?'':'disabled'}>+1</button><button class="ac" data-c="p:${k}:5" ${PT.free?'':'disabled'}>+5</button><button class="ac" data-c="p:${k}:all" ${PT.free?'':'disabled'}>전부</button></div>`).join('')}<div class="cw-ln"><span>자동 분배 <small>${PT.auto?'힘·활력·민첩·지혜 3:3:2:2':'직접 분배'}</small></span><button class="ac" data-c="pauto">${PT.auto?'끄기':'켜기'}</button><button class="ac" data-c="prst" ${!frs&&gold<P.lv*100?'disabled':''}>재분배 ${frs?'무료 1회':P.lv*100+'G'}</button></div></div></div>`;
@@ -1430,8 +1446,8 @@ const CTB=['장비','능력치','패시브','스킬','세트','보관함'],dollH
 const skT=`<div class="cw-sets"><h3>스킬북 등급 해금</h3><div class="cw-set">${TN.map((n,i)=>`<small style="color:${stage>=TMIN[i]?TC[i]:'#6f8080'}">${n}${i?' · 스킬북 중 '+M.round(TDP[i-1]*100)+'%':''} — ${stage>=TMIN[i]?'해금':'STAGE '+TMIN[i]+' 이상'}</small>`).join('')}</div></div>`;
 const ctH='<div class="cw-tabs">'+CTB.map((n,i)=>`<button data-ct="${i}" class="${chrTab==i?'on':''}">${n}${i==1&&PT.free?' ●':''}</button>`).join('')+'</div>',W1='<div class="cw-r" style="grid-column:1/-1">',cbH=[`<div class="cw-l">${dollH}</div><div class="cw-r">${ddH}</div>`,W1+lvH+stsH+stt+'</div>',W1+pvh+'</div>',W1+skT+skh+'</div>',W1+setH+drH+'</div>',W1+invHtml()+'</div>'][chrTab]||'';
 document.getElementById('chr').innerHTML=`<div class="cw"><div class="cw-t"><h2>캐릭터</h2><span class="cw-g">● 골드 ${gold}</span>${KB?'<small>I 열기/닫기 · Esc</small>':''}<button class="ac" data-c="x" aria-label="닫기">✕</button></div>${ctH}<div class="cw-b">${cbH}</div></div>`}
-document.getElementById('chr').addEventListener('click',e=>{if(e.target.id=='chr')return closeChr();{const t=e.target.closest('[data-ct]');if(t){chrTab=+t.dataset.ct;chrMsg='';sfx(990,.04,'sine',.04,.8);buildChr();document.getElementById('chr').scrollTop=0;return}}const s=e.target.closest('[data-sl]');if(s){chrSel=s.dataset.sl;chrMsg='';sfx(990,.04,'sine',.04,.8);buildChr();return}
-const b=e.target.closest('button[data-c]');if(!b||b.disabled)return;const id=b.dataset.c,x=EQ[chrSel];if(id=='x')return closeChr();
+document.getElementById('chr').addEventListener('click',e=>{if(e.target.id=='chr')return closeChr();{const t=e.target.closest('[data-ct]');if(t){RRC={k:'',j:-1,t:0};chrTab=+t.dataset.ct;chrMsg='';sfx(990,.04,'sine',.04,.8);buildChr();document.getElementById('chr').scrollTop=0;return}}const s=e.target.closest('[data-sl]');if(s){RRC={k:'',j:-1,t:0};chrSel=s.dataset.sl;chrMsg='';sfx(990,.04,'sine',.04,.8);buildChr();return}
+const b=e.target.closest('button[data-c]');if(!b||b.disabled)return;const id=b.dataset.c,x=EQ[chrSel];if(!/^r\d+$/.test(id))RRC={k:'',j:-1,t:0};if(id=='x')return closeChr();
 if(id.startsWith('p:')){const [,k,n]=id.split(':');const m=n=='all'?PT.free:M.min(+n,PT.free);PT[k]+=m;PT.free-=m}
 else if(id=='lk'){LK[chrSel]=LKO[(LKO.indexOf(LK[chrSel]|0)+1)%4];chrMsg='교체 방식: '+LKN[LK[chrSel]]}else if(id=='pauto'){PT.auto=!PT.auto;if(PT.auto&&PT.free){const f=PT.free;PT.free=0;gainPts(f)}}
 else if(id=='prst'){const c=frs?0:P.lv*100;if(gold>=c){gold-=c;frs=0;const t=PT.str+PT.vit+PT.dex+PT.wis+PT.free;PT.str=PT.vit=PT.dex=PT.wis=0;PT.auto=false;PT.free=t}}
@@ -1441,7 +1457,7 @@ else if(id.startsWith('sq:'))chrSK=+id.slice(3);
 else if(id.startsWith('am:')){const i=+id.slice(3);if(i>=0&&i<3&&P.lv>=SKL[i]){SKS.am[i]=((SKS.am[i]|0)+1)%3;chrMsg='슬롯 '+(i+1)+' 자동 사용: '+['항상','보스만','끔'][SKS.am[i]]}}
 else if(id.startsWith('sv:'))skEq(id.slice(3));
 else if(id=='it'){const o=[0,1,2,3,9];INVT=o[(o.indexOf(INVT)+1)%5];chrMsg='보관 기준: '+(INVT>8?'꺼짐':TIERS[INVT].n+' 이상')}else if(id.startsWith('if:'))invF=id.slice(3);else if(id.startsWith('ie:'))chrMsg=invEq(INV.findIndex(z=>z.iid==+id.slice(3)));else if(id=='ic:*')chrMsg=invCleanAll();else if(id.startsWith('ic:'))chrMsg=invClean(id.slice(3));else if(id.startsWith('is:'))chrMsg=invSell(INV.findIndex(z=>z.iid==+id.slice(3)));else if(id.startsWith('il:'))chrMsg=invLock(INV.findIndex(z=>z.iid==+id.slice(3)));
-else if(id=='eb'){chrMsg=bulkEnh()}else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강화 성공! +'+EN[chrSel]:'강화 실패 · 단계는 그대로예요'}else if(id[0]=='r'&&x){chrMsg=reroll(x,+id.slice(1))?'옵션을 재굴림했어요':''}
+else if(id=='eb'){chrMsg=bulkEnh()}else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강화 성공! +'+EN[chrSel]:'강화 실패 · 단계는 그대로예요'}else if(id[0]=='r'&&x){const j=+id.slice(1);if(RRC.k==chrSel&&RRC.j===j){RRC={k:'',j:-1,t:0};chrMsg=reroll(x,j)?'옵션을 재굴림했어요':''}else{RRC={k:chrSel,j:j,t:0};chrMsg='재굴림은 같은 버튼을 한 번 더 눌러야 실행돼요'}}
 uiSnd();save();buildChr()});
 function fxu(dt){for(const e of E){if(e.hf>0)e.hf=M.max(0,e.hf-dt*5);if(e.tr==null)continue;if(e.th>0){e.th-=dt;continue}const f=M.max(0,e.hp/e.mh);if(e.tr>f)e.tr=M.max(f,e.tr-(.35+(e.tr-f)*2.2)*dt);else e.tr=null}FX=FX.filter(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=500*dt;f.l-=dt;return f.l>0});TX=TX.filter(t=>{if(t.l0==null)t.l0=t.l;const lo=t.l0>=2.5&&t.t&&t.t.length>8;t.y-=(lo?12:40)*dt;t.l-=dt*(lo?.55:1);return t.l>0});shake*=.88}
 let last=0,slw=0,slf=1,zm=1,ci=0;
@@ -1452,9 +1468,19 @@ function loop(t){if(psv){psSleep=1;psLT=setTimeout(()=>requestAnimationFrame(loo
 uiRef();render();hudUp();requestAnimationFrame(loop)}
 fit();addEventListener('resize',fit);addEventListener('load',fit);load();document.querySelector('[data-k=mute]').classList.toggle('on',!mute);addEventListener('pagehide',()=>{if(st==1)save()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&st==1)save()});setInterval(()=>{if(st==1)autoSave()},3000);/* 자동 저장 */setInterval(mus,150);document.addEventListener('visibilitychange',()=>{if(AC){try{const r=document.hidden?AC.suspend():AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}});requestAnimationFrame(loop);
 /* ===== 백그라운드 사냥: 탭이 숨겨져도 워커 타이머로 게임을 계속 돌려요 ===== */
-let bgLast=0,bgAcc=0;
+let bgLast=0,bgAcc=0,pfAt=performance.now(),wcAt=Date.now(),wcC=0,wcBusy=0,TSU='',TSK='';
 function bgStep(dt){simStep(dt);if(ci>0)ci-=dt;if(slw>0)slw-=dt}
-function bgTick(){const n=performance.now();if((!document.hidden&&!psv&&!vlv)||st==0){bgLast=n;bgAcc=0;return}
+/* 절전·잠자기 정산: 컴퓨터/폰이 잠들었다 깨면 performance.now()(게임 안의 시계)가 멈추거나 상한에 걸려서 그 시간이 통째로 사라져요.
+   그래서 워커 틱마다 실제 시계(Date.now)와 게임 시계의 차이를 보고, 게임이 못 센 시간(lost)이 1분 이상이면 방치 보상으로 정산해요.
+   · 숨김 상태에서 이미 세는 시간(최대 600초)·화면이 켜져 있을 때 게임이 돌린 시간은 빼서 이중 지급을 막아요
+   · 기기 시계를 앞으로 돌린 편법은 서버 시각으로 한 번 더 확인해서(AF.tsync) 걸러요 · 서버에 닿지 않으면 기기 시계를 그대로 써요(최대 OFF.max)
+   · 던전·월드보스 중에는 정산하지 않아요 */
+async function wcGap(acc,w0,c0,lost){wcBusy=1;try{let g=lost;
+  if(TSU){const ok=await Promise.race([AF.tsync(TSU,TSK),new Promise(r=>setTimeout(()=>r(false),8000))]);if(ok)g=((Date.now()+CSK)-(w0+c0))/1000-acc}
+  if(g>=60&&st==1&&!DG&&!WBM){ot=M.min(g,OFF.max);offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:ot>=3600?M.round(ot/360)/10+'시간':M.round(ot/60)+'분',g:og});og=0}ot=0}}catch(e){}wcBusy=0}
+function bgTick(){const n=performance.now(),w=Date.now(),pd=(n-pfAt)/1000,wd=(w-wcAt)/1000,w0=wcAt,c0=wcC;pfAt=n;wcAt=w;wcC=CSK;
+  if(st==1&&!wcBusy){const acc=(document.hidden||psv||vlv)?M.min(pd,600):M.min(pd,.5),lost=wd-acc;if(lost>=60)wcGap(acc,w0,c0,lost)}
+  if((!document.hidden&&!psv&&!vlv)||st==0){bgLast=n;bgAcc=0;return}
   bgAcc+=M.min(n-bgLast,600000)/1000;bgLast=n;
   if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:M.round(ot/60)+'분',g:og});og=0}ot=0}}/* 너무 오래 밀리면 방치 보상으로 정산 */
   let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}if(st==1){autoSave();try{AF.cloudUp&&AF.cloudUp(600000)}catch(e){}}}
@@ -1547,11 +1573,11 @@ wbEquip:it=>{const c=EQ[it.sl];EQ[it.sl]=it;invV++;if(c)gold+=invAdd(c);TX.push(
 wbSell:it=>{gold+=wbSv(it);save()},wbReroll:(it,j)=>reroll(it,j),wbRc:it=>rc(it),BOOST,P:new Proxy(P,{set:()=>true,defineProperty:()=>false,deleteProperty:()=>false}),cp,sfx,K,go,save});
 /* 시계 조작 방지: 서버 시각과 기기 시계의 차이(SK)를 구해서 저장 시각·방치 시간 계산에 반영해요 */
 AF.pubLeft=()=>PUT>0?M.max(0,PUT+PUL-tnow()):0;AF.pubToggle=()=>{if(AF.pubLeft()>0)return false;PUB=!PUB;PUT=tnow();return true};
-AF.tsync=async(u,k)=>{try{const t0=Date.now();let sv=0;
+AF.tsync=async(u,k)=>{try{if(u&&k){TSU=u;TSK=k}const t0=Date.now();let sv=0;
 try{const r=await fetch(u+'/rest/v1/rpc/server_time',{method:'POST',headers:{apikey:k,Authorization:'Bearer '+k,'Content-Type':'application/json'},body:'{}'});if(r.ok){const j=await r.json();sv=Date.parse(j)||0}}catch(e){}
 if(!sv){try{const r=await fetch(u+'/rest/v1/',{headers:{apikey:k}});const h=r.headers.get('date');if(h)sv=Date.parse(h)||0}catch(e){}}
 if(!sv)return;const t1=Date.now();CSK=sv-(t0+t1)/2;if(M.abs(CSK)<5000)CSK=0;
-if(st==0&&lts){const o=(tnow()-lts)/1000;OR=null;og=0;ogs='';ot=o>60?M.min(o,OFF.max):0;if(ot)offCalc();else ot=0}}catch(e){}};
+if(st==0&&lts){const o=(tnow()-lts)/1000;OR=null;og=0;ogs='';ot=o>60?M.min(o,OFF.max):0;if(ot)offCalc();else ot=0}return true}catch(e){}return false};
 
 })();
 </script>
@@ -1618,7 +1644,7 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
   <h3>절전</h3>${tg('o-ps','자동 절전','3분 동안 조작이 없으면 절전 화면으로 들어가요 · 끄면 들어가지 않아요 (직접 켜는 절전은 P 키·달 모양 버튼으로 그대로 써요)')}
   <h3>화면</h3>${FSOK?tg('o-fs','전체화면','F 키로도 전환해요'):''}${tg('o-sh','화면 흔들림')}${tg('o-fx','전투 연출','슬로모션 · 확대')}
   <h3>공개</h3>${tg('o-pub','내 정보 공개','채팅에서 내 닉네임을 누르면 레벨·전투력·장비가 보여요 · 끄면 다른 사람의 정보도 볼 수 없어요 · 한 번 바꾸면 24시간 동안 다시 바꿀 수 없어요 (로그인 시 서버에 반영)')}
-  
+  <div class="or"><span>차단 목록<small>차단한 사람을 확인하고 해제할 수 있어요 · 채팅에서 닉네임을 눌러 차단해요</small></span><button class="tg on" data-a="blk">열기</button></div>
   <h3>고객지원</h3><div class="or"><span>업데이트 내역<small>최근 바뀐 내용을 볼 수 있어요</small></span><button class="tg on" data-a="pat">열기</button></div><div class="or"><span>문의하기<small>버그 제보·건의 · 답변도 여기서 확인해요</small></span><button class="tg on" data-a="inq">열기</button></div>
   <h3 class="kh">조작</h3>
   <div class="keys"><kbd>← →</kbd><span>이동</span><kbd>Space</kbd><span>점프</span><kbd>Z</kbd><span>베기</span><kbd>X</kbd><span>검기</span><kbd>C</kbd><span>폭발</span><kbd>Q</kbd><span>자동/수동</span><kbd>I</kbd><span>장비</span><kbd>B</kbd><span>단련</span><kbd>M</kbd><span>소리</span><kbd>Enter</kbd><span>채팅</span><kbd>F</kbd><span>전체화면</span><kbd>Esc</kbd><span>메뉴</span></div>
@@ -1634,6 +1660,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
+{v:'2026102104',d:'10/21',t:['유저 차단 추가 — 채팅에서 닉네임을 누르면 나오는 정보창 맨 아래 [이 유저 차단]으로 차단해요 (차단하면 그 사람의 채팅이 바로 사라져요)','닉네임을 바꿔도 차단이 풀리지 않아요 · 설정 → 차단 목록에서 확인하고 해제할 수 있어요','장비 창에서 슬롯 강화·일괄 강화 버튼이 옵션 줄 위로 올라왔어요 (옵션 재굴림 버튼과 헷갈리지 않게)','옵션 재굴림은 같은 버튼을 한 번 더 눌러야 실행돼요 (실수 방지)','채팅 드랍 알림이 천상 등급부터 나와요 (기존: 적룡 이상)']},
 {v:'2026102002',d:'10/20',t:['스킬 자동 사용 설정 추가 — 캐릭터 창의 스킬 탭에서 슬롯마다 [항상 / 보스만 / 끔]을 고를 수 있어요 (보스만: 보스·월드보스와 싸울 때만 자동으로 써요 · 직접 누르는 건 언제나 돼요)','출석체크 추가 — 메뉴의 [출석체크]에서 매일 보상을 받아요 (28일 주기 · 매일 0시 기준 · 로그인 필요)','보상: 월드보스 코인·재굴림 쿠폰 · 7·21일째 던전 입장권 · 탈것 강화권(14·21일째 1장, 28일째 2장) · 28일째 출석 테두리(이미 있으면 코인 30으로 대체)','던전 입장권: 오늘 던전에 이미 들어갔다면 입장권이 한 장씩 자동으로 쓰여요','탈것 강화권: 월드보스 창의 탈것 강화에서 켜면 성공 확률이 +15%p 올라요 (강화할 때 1장 사용 · 이미 확률이 100%면 쓰지 않아요)']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
@@ -1698,6 +1725,7 @@ function act(a,btn){
     clearTimeout(confirmT);confirmT=setTimeout(()=>{if(btn.dataset.a=='new2'){btn.dataset.a='new';btn.classList.remove('dg');btn.textContent='새 게임'}},4000);return}
   if(a=='new2'){AF.resetting=true;try{localStorage.removeItem('ashen1')}catch(e){}cloudDel().then(()=>location.reload(),()=>{alert('서버에 저장된 데이터를 지우지 못했어요. 잠시 후 다시 시도해 주세요.');AF.resetting=false});return}
   if(a=='nick'){nkOpen(0);return}
+  if(a=='blk'){if(AF.pfBlockList)AF.pfBlockList();return}
   if(a=='rank'){openRank(btn);return}if(a=='rk-x'){closeRank();return}
   if(a=='atd'){if(AF.atdOpen)AF.atdOpen();return}
   if(a=='ref'){openRef(btn);return}if(a=='ref-back'){closeRef();return}if(a=='ref-copy'){refCopy();return}if(a=='ref-link'){refCopy(1);return}if(a=='ref-use'){refUse();return}if(a=='opt'){openOpt(btn);return}
@@ -2141,19 +2169,19 @@ buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirs
 (function(){
 const $=id=>document.getElementById(id),box=$('cht'),lg=$('chlg'),ct=$('chct'),inp=$('chin'),hud=$('hud');
 const TABS=[{id:'all',n:'전체',f:()=>true},{id:'chat',n:'채팅',f:m=>m.ch==='chat'},{id:'sys',n:'시스템',f:m=>m.ch==='sys'},{id:'vl',n:'마을',f:m=>m.ch==='vl',vh:1}];/* vh: 마을에 있을 때만 보이는 탭 *//* 탭 추가: 길드·귓속말 등은 여기 한 줄 + 메시지의 ch 값만 늘리면 돼요 */
-const LIM={len:100,gap:1000,dup:5000,keep:200},SAVE='ashen1c';
+const LIM={len:100,gap:1000,dup:5000,keep:200},SAVE='ashen1c',BMAX=50;
 const TOUCH=matchMedia('(pointer:coarse)').matches,vv=window.visualViewport;
 let vlOn=false,tab='all',isOpen=false,keep=false,pend=false,hist=[],hi=-1,lastT=0,lastM='',lastMT=0,seq=0,welcomed=false;
-const seen=new Set(),ign=new Set();
+const seen=new Set(),ignN=new Set(),blk=new Map();/* blk: 차단한 유저 uid → {n:닉네임, t:차단 시각} · ignN: 예전 방식(이름 기준) 차단 — 그 사람 채팅이 다시 오면 uid 차단으로 바뀌어요 */
 const ME={id:'local-'+(Math.random()*1e9|0).toString(36),name:'모험가'+(1000+(Math.random()*9000|0))};
-try{const d=JSON.parse(localStorage.getItem(SAVE));if(d){if(d.name)ME.name=String(d.name).slice(0,12);if(d.id)ME.id=d.id;if(Array.isArray(d.ign))d.ign.forEach(n=>ign.add(n))}}catch(e){}
-const saveMe=()=>{try{localStorage.setItem(SAVE,JSON.stringify({name:ME.name,id:ME.id,ign:[...ign]}))}catch(e){}};saveMe();
+try{const d=JSON.parse(localStorage.getItem(SAVE));if(d){if(d.name)ME.name=String(d.name).slice(0,12);if(d.id)ME.id=d.id;if(Array.isArray(d.ign))d.ign.forEach(n=>ignN.add(String(n).slice(0,12)));if(Array.isArray(d.blk))d.blk.slice(0,BMAX).forEach(x=>{if(Array.isArray(x)&&typeof x[0]==='string'&&x[0])blk.set(x[0],{n:String(x[1]||'').slice(0,12),t:+x[2]||0})})}}catch(e){}
+const saveMe=()=>{try{localStorage.setItem(SAVE,JSON.stringify({name:ME.name,id:ME.id,ign:[...ignN],blk:[...blk].map(([u,v])=>[u,v.n,v.t])}))}catch(e){}};saveMe();
 const hue=n=>{let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%360;return h},hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 const CHAT={me:ME,filter:t=>t/* 욕설 필터 자리: 나중에 여기서 치환 */,net:{mode:'local',connect(){return Promise.resolve()},send(){return Promise.resolve()},history(){return Promise.resolve([])}}};
 function recv(m){
   if(!m||typeof m.text!=='string'||!m.text)return;
   if(m.id!=null){if(seen.has(m.id))return;seen.add(m.id);if(seen.size>500)seen.delete(seen.values().next().value)}
-  if(m.ch!=='sys'&&m.uid!==ME.id&&ign.has(m.name))return;
+  if(m.ch!=='sys'&&m.uid!==ME.id){if(m.uid&&blk.has(m.uid))return;if(ignN.has(m.name)){if(m.uid&&blk.size<BMAX){blk.set(m.uid,{n:m.name,t:Date.now()});ignN.delete(m.name);saveMe()}return}}
   m={ch:m.ch==='sys'?'sys':m.ch==='vl'?'vl':'chat',uid:m.uid,name:String(m.name||'').slice(0,12),text:m.text.slice(0,200),ts:m.ts||Date.now(),c:m.c};
   const el=document.createElement('div');el.className='ln';el._m=m;el._t=Date.now();if(m.ch==='sys'&&m.text.length>18)el._L=1;
   const ts=document.createElement('span');ts.className='ts';ts.textContent=hm(m.ts);el.appendChild(ts);
@@ -2163,11 +2191,21 @@ function recv(m){
   lg.insertBefore(el,lg.firstChild);/* column-reverse: 첫 자식이 맨 아래 줄 */
   while(lg.children.length>LIM.keep)lg.removeChild(lg.lastChild)}
 const sys=(t,c)=>recv({ch:'sys',text:String(t),c});
+/* ---- 유저 차단: 정보창(AF.showProfile)의 [이 유저 차단] · 설정의 [차단 목록] · /ignore 가 이 함수들을 써요 ---- */
+const purge=f=>{[...lg.children].forEach(el=>{const m=el._m;if(m&&m.ch!=='sys'&&m.uid!==ME.id&&f(m))lg.removeChild(el)})};/* 이미 화면에 있는 채팅 줄도 지워요 */
+CHAT.max=BMAX;
+CHAT.isBlocked=u=>!!u&&blk.has(u);
+CHAT.block=(u,n)=>{if(!u||u===ME.id)return '차단할 수 없는 대상이에요.';if(blk.has(u))return '';if(blk.size+ignN.size>=BMAX)return '차단 목록이 가득 찼어요 (최대 '+BMAX+'명)';n=String(n||'').slice(0,12);blk.set(u,{n,t:Date.now()});ignN.delete(n);saveMe();purge(m=>m.uid===u);sys((n||'상대')+' 님을 차단했어요. 설정 → 차단 목록에서 해제할 수 있어요.');return ''};
+CHAT.unblock=k=>{let n='';if(typeof k==='string'&&k.slice(0,2)==='n:'){n=k.slice(2);if(!ignN.delete(n))return}else{const v=blk.get(k);if(!v)return;blk.delete(k);n=v.n}saveMe();sys((n||'상대')+' 님 차단을 풀었어요.')};
+CHAT.blocks=()=>[...blk].map(([u,v])=>({key:u,name:v.n||'(이름 없음)',t:v.t})).concat([...ignN].map(n=>({key:'n:'+n,name:n,t:0}))).sort((a,b)=>b.t-a.t);
 function cmd(t){const p=t.slice(1).split(' '),c=p[0].toLowerCase(),a=p.slice(1).join(' ').trim();
   if(c==='clear')lg.textContent='';
   else if(c==='name'){if(AF.user){sys('닉네임은 타이틀 화면의 \'닉네임 변경\'에서 바꿀 수 있어요.','#ff9a8a');return}if(!/^[가-힣A-Za-z0-9_]{2,12}$/.test(a))sys('이름은 2~12자, 한글·영문·숫자·_ 만 쓸 수 있어요.','#ff9a8a');else{ME.name=a;saveMe();sys('이름을 '+a+'(으)로 바꿨어요.')}}
-  else if(c==='ignore'){if(!a||a===ME.name)sys('차단할 이름을 적어 주세요. 예) /ignore 이름','#ff9a8a');else{ign.add(a);saveMe();sys(a+' 님의 채팅을 숨겨요.')}}
-  else if(c==='unignore'){ign.delete(a);saveMe();sys(a+' 님 차단을 풀었어요.')}
+  else if(c==='ignore'){if(!a||a===ME.name)sys('차단할 이름을 적어 주세요. 예) /ignore 이름','#ff9a8a');else{let u=null;for(const el of lg.children){const m=el._m;if(m&&m.ch!=='sys'&&m.uid&&m.uid!==ME.id&&m.name===a){u=m.uid;break}}
+    if(u){const er=CHAT.block(u,a);if(er)sys(er,'#ff9a8a')}
+    else if(blk.size+ignN.size>=BMAX)sys('차단 목록이 가득 찼어요 (최대 '+BMAX+'명)','#ff9a8a');
+    else{ignN.add(a);saveMe();purge(m=>m.name===a);sys(a+' 님의 채팅을 숨겨요. (최근 채팅에서 못 찾아 이름으로 차단했어요)')}}}
+  else if(c==='unignore'){let k=null;for(const [u,v] of blk)if(v.n===a){k=u;break}if(!k&&ignN.has(a))k='n:'+a;if(k)CHAT.unblock(k);else sys('차단 목록에 없는 이름이에요.','#ff9a8a')}
   else if(c==='w'||c==='r')sys('귓속말은 서버에 연결되면 쓸 수 있어요.');
   else sys('알 수 없는 명령어예요.','#ff9a8a')}
 function submit(raw){let t=raw.replace(/\s+/g,' ').trim();if(!t)return;
