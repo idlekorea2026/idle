@@ -708,10 +708,12 @@ SKB.forEach((b,i)=>{const at=()=>{const r=b.getBoundingClientRect();tipShow(i,r.
 const tst=document.createElement('div');tst.id='tst';document.body.appendChild(tst);
 function toast(t,c){const d=document.createElement('div');d.textContent=t;d.style.borderLeftColor=c||'#ffd27a';tst.appendChild(d);while(tst.children.length>5)tst.firstChild.remove();const ms=M.min(8000,M.max(3200,String(t).length*200));setTimeout(()=>d.classList.add('out'),ms);setTimeout(()=>d.remove(),ms+500)}
 const bf=document.createElement('div');bf.id='bfs';document.body.appendChild(bf);let bfk='';const evp=x=>M.round(x*100);
-function EVH(){return'<div data-i="ev"'+(evOpen?'':' class="sm"')+' style="--c:#7dffe0"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><em></em><span>'+(evOpen?'이벤트 진행 중<br>골드 +'+evp(EV.g)+'%<br>장비 드롭 고급~영웅 +'+evp(EV.d)+'%<br>전설 이상 +'+evp(EV.h)+'%':'+'+evp(EV.g)+'%')+'</span></div>'}
+/* 이벤트 예정 뱃지: 시작 7일 전부터 보여요 · 시작 시각이 되면 자동으로 '진행 중' 뱃지로 바뀌어요 (표시 시각은 한국 시간) */
+const evPre=()=>{if(!EV.on||!evSrv)return false;const d=EV.s-evNow();return d>0&&d<=6048e5},evKst=t=>{const d=new Date(t+324e5),z=n=>(n<10?'0':'')+n;return(d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+z(d.getUTCHours())+':'+z(d.getUTCMinutes())};
+function EVH(pre){const b='<br>골드 +'+evp(EV.g)+'%<br>장비 드롭 고급~영웅 +'+evp(EV.d)+'%<br>전설 이상 +'+evp(EV.h)+'%';return'<div data-i="ev"'+(evOpen?'':' class="sm"')+' style="--c:#7dffe0"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><em></em><span>'+(pre?(evOpen?'이벤트 예정<br>'+evKst(EV.s)+' ~ '+evKst(EV.e)+b:'이벤트 예정'):(evOpen?'이벤트 진행 중'+b:'+'+evp(EV.g)+'%'))+'</span></div>'}
 bf.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-i="ev"]')){evOpen=!evOpen;bfk=''}});
-function UIX(){const a=[];if(sbT>0)a.push(['rally',sbT]);if(sdT>0)a.push(['ward',sdT]);if(evOn())a.push(['ev',EV.e-evNow()]);const k=a.map(z=>z[0]).join()+(evOpen?'+':'');if(k!=bfk){bfk=k;bf.innerHTML=a.map(z=>{if(z[0]=='ev')return EVH();const s=SKT.find(q=>q.id==z[0]);return'<div data-i="'+z[0]+'" style="--c:'+s.col+'"><svg viewBox="0 0 24 24">'+s.ic+'</svg><em></em><span>'+s.n+'</span></div>'}).join('')}
-for(const z of a){const el=bf.querySelector('[data-i="'+z[0]+'"]');if(el){const ev=z[0]=='ev';el.querySelector('em').textContent=ev?'D-'+M.ceil(z[1]/864e5):M.ceil(z[1]);el.style.setProperty('--p',ev?z[1]/(EV.e-EV.s):z[1]/8)}}}
+function UIX(){const a=[];if(sbT>0)a.push(['rally',sbT]);if(sdT>0)a.push(['ward',sdT]);if(evOn())a.push(['ev',EV.e-evNow()]);else if(evPre())a.push(['evp',EV.s-evNow()]);const k=a.map(z=>z[0]).join()+(evOpen?'+':'');if(k!=bfk){bfk=k;bf.innerHTML=a.map(z=>{if(z[0]=='ev')return EVH();if(z[0]=='evp')return EVH(1);const s=SKT.find(q=>q.id==z[0]);return'<div data-i="'+z[0]+'" style="--c:'+s.col+'"><svg viewBox="0 0 24 24">'+s.ic+'</svg><em></em><span>'+s.n+'</span></div>'}).join('')}
+for(const z of a){const el=bf.querySelector('[data-i="'+(z[0]=='evp'?'ev':z[0])+'"]');if(el){const ev=z[0]=='ev',pr=z[0]=='evp';el.querySelector('em').textContent=pr?(z[1]>=864e5?'D-'+M.ceil(z[1]/864e5):M.ceil(z[1]/36e5)+'시간'):ev?'D-'+M.ceil(z[1]/864e5):M.ceil(z[1]);el.style.setProperty('--p',pr?M.max(0,1-z[1]/6048e5):ev?z[1]/(EV.e-EV.s):z[1]/8)}}}
 function FXD(){const n=performance.now()/1000;FD=FD.filter(e=>n-e.t0<e.l);g.save();g.globalCompositeOperation='lighter';const px=P.x-cam;
 if(sbT>0){g.globalAlpha=.3+.15*M.sin(T*6);g.strokeStyle='#ffd84a';g.lineWidth=3;g.beginPath();g.ellipse(px,GY-8,46,11,0,0,7);g.stroke()}
 if(sdT>0){g.globalAlpha=.3+.15*M.sin(T*6+1);g.strokeStyle='#86ccff';g.lineWidth=3;g.beginPath();g.ellipse(px,GY-8,58,14,0,0,7);g.stroke()}
@@ -1468,7 +1470,7 @@ function loop(t){if(psv){psSleep=1;psLT=setTimeout(()=>requestAnimationFrame(loo
 uiRef();render();hudUp();requestAnimationFrame(loop)}
 fit();addEventListener('resize',fit);addEventListener('load',fit);load();document.querySelector('[data-k=mute]').classList.toggle('on',!mute);addEventListener('pagehide',()=>{if(st==1)save()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&st==1)save()});setInterval(()=>{if(st==1)autoSave()},3000);/* 자동 저장 */setInterval(mus,150);document.addEventListener('visibilitychange',()=>{if(AC){try{const r=document.hidden?AC.suspend():AC.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}});requestAnimationFrame(loop);
 /* ===== 백그라운드 사냥: 탭이 숨겨져도 워커 타이머로 게임을 계속 돌려요 ===== */
-let bgLast=0,bgAcc=0,pfAt=performance.now(),wcAt=Date.now(),wcC=0,wcBusy=0,TSU='',TSK='';
+let bgLast=0,bgAcc=0,pfAt=performance.now(),wcAt=Date.now(),wcC=0,wcBusy=0,wcX=0,TSU='',TSK='';
 function bgStep(dt){simStep(dt);if(ci>0)ci-=dt;if(slw>0)slw-=dt}
 /* 절전·잠자기 정산: 컴퓨터/폰이 잠들었다 깨면 performance.now()(게임 안의 시계)가 멈추거나 상한에 걸려서 그 시간이 통째로 사라져요.
    그래서 워커 틱마다 실제 시계(Date.now)와 게임 시계의 차이를 보고, 게임이 못 센 시간(lost)이 1분 이상이면 방치 보상으로 정산해요.
@@ -1477,12 +1479,14 @@ function bgStep(dt){simStep(dt);if(ci>0)ci-=dt;if(slw>0)slw-=dt}
    · 던전·월드보스 중에는 정산하지 않아요 */
 async function wcGap(acc,w0,c0,lost){wcBusy=1;try{let g=lost;
   if(TSU){const ok=await Promise.race([AF.tsync(TSU,TSK),new Promise(r=>setTimeout(()=>r(false),8000))]);if(ok)g=((Date.now()+CSK)-(w0+c0))/1000-acc}
-  if(g>=60&&st==1&&!DG&&!WBM){ot=M.min(g,OFF.max);offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:ot>=3600?M.round(ot/360)/10+'시간':M.round(ot/60)+'분',g:og});og=0}ot=0}}catch(e){}wcBusy=0}
+  /* 같은 틱의 숨김 정산분(wcX)과 시계 보정분(g)을 각각 조건 확인 후 합쳐서 방치 보상을 1번만 지급 */
+  g=(g>=60&&!DG&&!WBM?g:0)+wcX;wcX=0;
+  if(g>=60&&st==1){ot=M.min(g,OFF.max);offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:ot>=3600?M.round(ot/360)/10+'시간':M.round(ot/60)+'분',g:og});og=0}ot=0}}catch(e){}wcBusy=0}
 function bgTick(){const n=performance.now(),w=Date.now(),pd=(n-pfAt)/1000,wd=(w-wcAt)/1000,w0=wcAt,c0=wcC;pfAt=n;wcAt=w;wcC=CSK;
   if(st==1&&!wcBusy){const acc=(document.hidden||psv||vlv)?M.min(pd,600):M.min(pd,.5),lost=wd-acc;if(lost>=60)wcGap(acc,w0,c0,lost)}
   if((!document.hidden&&!psv&&!vlv)||st==0){bgLast=n;bgAcc=0;return}
   bgAcc+=M.min(n-bgLast,600000)/1000;bgLast=n;
-  if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:M.round(ot/60)+'분',g:og});og=0}ot=0}}/* 너무 오래 밀리면 방치 보상으로 정산 */
+  if(bgAcc>180){const gap=bgAcc-180;bgAcc=180;if(st==1&&gap>=60){if(wcBusy){wcX+=gap}else{ot=gap;offCalc();if(OR)offApply();else if(og){gold+=og;offPop({h:M.round(ot/60)+'분',g:og});og=0}ot=0}}}/* 너무 오래 밀리면 방치 보상으로 정산 */
   let c=0;while(bgAcc>=1/30&&c<900){bgStep(1/30);bgAcc-=1/30;c++}if(st==1){autoSave();try{AF.cloudUp&&AF.cloudUp(600000)}catch(e){}}}
 try{const wk=new Worker(URL.createObjectURL(new Blob(['setInterval(()=>postMessage(0),250)'],{type:'text/javascript'})));wk.onmessage=bgTick}catch(e){setInterval(bgTick,1000)}
 /* ===== 절전 모드: 그리기만 멈추고 사냥 계산은 그대로(워커 타이머가 같은 계산을 이어서 해요) · 터치/키 입력으로 해제 ===== */
@@ -1660,6 +1664,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
+{v:'2026102201',d:'10/22',t:['이벤트 예정 뱃지 추가 — 이벤트가 시작되기 전에도 화면 오른쪽 위에 [이벤트 예정 · D-day] 뱃지가 떠요 (누르면 기간과 보너스를 볼 수 있어요)','드랍 이벤트 — 10/23(금) 00:00 ~ 10/25(일) 23:59 · 장비 드랍 고급~영웅 +20%, 전설 이상 +30%, 골드 +30%','방치 보상: 탭을 10분 넘게 떠났다 돌아올 때 알림이 두 번 뜨던 것을 한 번으로 합쳤어요']},
 {v:'2026102104',d:'10/21',t:['유저 차단 추가 — 채팅에서 닉네임을 누르면 나오는 정보창 맨 아래 [이 유저 차단]으로 차단해요 (차단하면 그 사람의 채팅이 바로 사라져요)','닉네임을 바꿔도 차단이 풀리지 않아요 · 설정 → 차단 목록에서 확인하고 해제할 수 있어요','장비 창에서 슬롯 강화·일괄 강화 버튼이 옵션 줄 위로 올라왔어요 (옵션 재굴림 버튼과 헷갈리지 않게)','옵션 재굴림은 같은 버튼을 한 번 더 눌러야 실행돼요 (실수 방지)','채팅 드랍 알림이 천상 등급부터 나와요 (기존: 적룡 이상)']},
 {v:'2026102002',d:'10/20',t:['스킬 자동 사용 설정 추가 — 캐릭터 창의 스킬 탭에서 슬롯마다 [항상 / 보스만 / 끔]을 고를 수 있어요 (보스만: 보스·월드보스와 싸울 때만 자동으로 써요 · 직접 누르는 건 언제나 돼요)','출석체크 추가 — 메뉴의 [출석체크]에서 매일 보상을 받아요 (28일 주기 · 매일 0시 기준 · 로그인 필요)','보상: 월드보스 코인·재굴림 쿠폰 · 7·21일째 던전 입장권 · 탈것 강화권(14·21일째 1장, 28일째 2장) · 28일째 출석 테두리(이미 있으면 코인 30으로 대체)','던전 입장권: 오늘 던전에 이미 들어갔다면 입장권이 한 장씩 자동으로 쓰여요','탈것 강화권: 월드보스 창의 탈것 강화에서 켜면 성공 확률이 +15%p 올라요 (강화할 때 1장 사용 · 이미 확률이 100%면 쓰지 않아요)']},
 ];
