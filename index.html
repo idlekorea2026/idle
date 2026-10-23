@@ -1088,7 +1088,8 @@ document.addEventListener('pointerdown',e=>{const x=e.target;if(shopOpen&&x&&(x.
 /* ===== 요일 던전: 하루 1번, 요일마다 보상이 달라요. 던전 중엔 stage·farm·frm·bk·dc·IR 을 DGS 에 백업해 두고(저장도 백업값으로), 끝나면 그대로 되돌려요 → 방치 보상·후퇴 로직에 영향 없음 ===== */
 const DGT=[['일','전 부문','골드·경험치·장비·스킬북 소량'],['월','골드','골드 대량'],['화','골드','골드 대량'],['수','경험치','경험치 대량'],['목','경험치','경험치 대량'],['금','장비','장비 3개 (등급 상승 확률 ↑)'],['토','스킬북','스킬북 1개']];
 const dgNow=()=>{const d=new Date(tnow()+324e5);return{k:d.getUTCFullYear()*1e4+(d.getUTCMonth()+1)*100+d.getUTCDate(),w:d.getUTCDay()}},dgWk=k=>new Date(Date.UTC(k/1e4|0,(k/100|0)%100-1,k%100)).getUTCDay(),dgStage=()=>M.max(1,M.round(best*.8));
-async function dgEnter(){if(!AF.user){toast('로그인 후에 이용할 수 있는 기능이에요','#ff7a7a');return}if(WBM){toast('월드보스 도전 중에는 입장할 수 없어요','#ff7a7a');return}if(DG||dgBusy||st!=1||ci>0||bossLock())return;const n=dgNow(),tk=DGD.d==n.k;if(tk&&!(AF.dgT>0)){toast('오늘 던전은 이미 입장했어요','#ff7a7a');return}
+AF.dgEnter=dgEnter;AF.dgInfo=()=>({done:DGD.d==dgNow().k,tk:AF.dgT|0});
+async function dgEnter(c){if(!AF.user){toast('로그인 후에 이용할 수 있는 기능이에요','#ff7a7a');return}if(WBM){toast('월드보스 도전 중에는 입장할 수 없어요','#ff7a7a');return}if(DG||dgBusy)return;if(st!=1||ci>0){toast('지금은 입장할 수 없어요. 전투가 끝난 뒤 다시 눌러 주세요','#ff7a7a');return}if(bossLock())return;const n=dgNow(),tk=DGD.d==n.k;if(tk&&!(AF.dgT>0)){toast('오늘 던전은 이미 입장했어요','#ff7a7a');return}if(c&&!confirm(tk?'던전 입장권 1장을 써서 입장할까요?':'오늘의 던전에 입장할까요? (하루 1회)'))return;
 if(vlv&&AF.vlClose)AF.vlClose();dgBusy=1;let k=n.k;/* 서버가 하루 1번을 판정(KST 날짜·요일은 서버가 돌려준 값). 서버 함수가 아직 없으면 로컬 기록으로만 막아요 */
 try{if(AF.sb&&AF.user){const r=await AF.sb.rpc('dungeon_enter');if(r.error)throw r.error;const v=+r.data;if(!v){DGD={d:n.k};AF.dgT=0;save();toast('오늘 던전은 이미 입장했어요','#ff7a7a');if(shopOpen)buildShop();return}k=v;if(tk){AF.dgT=M.max(0,(AF.dgT|0)-1);toast('던전 입장권 1장을 썼어요 (남은 '+AF.dgT+'장)','#9fe8c0')}if(AF.atdRefresh)setTimeout(AF.atdRefresh,800)}}
 catch(e){const m=String((e&&e.message)||'');if(!(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m)))){toast('서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요','#ff7a7a');return}}finally{dgBusy=0}
@@ -1664,9 +1665,8 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
+{v:'2026102301',d:'10/23',t:['바로가기 독 추가 — 월드보스·일일던전·출석체크·마을 아이콘을 한 묶음으로 모았어요 (접었다 펼 수 있고, 접어 둔 상태는 기억해요 · 폰은 처음에 접혀 있어요)']},
 {v:'2026102201',d:'10/22',t:['이벤트 예정 뱃지 추가 — 이벤트가 시작되기 전에도 화면 오른쪽 위에 [이벤트 예정 · D-day] 뱃지가 떠요 (누르면 기간과 보너스를 볼 수 있어요)','드랍 이벤트 — 10/23(금) 00:00 ~ 10/25(일) 23:59 · 장비 드랍 고급~영웅 +20%, 전설 이상 +30%, 골드 +30%','방치 보상: 탭을 10분 넘게 떠났다 돌아올 때 알림이 두 번 뜨던 것을 한 번으로 합쳤어요']},
-{v:'2026102104',d:'10/21',t:['유저 차단 추가 — 채팅에서 닉네임을 누르면 나오는 정보창 맨 아래 [이 유저 차단]으로 차단해요 (차단하면 그 사람의 채팅이 바로 사라져요)','닉네임을 바꿔도 차단이 풀리지 않아요 · 설정 → 차단 목록에서 확인하고 해제할 수 있어요','장비 창에서 슬롯 강화·일괄 강화 버튼이 옵션 줄 위로 올라왔어요 (옵션 재굴림 버튼과 헷갈리지 않게)','옵션 재굴림은 같은 버튼을 한 번 더 눌러야 실행돼요 (실수 방지)','채팅 드랍 알림이 천상 등급부터 나와요 (기존: 적룡 이상)']},
-{v:'2026102002',d:'10/20',t:['스킬 자동 사용 설정 추가 — 캐릭터 창의 스킬 탭에서 슬롯마다 [항상 / 보스만 / 끔]을 고를 수 있어요 (보스만: 보스·월드보스와 싸울 때만 자동으로 써요 · 직접 누르는 건 언제나 돼요)','출석체크 추가 — 메뉴의 [출석체크]에서 매일 보상을 받아요 (28일 주기 · 매일 0시 기준 · 로그인 필요)','보상: 월드보스 코인·재굴림 쿠폰 · 7·21일째 던전 입장권 · 탈것 강화권(14·21일째 1장, 28일째 2장) · 28일째 출석 테두리(이미 있으면 코인 30으로 대체)','던전 입장권: 오늘 던전에 이미 들어갔다면 입장권이 한 장씩 자동으로 쓰여요','탈것 강화권: 월드보스 창의 탈것 강화에서 켜면 성공 확률이 +15%p 올라요 (강화할 때 1장 사용 · 이미 확률이 100%면 쓰지 않아요)']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
 function pmark(){try{localStorage.setItem(PSK,PATCH[0].v)}catch(e){}document.body.classList.remove('pnew')}
@@ -2871,9 +2871,9 @@ addEventListener('keydown',e=>{
 },true);
 addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA'||e.code==='ArrowRight'||e.code==='KeyD')release()},true);
 addEventListener('blur',release);
-const btn=document.createElement('button');btn.id='vlb';btn.type='button';btn.textContent='🏕 마을';btn.style.display='none';
+const btn=document.createElement('button');btn.id='vlb';btn.type='button';btn.className='dkb';btn.setAttribute('aria-label','마을 (V)');btn.title='마을 (V)';btn.style.setProperty('--gl','#ffb84a66');btn.style.setProperty('--b1','#4a3010');btn.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5L3 27h26z" fill="#c98a3a" stroke="#4a2a0a" stroke-width="1.2" stroke-linejoin="round"/><path d="M16 5l-4 22h8z" fill="#8a5a22"/><path d="M16 14l-3.500 13h7z" fill="#2a1608"/><circle cx="26" cy="25" r="2.500" fill="#ff9a3a"/></svg><span>마을</span>';btn.style.display='none';
 document.body.appendChild(btn);
-let ft=0;function flash(m){btn.textContent=m;clearTimeout(ft);ft=setTimeout(()=>{btn.textContent='🏕 마을'},1800)}
+let ft=0;function flash(m){try{AF.toast(m,'#9fe8c0')}catch(e){}}
 btn.addEventListener('click',()=>{if(root&&root.classList.contains('on'))close();else open()});
 addEventListener('keydown',e=>{
   if(e.code!=='KeyV'||e.repeat||e.ctrlKey||e.metaKey||e.altKey)return;
@@ -3193,13 +3193,69 @@ o.innerHTML='<div class="w"><h2>출석체크</h2><div class="s">누적 '+(S.tota
 +'<button class="c" data-z="c"'+(S.done||busy?' disabled':'')+'>'+(S.done?'오늘은 이미 출석했어요':busy?'받는 중…':'오늘 출석 보상 받기')+'</button>'
 +'<div class="s" style="margin-top:8px">28일차 출석 테두리는 처음 한 번만 지급되고, 이미 가지고 있으면 코인 30으로 대신 지급돼요. 던전 입장권은 오늘 던전을 이미 들어갔을 때 자동으로 한 장씩 쓰여요. 탈것 강화권은 월드보스 창의 탈것 강화에서 확률을 올리는 데 써요.</div>'
 +'<button class="x" data-z="x">닫기</button></div>'}
-async function load(){S=null;msg='';paint();try{const r=await A.sb.rpc('attend_state');if(r.error)throw r.error;S=r.data;A.dgT=+S.dg||0;msg=''}catch(x){msg='불러오지 못했어요. 잠시 뒤 다시 열어 주세요'}paint()}
-async function claim(){if(busy||!S||S.done)return;busy=1;paint();try{const r=await A.sb.rpc('attend_claim');if(r.error)throw r.error;const d=r.data||{};if(!d.done){const l=A.attendGrant?A.attendGrant(d):[];msg=l.length?'받았어요: '+l.join(' · '):'출석했어요'}else msg='오늘은 이미 출석했어요';const q=await A.sb.rpc('attend_state');if(!q.error){S=q.data;A.dgT=+S.dg||0}}catch(x){msg='출석 처리에 실패했어요. 잠시 뒤 다시 시도해 주세요'}busy=0;paint();try{window.dispatchEvent(new Event('af-atd'))}catch(x){}}
+async function load(){S=null;msg='';paint();try{const r=await A.sb.rpc('attend_state');if(r.error)throw r.error;S=r.data;A.dgT=+S.dg||0;A.atdDone=!!S.done;msg=''}catch(x){msg='불러오지 못했어요. 잠시 뒤 다시 열어 주세요'}paint()}
+async function claim(){if(busy||!S||S.done)return;busy=1;paint();try{const r=await A.sb.rpc('attend_claim');if(r.error)throw r.error;const d=r.data||{};if(!d.done){const l=A.attendGrant?A.attendGrant(d):[];msg=l.length?'받았어요: '+l.join(' · '):'출석했어요'}else msg='오늘은 이미 출석했어요';const q=await A.sb.rpc('attend_state');if(!q.error){S=q.data;A.dgT=+S.dg||0;A.atdDone=!!S.done}}catch(x){msg='출석 처리에 실패했어요. 잠시 뒤 다시 시도해 주세요'}busy=0;paint();try{window.dispatchEvent(new Event('af-atd'))}catch(x){}}
 function close(){o.classList.remove('on')}
-A.dgT=0;A.atdRefresh=async function(){if(!(A.sb&&A.user)){A.dgT=0;return}try{const q=await A.sb.rpc('attend_state');if(!q.error&&q.data)A.dgT=+q.data.dg||0}catch(x){}};
+A.dgT=0;A.atdDone=null;A.atdRefresh=async function(){if(!(A.sb&&A.user)){A.dgT=0;A.atdDone=null;return}try{const q=await A.sb.rpc('attend_state');if(!q.error&&q.data){A.dgT=+q.data.dg||0;A.atdDone=!!q.data.done}}catch(x){}};
 addEventListener('af-user',()=>{A.dgT=0;setTimeout(A.atdRefresh,1500)});setTimeout(A.atdRefresh,2500);
 A.atdOpen=function(){if(!(A.sb&&A.user)){try{A.toast('로그인하면 이용할 수 있어요','#ff7a7a')}catch(x){}return}o.classList.add('on');load()};
 o.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-z]');if(!b)return;if(b.dataset.z=='x')close();else if(b.dataset.z=='c')claim()});
 addEventListener('keydown',ev=>{if(ev.key=='Escape'&&o.classList.contains('on')){ev.stopPropagation();close()}},true);
 })();
-</script></body></html>
+</script><script>/* ===== 바로가기 독: 월드보스 · 일일던전 · 출석체크 · 마을을 한 묶음으로, 접었다 펼 수 있어요 ===== */
+(function(){const A=window.AF;if(!A)return;
+const css=document.createElement('style');css.textContent=`
+#dock{position:fixed;left:10px;top:var(--wt,84px);z-index:7;display:flex;flex-direction:row;align-items:flex-start;gap:6px}
+#dock .dkx{display:flex;flex-direction:row;gap:6px;order:2}
+#dock #wbb{order:1;position:relative;left:auto;top:auto;right:auto;bottom:auto}
+#dock .dkt{order:3}
+#dock.c .dkx{display:none}
+body.ttl #dock{display:none}
+#dock .dkb,#dock .dkt{position:relative;margin:0;padding:0;border:0;cursor:pointer;color:#ffe2a0;font:13px/1 "Do Hyeon",sans-serif;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;white-space:nowrap;transition:transform .12s,filter .12s}
+#dock .dkb{width:60px;height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;opacity:1;top:auto;right:auto;left:auto;bottom:auto;background:radial-gradient(circle at 50% 28%,var(--b1) 0,#0d0a12 60%,#060509 100%);box-shadow:inset 0 0 0 1px #d7a550,inset 0 0 0 3px #0c0706,inset 0 0 0 4px #8a6428,inset 0 8px 10px #ffffff12,0 5px 12px #000b,0 0 16px var(--gl)}
+#dock .dkb svg{width:32px;height:32px;display:block;filter:drop-shadow(0 0 5px var(--gl))}
+#dock .dkb:hover,#dock .dkt:hover{transform:translateY(-2px);filter:brightness(1.22)}
+#dock .dkb:active,#dock .dkt:active{transform:scale(.93);filter:brightness(.9)}
+#dock .dkb.off{filter:grayscale(.85) brightness(.7)}
+#dock .dkb.al{animation:wbpulse 1.5s ease-in-out infinite}
+#dock .dkt{width:26px;height:66px;border-radius:10px;background:#0b1014e6;box-shadow:inset 0 0 0 1px #6b5228,0 3px 8px #000a;display:flex;align-items:center;justify-content:center}
+#dock .dkt svg{width:14px;height:14px;transition:transform .15s}
+#dock:not(.c) .dkt svg{transform:rotate(180deg)}
+#dock .dn{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 4px;box-sizing:border-box;border-radius:10px;font:12px/18px "Do Hyeon",sans-serif;text-align:center;color:#fff;border:1px solid #ffe0cc;box-shadow:0 2px 5px #000b;display:none}
+#dock .al>.dn{display:block;background:linear-gradient(#ff6a5a,#b3201a)}
+#dock .rm>.dn,#dock.c .dkt.has>.dn{display:block;color:#3a2200;background:linear-gradient(#ffe08a,#d39a2e);border-color:#fff0c0}
+@media(pointer:coarse),(max-width:640px){
+#dock{left:auto;top:auto;right:8px;bottom:var(--wbb,120px);flex-direction:column-reverse;align-items:flex-end}
+#dock .dkx{flex-direction:column-reverse;order:3}#dock #wbb{order:2}#dock .dkt{order:1;width:54px;height:24px}
+#dock .dkb{width:54px;height:60px;border-radius:11px;font-size:12px}#dock .dkb svg{width:28px;height:28px}
+#dock .dkt svg{transform:rotate(-90deg)}#dock:not(.c) .dkt svg{transform:rotate(90deg)}}
+@media(max-width:640px){#dock .dkb{width:46px;height:50px;border-radius:10px;font-size:10px;gap:2px}#dock .dkb svg{width:24px;height:24px}#dock .dkt{width:46px}#dock .dn{top:-6px;right:-6px;min-width:18px;height:18px;font-size:11px;line-height:16px}}
+@media(pointer:coarse) and (max-height:500px){#dock .dkx{flex-direction:row-reverse}}
+/* 폰: 닫힌 채팅 로그가 오른쪽 아이콘 위로 겹치지 않게 폭을 줄여요 */
+@media(max-width:640px){#cht:not(.on){width:min(var(--w,380px),calc(100vw - 78px))}}`;document.head.appendChild(css);
+const sv=(p,x)=>'<svg viewBox="0 0 32 32" aria-hidden="true">'+p+'</svg>'+(x?'<span>'+x+'</span>':'');
+const mk=(id,cls,lb,html,gl,b1)=>{const b=document.createElement('button');b.id=id;b.type='button';b.className='dkb '+cls;b.setAttribute('aria-label',lb);b.title=lb;b.style.setProperty('--gl',gl);b.style.setProperty('--b1',b1);b.innerHTML=html+'<i class="dn"></i>';return b};
+const dg=mk('dgb','','일일던전',sv('<path d="M5 29V13a11 11 0 0 1 22 0v16z" fill="#5a5a70" stroke="#15151f" stroke-width="1.2"/><path d="M9.500 29V14a6.500 6.500 0 0 1 13 0v15z" fill="#1a0f33"/><path d="M12 29v-5h8v5M14 24v-3h4v3" fill="#7a5cff" opacity=".9"/><circle cx="16" cy="15" r="3" fill="#c9a0ff"/>','던전'),'#7a5cff66','#2a1f4a');
+const at=mk('atb','','출석체크',sv('<rect x="5" y="7" width="22" height="20" rx="3" fill="#e8f1ee" stroke="#15302a"/><rect x="5" y="7" width="22" height="6" rx="3" fill="#3fae6a"/><path d="M10 4v5M22 4v5" stroke="#d9ffe6" stroke-width="2" stroke-linecap="round"/><path d="M10.500 20l4 4 7-8" fill="none" stroke="#2a8a50" stroke-width="2.600" stroke-linecap="round" stroke-linejoin="round"/>','출석'),'#3fae6a66','#123a24');
+const kx=document.createElement('div');kx.className='dkx';kx.append(dg,at);
+const tg=document.createElement('button');tg.type='button';tg.className='dkt';tg.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2l6 6-6 6" fill="none" stroke="#f0d9a0" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"/></svg><i class="dn"></i>';
+const dock=document.createElement('div');dock.id='dock';dock.append(kx,tg);document.body.appendChild(dock);
+let col;try{const v=localStorage.getItem('dockc');col=v==null?matchMedia('(pointer:coarse),(max-width:640px)').matches:v=='1'}catch(e){col=false}
+function setC(c,sv){col=c;dock.classList.toggle('c',c);tg.setAttribute('aria-expanded',c?'false':'true');tg.setAttribute('aria-label',c?'바로가기 펼치기':'바로가기 접기');tg.title=tg.getAttribute('aria-label');if(sv)try{localStorage.setItem('dockc',c?'1':'0')}catch(e){}}
+setC(col,0);
+tg.addEventListener('click',()=>setC(!col,1));
+dg.addEventListener('click',()=>{try{A.dgEnter(true)}catch(e){}});
+at.addEventListener('click',()=>{try{A.atdOpen()}catch(e){}});
+/* 월드보스(#wbb)·마을(#vlb)은 원래 버튼을 그대로 옮겨요 (동작·배지 그대로) */
+function adopt(){const w=document.getElementById('wbb'),v=document.getElementById('vlb');if(w&&w.parentNode!==dock)dock.insertBefore(w,kx);if(v&&v.parentNode!==kx)kx.appendChild(v)}
+function upd(){adopt();const lg=!!A.user;let n=0,di={};try{di=A.dgInfo?A.dgInfo():{}}catch(e){}
+const w=document.getElementById('wbb');if(w&&(w.classList.contains('al')||w.classList.contains('rm')))n++;
+const da=lg&&di.done===false,dt=lg&&di.done===true&&di.tk>0;dg.classList.toggle('al',da);dg.classList.toggle('rm',dt);dg.classList.toggle('off',!lg||(!da&&!dt));dg.querySelector('.dn').textContent=da?'!':(dt?di.tk:'');if(da||dt)n++;
+const aa=lg&&A.atdDone===false;at.classList.toggle('al',aa);at.classList.toggle('off',!lg||A.atdDone===true);at.querySelector('.dn').textContent=aa?'!':'';if(aa)n++;
+tg.classList.toggle('has',n>0);tg.querySelector('.dn').textContent=n>0?n:''}
+upd();setInterval(upd,1000);addEventListener('af-atd',upd);addEventListener('af-user',()=>setTimeout(upd,1700));
+/* 한국 시간 0시가 지나면 출석 상태를 다시 읽어요 */
+let kd=Math.floor((Date.now()+324e5)/864e5);setInterval(()=>{const d=Math.floor((Date.now()+324e5)/864e5);if(d!==kd){kd=d;try{A.atdRefresh&&A.atdRefresh()}catch(e){}}},30000);
+})();
+</script>
+</body></html>
