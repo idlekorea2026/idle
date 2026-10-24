@@ -253,7 +253,18 @@ body.ttl #cht{display:none}
 #bd .iqi.nt{background:#ffd27a10;border-top-color:#ffd27a40}
 #bd .iqi .h i{color:#ffd27a}
 #bd .bdt{display:block;margin-top:3px;color:#ffe7a8;font-size:16px;font-weight:400;word-break:break-all}
-#bd .bdx{min-width:0;flex:none;padding:2px 9px;font-size:13px}
+#bd .bdx{width:auto;height:28px;min-width:0;flex:none;align-self:flex-start;padding:0 12px;border:1px solid #c2452d;border-radius:14px;background:#0a0f13;color:#ffb0a0;font:14px 'Do Hyeon',sans-serif;line-height:1;cursor:pointer}#bd .bdx:active{background:#c2452d;color:#fff}
+#bd #bd-ls{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+#bd .iqi{padding:10px 12px 12px;border:1px solid #ffffff14;border-left:3px solid #6b5228;border-radius:8px;background:linear-gradient(#ffffff0a,#ffffff04)}
+#bd .iqi.nt{border-color:#ffd27a55;border-left-color:#ffd27a;background:linear-gradient(#ffd27a1c,#ffd27a08)}
+#bd .iqi .h{align-items:center;font-size:12.5px;color:#8aa09b}
+#bd .iqi .h i{display:inline-block;margin-right:4px;padding:1px 8px;border-radius:9px;background:#ffd27a;color:#2a1f0a;font-size:12px}
+#bd .bdt{margin-top:6px;font-size:17px;line-height:1.35}
+#bd .iqi p{margin-top:6px;padding-top:6px;border-top:1px dashed #ffffff14;color:#d5e2de;font-size:14.5px}
+#bd .bdx{align-self:center;height:26px;font-size:13px;opacity:.85}
+#bd .em{padding:26px 0;color:#7f9590}
+#bd .pn h3{display:flex;align-items:center;gap:8px;margin:18px 0 0;padding-bottom:6px;border-bottom:1px solid #ffffff14}
+#bd .pn h3::before{content:'';width:4px;height:14px;border-radius:2px;background:#ffb84a}
 #bd .bdnl{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:14px;color:#ffd98a}
 
 /* ── 하단바 슬림화 + 보스 재도전 버튼 정리 ── */
@@ -1694,7 +1705,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026102404',d:'10/24',t:['마을에서 다른 유저를 눌러 오목을 신청할 수 있다는 안내를 추가했어요 (입장 안내 · 이름표 표시 · 접속자 칩 문구)','절전 모드 화면에 절전 중 얻은 골드·경험치·레벨과 시간당 수치를 보여줘요 (풀 때도 요약해 줘요)','월드보스 소탕 추가 — 오늘 1회 직접 도전하면 남은 횟수를 그날 최고 피해로 한 번에 처리할 수 있어요 (10/25 00시부터)','후반 패시브 6종 추가 — 파쇄·맹공·신속 시전·스킬 증폭·급소 노출·처형자 (STAGE 100 · 120 · 140 · 160 · 180 · 200 보스 처치 시 획득)','이미 해당 스테이지를 넘긴 유저는 접속하면 바로 받아요']},
+{v:'2026102405',d:'10/24',t:['마을에 게시판을 추가했어요 — 로그인하면 공지·건의·공략 글을 읽고 남길 수 있어요','마을에서 다른 유저를 눌러 오목을 신청할 수 있다는 안내를 추가했어요 (입장 안내 · 이름표 표시 · 접속자 칩 문구)','절전 모드 화면에 절전 중 얻은 골드·경험치·레벨과 시간당 수치를 보여줘요 (풀 때도 요약해 줘요)','월드보스 소탕 추가 — 오늘 1회 직접 도전하면 남은 횟수를 그날 최고 피해로 한 번에 처리할 수 있어요 (10/25 00시부터)','후반 패시브 6종 추가 — 파쇄·맹공·신속 시전·스킬 증폭·급소 노출·처형자 (STAGE 100 · 120 · 140 · 160 · 180 · 200 보스 처치 시 획득)','이미 해당 스테이지를 넘긴 유저는 접속하면 바로 받아요']},
 {v:'2026102302',d:'10/23',t:['바로가기 독 추가 — 월드보스·일일던전·출석체크·마을 아이콘을 한 묶음으로 모았어요 (접었다 펼 수 있고, 접어 둔 상태는 기억해요 · 폰은 처음에 접혀 있어요)','월드보스 개인 도전 보스의 HP를 10배로 늘렸어요 (상위 유저가 피해 상한에 걸리던 문제)']},
 {v:'2026102201',d:'10/22',t:['이벤트 예정 뱃지 추가 — 이벤트가 시작되기 전에도 화면 오른쪽 위에 [이벤트 예정 · D-day] 뱃지가 떠요 (누르면 기간과 보너스를 볼 수 있어요)','드랍 이벤트 — 10/23(금) 00:00 ~ 10/25(일) 23:59 · 장비 드랍 고급~영웅 +20%, 전설 이상 +30%, 골드 +30%','방치 보상: 탭을 10분 넘게 떠났다 돌아올 때 알림이 두 번 뜨던 것을 한 번으로 합쳤어요']},
 ];
