@@ -177,7 +177,7 @@ body.ttl #cht{display:none}
 #sks .sl{--s:var(--m);width:calc(var(--s) + 8px);height:calc(var(--s) + 8px);border-color:#b48cff;padding-top:5px}
 #sks .sl span{font-size:10px;line-height:1.05;text-align:center;padding:0 2px}#sks .sl.empty{opacity:.45;border-color:#6b5228}#sks .sl.empty span{font-size:10px}
 #sks .sl.lock{opacity:.35;border-color:#4a3c20}
-.sl[data-cd]:not([data-cd=""])::before{content:attr(data-cd);position:absolute;inset:0;display:grid;place-items:center;z-index:2;font:20px 'Do Hyeon',sans-serif;color:#fff;text-shadow:0 0 3px #000,0 0 6px #000;pointer-events:none}
+.sl[data-cd]:not([data-cd=""])::before{content:attr(data-cd);position:absolute;inset:0;display:grid;place-items:center;z-index:2;font:17px 'Do Hyeon',sans-serif;color:#fff;text-shadow:0 0 3px #000,0 0 6px #000;pointer-events:none;white-space:nowrap}
 #tip{position:fixed;display:none;z-index:60;max-width:230px;padding:8px 10px;border:1px solid #8a6a30;border-radius:6px;background:#0b1014f2;color:#d8e4e0;font:13px/1.4 'Do Hyeon',sans-serif;pointer-events:none;box-shadow:0 4px 14px #000a}
 #tip b{font-size:15px}#tip small{opacity:.7}#tip p{margin:4px 0}#tip div{color:#9ab8ff;font-size:12px}
 #bfs{position:fixed;top:var(--bf,122px);right:14px;z-index:6;display:flex;flex-direction:column;gap:6px;pointer-events:none}
@@ -707,7 +707,7 @@ function skEq(id){if(P.lv<SKL[chrSK]||!SKS.own[id])return;const c=SKS.eq.indexOf
 const SKB=[...document.querySelectorAll('#sks .sl')];let skg=['','',''];
 function sksUp(){for(let i=0;i<3;i++){const b=SKB[i],id=SKS.eq[i],s=id&&SKT.find(z=>z.id==id),o=s&&SKS.own[id],lk=P.lv<SKL[i],key=lk?'L'+SKL[i]:s?id+o.lv:'E';
 if(skg[i]!=key){skg[i]=key;b.className='sl'+(lk?' lock':!s?' empty':'');b.style.borderColor=!lk&&s&&s.t?TC[s.t]:'';b.innerHTML=lk?'<span>Lv.'+SKL[i]+'</span><kbd>'+(i+1)+'</kbd>':s?'<svg viewBox="0 0 24 24">'+s.ic+'</svg><span>'+s.n+'</span><kbd>'+(i+1)+'</kbd>':'<span>비었음</span><kbd>'+(i+1)+'</kbd>'}
-b.style.setProperty('--cd',s&&!lk?SKC[i]/skCd(s):0);b.dataset.cd=s&&!lk&&SKC[i]>0?M.ceil(SKC[i]):'';b.classList.toggle('nomp',!!s&&!lk&&P.mp<skMp(s))}UIX()}
+b.style.setProperty('--cd',s&&!lk?SKC[i]/skCd(s):0);b.dataset.cd=s&&!lk&&SKC[i]>0?(M.ceil(SKC[i]*10)/10).toFixed(1):'';b.classList.toggle('nomp',!!s&&!lk&&P.mp<skMp(s))}UIX()}
 /*PCFEEL*/
 let FD=[];const tip=document.createElement('div');tip.id='tip';document.body.appendChild(tip);
 function tipShow(i,x,y){const id=SKS.eq[i],s=SKT.find(z=>z.id==id),o=SKS.own[id];tip.innerHTML=P.lv<SKL[i]?'<b>슬롯 '+(i+1)+'</b><p>Lv.'+SKL[i]+'에 열립니다</p>':!s||!o?'<b>빈 슬롯</b><p>보스·정예가 떨어뜨리는 스킬북으로 채워요</p>':'<b style="color:'+s.col+'">'+s.n+(s.t?' <small style="color:'+TC[s.t]+'">'+TN[s.t]+'</small>':'')+' <small>Lv.'+o.lv+'</small></b><p>'+skd(s,o.lv)+'</p><div>마나 '+(s.mpp?M.round(s.mpp*100)+'%':s.mp)+' · 쿨타임 '+(M.round(skCd(s)*10)/10)+'초</div>';tip.style.display='block';const w=tip.offsetWidth,h=tip.offsetHeight;tip.style.left=M.max(6,M.min(innerWidth-w-6,x-w/2))+'px';tip.style.top=M.max(6,y-h-12)+'px'}
