@@ -2861,7 +2861,7 @@ function open(){
   if(r){flash(r);return false}
   const lite=matchMedia('(prefers-reduced-motion: reduce)').matches||(navigator.hardwareConcurrency||8)<=4||(navigator.deviceMemory||8)<=2||(AF.OPT&&!AF.OPT.fx);
   root.classList.toggle('lite',!!lite);
-  vact=performance.now();root.classList.add('on');chatUp(1);netStart();try{AF.CHAT.vlMode(true)}catch(e){}try{const k='ashen_omokhint',c=+localStorage.getItem(k)||0;if(c<3){localStorage.setItem(k,c+1);setTimeout(()=>{flash('🎯 마을에서 다른 유저를 누르면 오목을 신청할 수 있어요');try{AF.chatSys('🎯 마을에서 다른 유저를 누르면 오목을 신청할 수 있어요 (수락하면 시작 · 보상 없는 가벼운 대국)','#7dffe0')}catch(e){}},900)}}catch(e){}
+  vact=performance.now();root.classList.add('on');chatUp(1);netStart();try{AF.CHAT.vlMode(true)}catch(e){}try{const k='ashen_omokhint',c=+localStorage.getItem(k)||0;if(c<3){localStorage.setItem(k,c+1);setTimeout(()=>{if(!root.classList.contains('on'))return;setInfo('','🎯 다른 유저를 누르면 오목을 신청할 수 있어요. 수락하면 바로 시작하는 보상 없는 가벼운 대국이에요.');clearTimeout(setInfo.t);setInfo.t=setTimeout(()=>{const ib=root.querySelector('.vinfo');if(ib)ib.classList.remove('on')},6500)},700)}}catch(e){}
   fit(0);place(0);{const nm=me.querySelector('.vcm');if(nm)nm.textContent=String(AF.nk||'나').slice(0,12)}stat();count();
   clearInterval(iv);iv=setInterval(stat,1000);
   return true;
