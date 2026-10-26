@@ -1501,11 +1501,11 @@ function pfView(d,name,me){const nm=String(d.nk||name||'모험가').slice(0,12),
 if(!me&&pfWho&&!pfWho.name)pfWho.name=nm;
 const row=k=>{const x=eq[k];if(!x)return `<div class="pi em"><div class="l"><span>${SL[k][0]}</span><span>비어 있음</span></div></div>`;const e=M.max(0,M.min(999,en[k]|0)),v=M.round(x.v*(1+ENH.st*e));
 return `<div class="pi"><div class="l"><span style="color:${icol(x)}">${e?'+'+e+' ':''}${pfx(x.n)}</span><b style="font-weight:400;color:#ffe7a8">${SL[k][1]} +${v}</b></div><small>${iname(x)} ${SL[k][0]}${sn(x)?' · '+pfx(sn(x))+' 세트':''}</small>${x.o.length?`<small>${pfx(ots(x))}</small>`:''}</div>`};
-pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas><div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${kn(+d.cp||0)}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>`,me?'내 정보':'');
+pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas>${d.gn?`<div style="text-align:center;margin:8px 0 2px"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px 3px 7px;border:1px solid #c99a4a99;border-radius:13px;background:linear-gradient(#4a381655,#1a110555);color:#ffd98a;box-shadow:inset 0 1px 0 #ffe2a822"><svg viewBox="0 0 32 32" width="16" height="16" aria-hidden="true"><path d="M16 3l11 4v9c0 7-5 11-11 13C10 27 5 23 5 16V7z" fill="#2d5a8a" stroke="#ffd98a" stroke-width="2.4"/><path d="M16 9v13M11 14h10" stroke="#ffd98a" stroke-width="2.4" stroke-linecap="round"/></svg><span>${pfx(String(d.gn).slice(0,10))}</span>${d.gl?`<i style="font-style:normal;opacity:.75;font-size:.85em">Lv.${d.gl|0}</i>`:''}</span></div>`:''}<div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${kn(+d.cp||0)}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>`,me?'내 정보':'');
 const c2=pfEl.querySelector('canvas'),t0=++pfTok;(function lp(){if(t0!==pfTok||!pfEl.classList.contains('on'))return;drawDoll(c2,eq,me?WB.bd:(d.bd|0),me?WB.cape:(d.cape|0),me?(WB.mv?WB.mt|0:0):(d.mt|0));pfRaf=requestAnimationFrame(lp)})()}
 AF.showProfile=async function(uid,name){if(!uid)return;const tk=++pfTok;pfWho=(uid==='me'||uid===(AF.user&&AF.user.id))?null:{uid,name:String(name||'').slice(0,12)};
  if(!AF.user&&uid!=='me'){pfShow(name,'<div class="pn">로그인하면 다른 모험가의 정보를 볼 수 있어요.</div>');return}
- if(uid==='me'||uid===(AF.user&&AF.user.id)){pfView({nk:NK||name,lv:P.lv,st:stage,cp:cp(),eq:EQ,en:EN},name,1);return}
+ if(uid==='me'||uid===(AF.user&&AF.user.id)){const gt=AF.gdTag&&AF.gdTag();pfView({nk:NK||name,lv:P.lv,st:stage,cp:cp(),eq:EQ,en:EN,gn:gt?gt.n:'',gl:gt?gt.l:0},name,1);return}
  if(!AF.pub){pfShow(name,'<div class="pn">내 정보를 공개해야 다른 모험가의 정보를 볼 수 있어요.<br><small>설정 → 공개에서 "내 정보 공개"를 켜 주세요.</small></div>');return}
  const hit=PFC.get(uid);if(hit&&Date.now()-hit.t<60000){pfView(hit.d,name,0);return}
  pfShow(name,'<div class="pn">불러오는 중…</div>');
@@ -1782,7 +1782,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026102701',d:'10/27',t:['채팅에 길드 탭을 추가했어요 — 길드에 가입하면 같은 길드원끼리만 대화할 수 있어요 (전체 탭에도 초록색 "길드" 표시로 함께 보여요)','채팅에서 닉네임 앞에 소속 길드 이름이 배지로 붙어요','길드 설정의 탈퇴 부분을 빨간색으로 바꿔 한눈에 알아보기 쉽게 했어요']},
+{v:'2026102702',d:'10/27',t:['채팅에 길드 탭을 추가했어요 — 길드에 가입하면 같은 길드원끼리만 대화할 수 있어요 (전체 탭에도 초록색 "길드" 표시로 함께 보여요)','채팅에서 닉네임 앞에 소속 길드 이름이 배지로 붙어요','정보창(프로필)에도 소속 길드 이름과 길드 레벨이 보여요','길드 설정의 탈퇴 부분을 빨간색으로 바꿔 한눈에 알아보기 쉽게 했어요']},
 {v:'2026102604',d:'10/26',t:['길드를 추가했어요 — 마을 오른쪽 끝 길드 회관에서 길드를 만들거나 가입할 수 있어요 (자유 가입 · 승인제)','기부와 일일 활동(출석·월드보스·던전)으로 공헌도를 쌓으면 길드 레벨이 올라 정원이 늘고, 골드·경험치 획득량이 늘어요','길드 랭킹은 이번 주 월드보스 피해를 길드원끼리 합산해 매겨요 · 길장·부길장은 신청 수락, 공지, 추방을 할 수 있어요','길드원 목록에 마지막 접속 시각이 보여요 · 가입 신청에는 현재 닉네임이 보이고, 추방·탈퇴 안내와 길장 위임 문구를 정확하게 고쳤어요','추천인 화면에 최근 7일 보상 현황을 추가했어요 — 7일 안에 받은 인원(10명 한도), 한도가 찼을 때 다음 자리가 열리는 시각, 대기 중인 친구 수를 볼 수 있어요','추천인 월드보스 코인 한도 안내를 "주 10명"에서 "최근 7일간 10명"으로 바꿨어요 — 요일마다 한꺼번에 초기화되는 게 아니라, 받은 시점부터 7일 뒤에 자리가 하나씩 열려요']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
@@ -2697,7 +2697,7 @@ const st=document.createElement('style');st.textContent=`
 body.mnew .mb button[data-a=ml]::after{content:'NEW';position:absolute;top:50%;right:12px;transform:translateY(-50%);padding:1px 7px;border-radius:9px;background:#ff5a5a;color:#fff;font-size:11px;letter-spacing:0}
 `;document.head.appendChild(st);
 
-const S={tab:0,q:'',users:null,sel:null,logs:null,ban:{h:24,reason:''},mail:{u:0,tgt:'sel',title:'',body:'',g:'',c:'',box:'',rr:'',sl:'w',ri:5,n:'',days:'30'},msg:'',bad:0,busy:0,mails:null,pg:0,more:0,det:null,iq:{st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0}};
+const S={tab:0,q:'',users:null,sel:null,logs:null,ban:{h:24,reason:''},mail:{u:0,tgt:'sel',title:'',body:'',g:'',c:'',box:'',rr:'',sl:'w',ri:5,n:'',days:'30'},msg:'',bad:0,busy:0,mails:null,pg:0,more:0,det:null,iq:{st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0},gc:{q:'',list:null,g:null,rows:null,more:0,busy:0},sp:{min:1,pg:0,more:0,rows:null,busy:0}};
 let opener=null;
 
 /* ---------- 관리자 화면 ---------- */
@@ -2714,7 +2714,7 @@ function tab0(){
   const pgb=S.users&&(S.pg>0||S.more)?'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0"><button class="ab" data-a="ad-pg" data-v="-1"'+(S.pg>0?'':' disabled')+'>◀ 이전</button><span>'+(S.pg+1)+'페이지</span><button class="ab" data-a="ad-pg" data-v="1"'+(S.more?'':' disabled')+'>다음 ▶</button></div>':'';
   if(S.users===null)h+='<div class="em2">검색 중…</div>';
   else if(!S.users.length)h+='<div class="em2">결과가 없어요</div>'+pgb;
-  else h+=pgb+S.users.map((u,i)=>'<div class="ui"><div><b>'+esc(nm(u))+'</b>'+(isB(u)?' <span class="bn">정지</span>':'')+(u.admin?' · 관리자':'')
+  else h+=pgb+S.users.map((u,i)=>'<div class="ui"><div><b>'+esc(nm(u))+'</b>'+(isB(u)?' <span class="bn">정지</span>':'')+(u.flag>0?' <span style="color:'+flC(u.flag|0)+';font-size:13px">의심 '+fmt(u.flag)+'</span>':'')+(u.admin?' · 관리자':'')
     +'<small>'+esc(u.kname||'')+' · Lv.'+fmt(u.lv)+' · STAGE '+fmt(u.stage)+' · '+fmt(u.gold)+'G</small><small>가입 '+dt(u.created_at)+' · 접속 '+dt(u.last_sign_in_at)+'</small></div><button class="ab" data-a="ad-sel" data-i="'+i+'">선택</button></div>').join('')+pgb;
   return h}
 function tab1(){const m=S.mail;
@@ -2730,8 +2730,8 @@ function tab1(){const m=S.mail;
 function tab2(){
   if(S.logs===null)return '<div class="em2">불러오는 중…</div>';
   if(!S.logs.length)return '<div class="em2">기록이 없어요</div>';
-  const A={ban:'정지',unban:'정지 해제',mail:'우편 발송',mail_all:'전체 우편',inq_reply:'문의 답변',board_del:'게시글 삭제'};
-  return S.logs.map(l=>{const d=l.detail||{};let x='';if(l.action=='inq_reply')x='#'+d.id+(d.edit?' · 수정':'')+(d.preview?' · '+d.preview:'');else if(l.action=='ban')x=(d.hours?d.hours+'시간':'영구')+(d.reason?' · '+d.reason:'');else if(l.action=='mail'||l.action=='mail_all')x=(d.title||'')+' · '+rw(d.payload||{})+(d.count!=null?' · '+d.count+'명':'');
+  const A={ban:'정지',unban:'정지 해제',mail:'우편 발송',mail_all:'전체 우편',inq_reply:'문의 답변',board_del:'게시글 삭제',gchat_view:'길드 채팅 열람'};
+  return S.logs.map(l=>{const d=l.detail||{};let x='';if(l.action=='inq_reply')x='#'+d.id+(d.edit?' · 수정':'')+(d.preview?' · '+d.preview:'');else if(l.action=='ban')x=(d.hours?d.hours+'시간':'영구')+(d.reason?' · '+d.reason:'');else if(l.action=='gchat_view')x=d.name||('#'+d.gid);else if(l.action=='mail'||l.action=='mail_all')x=(d.title||'')+' · '+rw(d.payload||{})+(d.count!=null?' · '+d.count+'명':'');
     return '<div class="ui"><div><b>'+esc(A[l.action]||l.action)+'</b>'+(l.target_uid?' · '+esc(l.target_nk||String(l.target_uid).slice(0,8)):'')+'<small>'+esc(x)+'</small></div><small style="white-space:nowrap">'+dt(l.at)+'</small></div>'}).join('')}
 const OPN={cr:['치명타','%'],ls:['흡혈','%'],xp:['경험치','%'],gd:['골드','%'],at:['공격력',''],hp:['체력',''],as:['공격 속도','%'],ms:['이동 속도','%'],mr:['마나 회복','%'],bd:['보스 피해','%'],dr:['피해 감소','%']};
 const TNM=(()=>{try{if(typeof TIERS!=='undefined'&&Array.isArray(TIERS))return TIERS.map(t=>t.n)}catch(e){}return['일반','고급','희귀','영웅','전설','신화','초월','천상','적룡','창세']})();
@@ -2756,6 +2756,7 @@ function detBox(){const d=S.det;if(!S.sel||!d||d.uid!=S.sel.uid)return '';
       +'<div class="lb">장비</div>'+SLK.map(k=>detEq(k,v.EQ&&v.EQ[k],v.en)).join('')}
   /* 추천 누적: 서버(admin_user_detail)가 r.ref={total,done} 을 돌려주면 표시해요 (total 초대한 친구 수 · done 그중 스테이지 5 달성) */
   h+=r.ref&&typeof r.ref=='object'?'<small>추천 누적 초대 '+fmt(r.ref.total||0)+'명 · 스테이지 5 달성 '+fmt(r.ref.done||0)+'명</small>':'<small style=\"color:#9fb5b0\">추천 누적: 서버 함수에 ref 항목을 추가하면 표시돼요</small>';
+  if(r.rank&&typeof r.rank=='object'){const k=r.rank,fl=k.flagged|0;h+='<div class="lb">랭킹 검증</div><small>랭킹 인정 최고 STAGE '+fmt(k.best)+(v&&v.best!=null&&+v.best>+k.best?' <span style="color:#ff9a8a">(저장 데이터 최고 '+fmt(v.best)+' · 차이 '+fmt(+v.best-+k.best)+')</span>':'')+'</small><small>속도 초과로 걸린 횟수 <b style="color:'+(fl?flC(fl):'#7dffe0')+'">'+fmt(fl)+'회</b> · 진행 여유 '+fmt(k.credit)+'스테이지 · 최근 갱신 '+dt(k.credit_at)+'</small>'}
   const iq=Array.isArray(r.inq)?r.inq:[];
   h+='<div class="lb">문의 '+fmt(r.inq_total||0)+'건'+(iq.length&&r.inq_total>iq.length?' (최근 '+iq.length+'건)':'')+'</div>';
   h+=iq.length?iq.map(q=>'<div style="padding:5px 0;border-top:1px solid #ffffff12"><b>'+esc(IQN[q.cat]||'기타')+'</b> · '+dt(q.created_at)+' · <span style="color:'+(q.replied?'#7dffe0':'#ffd98a')+'">'+(q.replied?'답변 완료':'답변 대기')+'</span><small>'+esc(q.body)+'</small></div>').join(''):'<small>문의 기록이 없어요</small>';
@@ -2786,10 +2787,37 @@ function tab3(){const q=S.iq;
   else if(!q.rows.length)h+='<div class="em2">'+(q.st=='open'?'답변 대기 중인 문의가 없어요':'문의가 없어요')+'</div>'+pgb;
   else h+=pgb+q.rows.map(iqCard).join('')+pgb;
   return h}
+const flC=n=>n>=5?'#ff7a7a':n>=3?'#ff9a8a':'#ffd98a';
+function tab5(){const q=S.sp;
+  let h='<small style="display:block;color:#9fb5b0;margin-bottom:6px">저장할 때 진행 속도(스테이지 1개당 약 6초)를 넘겨서 걸린 횟수예요. 렉·절전 복귀로도 1~2번은 생길 수 있으니, 횟수가 많은 사람부터 상세 정보로 확인해 보세요.</small><div class="sg">'+[[1,'1회 이상'],[3,'3회 이상'],[5,'5회 이상'],[10,'10회 이상']].map(x=>'<button data-a="ad-sm" data-v="'+x[0]+'" class="'+(q.min==x[0]?'on':'')+'">'+x[1]+'</button>').join('')+'</div>';
+  const pgb=q.rows&&(q.pg>0||q.more)?'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0"><button class="ab" data-a="ad-sp" data-v="-1"'+(q.pg>0?'':' disabled')+'>◀ 이전</button><span>'+(q.pg+1)+'페이지</span><button class="ab" data-a="ad-sp" data-v="1"'+(q.more?'':' disabled')+'>다음 ▶</button></div>':'';
+  if(q.rows===null)return h+'<div class="em2">불러오는 중…</div>';
+  if(!q.rows.length)return h+'<div class="em2">해당하는 유저가 없어요</div>'+pgb;
+  return h+pgb+q.rows.map((u,i)=>'<div class="ui"><div><b>'+esc(nm(u))+'</b> <span style="color:'+flC(u.flag|0)+'">의심 '+fmt(u.flag)+'회</span>'+(isB(u)?' <span class="bn">정지</span>':'')
+    +'<small>'+esc(u.kname||'')+' · Lv.'+fmt(u.lv)+' · STAGE '+fmt(u.stage)+' (랭킹 인정 '+fmt(u.rbest)+') · 전투력 '+fmt(u.cp)+'</small><small>접속 '+dt(u.last_sign_in_at)+'</small></div><button class="ab" data-a="ad-ss" data-i="'+i+'">선택</button></div>').join('')+pgb}
+async function loadSus(pg){const q=S.sp;if(q.busy)return;q.busy=1;const p=Math.max(0,pg|0);
+  try{const r=await rpc('admin_suspects',{p_min:q.min,p_limit:PG+1,p_offset:p*PG});q.pg=p;q.more=r.length>PG;q.rows=r.slice(0,PG);S.msg='';S.bad=0}
+  catch(e){q.rows=q.rows||[];S.msg=em(e);S.bad=1}q.busy=0;if(S.tab==5){admBuild();const pn=ad.querySelector('.pn');if(pn&&pg!==undefined)pn.scrollTop=0}}
+function tab4(){const c=S.gc;
+  if(c.g){const hd='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 0 6px"><b>'+esc(c.g.name)+' <small style="color:#9fb5b0">Lv.'+fmt(c.g.lv)+' · '+fmt(c.g.n)+'명</small></b><button class="ab" data-a="ad-gb">◀ 목록</button></div>';
+    if(c.rows===null)return hd+'<div class="em2">불러오는 중…</div>';
+    if(!c.rows.length)return hd+'<div class="em2">길드 채팅이 없어요</div>';
+    return hd+'<small style="display:block;color:#9fb5b0;margin-bottom:4px">최신 글이 위에 있어요 · 길드원에게는 알림이 가지 않아요 · 열람 기록은 \'기록\' 탭에 남아요</small>'
+      +c.rows.map(r=>'<div style="padding:5px 0;border-top:1px solid #ffffff12;word-break:break-all"><small style="color:#6f8580">'+dt(r.at)+'</small> <b style="color:#ffd98a;font-weight:400">'+esc(r.name)+'</b> '+esc(r.text)+'</div>').join('')
+      +(c.more?'<div style="margin-top:8px"><button class="ab" data-a="ad-gm"'+(c.busy?' disabled':'')+'>이전 대화 더 보기</button></div>':'');}
+  let h='<div style="display:flex;gap:6px;align-items:center"><input id="ad-gq" maxlength="10" autocomplete="off" placeholder="길드 이름 (비우면 상위 길드)" value="'+esc(c.q)+'" style="flex:1"><button class="ab ok" data-a="ad-gf">검색</button></div>';
+  if(c.list===null)return h+'<div class="em2">불러오는 중…</div>';
+  if(!c.list.length)return h+'<div class="em2">길드가 없어요</div>';
+  return h+c.list.map((g,i)=>'<div class="ui"><div><b>Lv.'+fmt(g.lv)+' '+esc(g.name)+'</b><small>길장 '+esc(g.lead)+' · '+fmt(g.n)+'/'+fmt(g.cap)+'명</small></div><button class="ab" data-a="ad-go" data-i="'+i+'">대화 보기</button></div>').join('')}
+async function gcFind(){const c=S.gc;c.g=null;c.rows=null;c.list=null;admBuild();
+  try{c.list=await rpc('guild_list',{p_q:c.q.trim()||null,p_off:0});S.msg='';S.bad=0}catch(e){c.list=[];S.msg=em(e);S.bad=1}if(S.tab==4)admBuild()}
+async function gcOpen(g,before){const c=S.gc;if(c.busy)return;c.busy=1;if(!before){c.g=g;c.rows=null;admBuild()}else admBuild();
+  try{const r=await rpc('admin_guild_chat',{p_gid:g.id,p_before:before||null,p_limit:80});c.g=Object.assign({},g,r.guild);c.rows=(before?(c.rows||[]):[]).concat(r.rows||[]);c.more=!!r.more;S.msg='';S.bad=0}
+  catch(e){if(!before){c.g=null;c.rows=null}S.msg=em(e);S.bad=1}c.busy=0;if(S.tab==4)admBuild()}
 function admBuild(){
   const old=ad.querySelector('.pn'),sc=old?old.scrollTop:0;
-  const tabs='<div class="sg">'+['유저','우편 발송','기록','문의'].map((n,i)=>'<button data-a="ad-t" data-v="'+i+'" class="'+(S.tab==i?'on':'')+'">'+n+(i==3&&S.iq.open?' '+S.iq.open:'')+'</button>').join('')+'</div>';
-  ad.innerHTML='<div class="pn wide"><h2>관리자</h2><div class="st">서버에서 관리자로 확인된 계정만 쓸 수 있어요</div>'+tabs+(S.tab==0?tab0():S.tab==1?tab1():S.tab==2?tab2():tab3())
+  const tabs='<div class="sg">'+['유저','우편 발송','기록','문의','길드챗','의심'].map((n,i)=>'<button data-a="ad-t" data-v="'+i+'" class="'+(S.tab==i?'on':'')+'">'+n+(i==3&&S.iq.open?' '+S.iq.open:'')+'</button>').join('')+'</div>';
+  ad.innerHTML='<div class="pn wide"><h2>관리자</h2><div class="st">서버에서 관리자로 확인된 계정만 쓸 수 있어요</div>'+tabs+(S.tab==0?tab0():S.tab==1?tab1():S.tab==2?tab2():S.tab==3?tab3():S.tab==4?tab4():tab5())
     +'<div class="msg" id="ad-m"></div><div class="mb bk"><button class="pri" data-a="ad-x">돌아가기</button></div></div>';
   const pn=ad.querySelector('.pn');if(old)pn.style.animation='none';pn.scrollTop=sc;msg(S.msg,S.bad)}
 const refocus=q=>{const e=ad.querySelector(q);if(e)e.focus({preventScroll:true})};
@@ -2865,7 +2893,14 @@ AF.ovAct=function(a,b){
   if(a=='ad-x'){closeOv('ad');return}if(a=='ml-x'){closeOv('ml');return}
   if(a=='ml-get'){mlGet(b.dataset.id);return}if(a=='ml-all'){mlAll();return}
   if(!AF.isAdmin)return;
-  if(a=='ad-t'){S.tab=+v||0;S.msg='';admBuild();refocus('button[data-a=ad-t].on');if(S.tab==2)loadLogs();if(S.tab==3)loadInq(S.iq.pg);return}
+  if(a=='ad-t'){S.tab=+v||0;S.msg='';admBuild();refocus('button[data-a=ad-t].on');if(S.tab==2)loadLogs();if(S.tab==3)loadInq(S.iq.pg);if(S.tab==4&&S.gc.list===null)gcFind();if(S.tab==5&&S.sp.rows===null)loadSus(0);return}
+  if(a=='ad-sm'){S.sp.min=+v||1;S.sp.rows=null;admBuild();loadSus(0);return}
+  if(a=='ad-sp'){loadSus(S.sp.pg+(+v||0));return}
+  if(a=='ad-ss'){const u=S.sp.rows&&S.sp.rows[+b.dataset.i];if(u){S.sel=u;S.det=null;S.tab=0;S.msg='';admBuild();ad.querySelector('.pn').scrollTop=0;loadDet()}return}
+  if(a=='ad-gf'){gcFind();return}
+  if(a=='ad-go'){const g=S.gc.list&&S.gc.list[+b.dataset.i];if(g)gcOpen(g);return}
+  if(a=='ad-gb'){S.gc.g=null;S.gc.rows=null;S.msg='';admBuild();return}
+  if(a=='ad-gm'){if(S.gc.g&&S.gc.rows&&S.gc.rows.length)gcOpen(S.gc.g,S.gc.rows[S.gc.rows.length-1].id);return}
   if(a=='ad-find'){find();return}
   if(a=='ad-pg'){find(S.pg+(+v||0));return}
   if(a=='ad-iqs'){S.iq.st=v;S.iq.rows=null;S.iq.pg=0;S.msg='';admBuild();loadInq(0);return}
@@ -2882,16 +2917,16 @@ AF.ovAct=function(a,b){
   if(a=='ad-u'){S.mail.u=+v?1:0;admBuild();refocus('button[data-a=ad-u].on');return}
   if(a=='ad-send'){doSend();return}
 };
-ad.addEventListener('input',e=>{const t=e.target;if(!t)return;if(t.id=='ad-q')S.q=t.value;else if(t.id=='ad-r')S.ban.reason=t.value;else if(t.dataset&&t.dataset.iq)S.iq.dr[t.dataset.iq]=t.value;else if(t.dataset&&t.dataset.k)S.mail[t.dataset.k]=t.value});
+ad.addEventListener('input',e=>{const t=e.target;if(!t)return;if(t.id=='ad-q')S.q=t.value;else if(t.id=='ad-gq')S.gc.q=t.value;else if(t.id=='ad-r')S.ban.reason=t.value;else if(t.dataset&&t.dataset.iq)S.iq.dr[t.dataset.iq]=t.value;else if(t.dataset&&t.dataset.k)S.mail[t.dataset.k]=t.value});
 /* 게임의 키 처리(맨 위 창만 반응)가 먼저 돌기 때문에, 검색창 Enter 는 같은 단계(window · capture)에서 따로 받아요 */
-addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.isComposing&&e.target&&e.target.id=='ad-q'&&ad.classList.contains('on')){e.preventDefault();if(!e.repeat)find()}},true);
+addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.isComposing&&e.target&&(e.target.id=='ad-q'||e.target.id=='ad-gq')&&ad.classList.contains('on')){e.preventDefault();if(!e.repeat){if(e.target.id=='ad-gq')gcFind();else find()}}},true);
 
 /* ---------- 관리자 여부 · 새 우편 확인 ---------- */
 let chkId='';
 async function chkAdmin(){const u=AF.user;if(!u||!AF.synced||chkId===u.id)return;chkId=u.id;let ok=false;try{ok=!!(await rpc('is_admin'))}catch(e){}
   if(AF.user&&AF.user.id===u.id){const was=AF.isAdmin;AF.isAdmin=ok;if(ok&&!was&&tm&&tm.classList.contains('on')&&AF.buildTitle)AF.buildTitle()}}
 addEventListener('af-nick',()=>{chkAdmin();mailLoad(true)});
-addEventListener('af-user',()=>{AF.isAdmin=false;chkId='';S.mails=null;S.sel=null;S.users=null;S.pg=0;S.more=0;S.det=null;S.logs=null;S.iq={st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0};setCnt(0);ad.classList.remove('on');ml.classList.remove('on')});
+addEventListener('af-user',()=>{AF.isAdmin=false;chkId='';S.mails=null;S.sel=null;S.users=null;S.pg=0;S.more=0;S.det=null;S.logs=null;S.iq={st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0};S.gc={q:'',list:null,g:null,rows:null,more:0,busy:0};S.sp={min:1,pg:0,more:0,rows:null,busy:0};setCnt(0);ad.classList.remove('on');ml.classList.remove('on')});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)mailLoad()});
 if(AF.user&&AF.synced){chkAdmin();mailLoad(true)}
 })();
@@ -3509,7 +3544,7 @@ async function open(){G.tok++;gd.classList.add('on');G.me=null;G.tab='';G.list=n
   await tabTo(G.me.in?'info':'find');
   if(G.me&&G.me.in){try{const r=await rpc('guild_act');apply(r);if(r.got>0)say('오늘의 활동 공헌도 +'+r.got);if(G.tab==='info')draw()}catch(e){}}}
 function close(){G.tok++;gd.classList.remove('on');gd.innerHTML=''}
-AF.openGd=open;
+AF.openGd=open;AF.gdTag=()=>G.me&&G.me.in?{n:G.me.name,l:G.me.lv}:null;
 
 const search=()=>{const i=$('gq');if(i)G.q=i.value;sq++;G.list=null;draw();loadList(0).then(()=>draw(),e=>{fail(e);G.list=[];draw()})};
 const more=()=>run(async()=>{await loadList((G.list||[]).length)});
