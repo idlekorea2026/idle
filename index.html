@@ -2021,7 +2021,7 @@ async function cloudSync(){const u=AF.user;if(!sb||!u||syncing)return;syncing=tr
 async function cloudUp(force,gap){const u=AF.user;if(!sb||!u||!cloudOK)return;const raw=lsGet();if(!raw)return;if(cloudHadProg&&!hasProg(raw))return;if(!dgOK&&lowerP(prg(raw),cloudSrv))return;/* 서버보다 진행도가 낮은 저장은 자동으로 올리지 않아요 */
 /* 서버에 진행이 있으면 빈 Lv1 저장으로는 절대 덮어쓰지 않아요 */const n=Date.now();if(n-lastUpT<(force?(gap||15000):(gap||55000))&&!(force&&!lastUpT))return;
   let o;try{o=JSON.parse(raw)}catch(e){return}const key=JSON.stringify(Object.assign({},o,{ts:0}));if(key===lastUp)return;
-  const pT=lastUpT;lastUpT=n;if(!(await lockOk())||!cloudOK){lastUpT=pT;return}/* 업로드 직전에 내 자리가 맞는지 확인(오래 멈췄다 깬 기기가 옛 저장으로 덮어쓰는 것 방지) */const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key;cloudHadProg=hasProg(raw);cloudSrv=dgOK?null:prg(o)}
+  const G=force?(gap||15000):(gap||55000);lastUpT=n;if(!(await lockOk())||!cloudOK){lastUpT=n+30000-G;return}/* 자리 확인에 실패하면 30초 뒤에야 다시 시도해요 (예전엔 바로 되돌려서 0.25초마다 서버를 계속 불렀어요) *//* 업로드 직전에 내 자리가 맞는지 확인(오래 멈췄다 깬 기기가 옛 저장으로 덮어쓰는 것 방지) */const r=await sb.from('game_saves').upsert({uid:u.id,data:o});if(r.error){console.warn('cloud up',r.error);return}lastUp=key;cloudHadProg=hasProg(raw);cloudSrv=dgOK?null:prg(o)}
 async function cloudDel(){const u=AF.user;if(!sb||!u)return;cloudSrv=null;const r=await sb.from('game_saves').delete().eq('uid',u.id);if(r.error)throw r.error;lastUp='';cloudHadProg=false}
 AF.pubFlush=()=>{lastUpT=0;cloudUp(true).catch(()=>{})};
 AF.cloudUp=g=>cloudUp(false,g).catch(()=>{});AF.cloudDel=cloudDel;
@@ -2103,8 +2103,9 @@ async function sessCheck(){
     if(r.data==='busy'){cloudOK=false;AF.busy=1;try{AF.save()}catch(e){}try{await afInfo('다른 기기에서 접속해서 이 기기의 연결이 종료됐어요.')}catch(e){}location.reload()}else if(r.data==='ok')lockAt=Date.now()}
   catch(e){if(sessMissing(e))sessOff=1}}
 /* 업로드 직전 자리 확인: 최근 150초 안에 확인했으면(서버 임대는 10분) 그대로 통과 — 창을 닫는 순간에도 바로 올라가요. 오래됐으면 서버에 다시 확인하고, 다른 기기가 쓰는 중이면 올리지 않고 접속 종료 처리(sessCheck)해요 */
+let nafAt=0;function noauthFix(){const n=Date.now();if(n-nafAt<60000)return;nafAt=n;try{sb.auth.getSession().then(r=>{if(!(r.data&&r.data.session))setUser(null)},()=>{})}catch(e){}}/* 서버가 '로그인 안 됨'이라고 하는데 화면은 로그인 상태로 남은 경우: 실제 세션이 없으면 로그아웃 처리해요 */
 async function lockOk(){if(AF.tabBlocked)return false;if(sessOff||!sb||!AF.user)return true;if(Date.now()-lockAt<150000)return true;
-  try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;if(r.data==='ok'){lockAt=Date.now();return true}if(r.data==='busy'){lockAt=0;sessCheck()}return false}
+  try{const r=await sb.rpc('claim_session',{p_sid:SID});if(r.error)throw r.error;if(r.data==='ok'){lockAt=Date.now();return true}if(r.data==='busy'){lockAt=0;sessCheck()}else if(r.data==='noauth'){lockAt=0;noauthFix()}return false}
   catch(e){if(sessMissing(e)){sessOff=1;return true}return false}}
 async function sessRelease(){if(sessOff||!sb||!AF.user)return;try{await Promise.race([sb.rpc('release_session',{p_sid:SID}),new Promise(r=>setTimeout(r,3000))])}catch(e){}}
 addEventListener('pagehide',()=>{if(AF.tabBlocked||sessOff||!AF.user||!ATK||AF.busy||!AF.synced)return;lockAt=0;try{fetch(SB_URL+'/rest/v1/rpc/release_session',{method:'POST',keepalive:true,headers:{apikey:SB_KEY,Authorization:'Bearer '+ATK,'Content-Type':'application/json'},body:JSON.stringify({p_sid:SID})}).catch(()=>{})}catch(e){}});
@@ -2390,7 +2391,7 @@ try{const d=JSON.parse(localStorage.getItem(SAVE));if(d){if(d.name)ME.name=Strin
 const saveMe=()=>{try{localStorage.setItem(SAVE,JSON.stringify({name:ME.name,id:ME.id,ign:[...ignN],blk:[...blk].map(([u,v])=>[u,v.n,v.t])}))}catch(e){}};saveMe();
 const hue=n=>{let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%360;return h},hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 const CHAT={me:ME,filter:t=>t/* 욕설 필터 자리: 나중에 여기서 치환 */,net:{mode:'local',connect(){return Promise.resolve()},send(){return Promise.resolve()},history(){return Promise.resolve([])}}};
-{const st=document.createElement('style');st.textContent='.ln .gtag{display:inline-flex;align-items:center;gap:3px;margin-right:5px;padding:0 7px 0 4px;border:1px solid #c99a4a99;border-radius:9px;background:linear-gradient(#4a381655,#1a110555);color:#ffd98a;font-size:.84em;line-height:1.4;vertical-align:1px;white-space:nowrap;box-shadow:inset 0 1px 0 #ffe2a822}.ln .gtag svg{width:1em;height:1em;flex:none}.ln .gtag i{font-style:normal}.ln .gch{padding:0 7px;color:#9dffb8;border-color:#4fbf7a99;background:linear-gradient(#17402a66,#06150d66)}';document.head.appendChild(st)}
+{const st=document.createElement('style');st.textContent='.ln .gtag{display:inline-flex;align-items:center;gap:3px;margin-right:5px;padding:0 5px 0 3px;border:0;border-radius:4px;background:#ffd98a24;color:#ffd98a;opacity:1;font-size:.88em;line-height:1.45;vertical-align:1px;white-space:nowrap}.ln .gtag svg{width:.95em;height:.95em;flex:none}.ln .gtag svg path{fill:none;stroke:currentColor}.ln .gtag i{font-style:normal}.ln .gch{padding:0 7px;color:#9dffb8;border:1px solid #4fbf7a99;border-radius:9px;background:linear-gradient(#17402a66,#06150d66);opacity:1;font-size:.84em;vertical-align:1px}';document.head.appendChild(st)}
 function recv(m){
   if(!m||typeof m.text!=='string'||!m.text)return;
   if(m.id!=null){if(seen.has(m.id))return;seen.add(m.id);if(seen.size>500)seen.delete(seen.values().next().value);if(isOpen||m.uid===ME.id)mark(m)}
