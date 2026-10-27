@@ -3480,7 +3480,7 @@ const vMake=()=>{const m=G.me,c=mkCost(),g=AF.gld.gold(),ok=g>=c;
   return cdNote()+'<div class="or"><span>길드 이름<small>한글·영문·숫자 2~10자 · 겹치는 이름은 쓸 수 없어요</small></span><input id="gn" maxlength="10" autocomplete="off" value="'+esc(G.mk.name)+'"></div>'
   +'<div class="or"><span>가입 방식<small>자유: 누구나 바로 가입 · 승인제: 길장·부길장이 수락해야 가입</small></span><button class="tg on" data-g="md">'+(G.mk.mode=='free'?'자유 가입':'승인제')+'</button></div>'
   +'<div class="or"><span>창설 비용<small>보유 골드 '+nf(g)+' G</small></span><b style="color:'+(ok?'#ffe7a8':'#ff9a8a')+'">'+nf(c)+' G</b></div>'
-  +'<div class="nt">길드 경험치는 길드원이 기부·활동으로 쌓은 공헌도만큼 올라요. 레벨이 오르면 정원이 늘고, 길드원 모두의 골드·경험치 획득량이 늘어요.</div>'
+  +'<div class="nt">길드 경험치는 길드원이 기부·활동으로 쌓은 공헌도만큼 올라요. 레벨이 오르면 길드원 모두의 골드·경험치 획득량이 늘어요.</div>'
   +'<button class="big" data-g="mk"'+(m.cd>0||G.busy?' disabled':'')+'>길드 만들기</button>'};
 
 const vInfo=()=>{const m=G.me,g=AF.gld.gold(),pct=m.need?Math.min(100,m.exp/m.need*100):100;
@@ -3507,7 +3507,7 @@ const vReq=()=>{if(!G.reqs)return'<div class="em">불러오는 중…</div>';if(
 
 const vRank=()=>{if(!G.rank)return'<div class="em">불러오는 중…</div>';const L=G.rank.list||[];
   return'<div class="nt">이번 주(월~일, 한국 시간) 길드원의 월드보스 피해를 합산해요 · 가입한 날 다음 날부터 반영돼요</div>'
-   +(L.length?L.map(x=>'<div class="or'+(x.me?' me':'')+'"><span class="no t'+(x.rk<=3?x.rk:0)+'" style="flex:none">'+x.rk+'</span><span><b style="color:#ffd98a;font-weight:400">Lv.'+x.lv+'</b> '+esc(x.name)+'<small>'+x.n+'명</small></span><b style="min-width:84px">'+nf(x.dmg)+'</b></div>').join(''):'<div class="em">아직 길드가 없어요</div>')};
+   +(L.length?L.map(x=>'<div class="or'+(x.me?' me':'')+'"><span class="no t'+(x.rk<=3?x.rk:0)+'" style="flex:none">'+x.rk+'</span><span><b style="color:#ffd98a;font-weight:400">Lv.'+x.lv+'</b> '+esc(x.name)+'<small>'+x.n+'명</small></span><b style="min-width:84px" title="'+nf(x.dmg)+'">'+(AF.kn?AF.kn(x.dmg):nf(x.dmg))+'</b></div>').join(''):'<div class="em">아직 길드가 없어요</div>')};
 
 const vSet=()=>{const m=G.me,off=m.role==='member';
   let h='';
