@@ -170,9 +170,9 @@ body.ttl #cht{display:none}
 #cht .sb:active{background:#ffb84a;color:#0b1218}
 #cht:not(.on) .tg{display:block;margin-top:4px;padding:6px 14px}
 #cht .xb2{display:flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:40px;border:1px solid #6b5228;border-radius:6px;background:#0a0f13;color:#9fb5b0;font:16px 'Do Hyeon',sans-serif;cursor:pointer;touch-action:manipulation}
-#cht .tg{position:relative}
+#cht .tg{position:relative}#cht .tg .nbb{display:none;position:absolute;top:-8px;right:-8px;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#e5484d;color:#fff;font:700 12px/18px sans-serif;text-align:center;pointer-events:none}#cht .tg .nbb.on{display:block}
 #cht .tg:hover,#cht .sb:hover,#cht .xb2:hover{border-color:#ffd27a;color:#fff2c4}
-@media(pointer:coarse){#cht:not(.on) .tg{padding:8px 16px;font-size:15px}#cht .ct i{padding:7px 14px;font-size:15px}#cht .lg{font-size:15px}}
+@media(pointer:coarse){#cht:not(.on) .tg{padding:8px 16px;font-size:15px}#cht .ct i{padding:7px 14px;font-size:15px}#cht .ct i .nb{display:none;margin-left:6px;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#e5484d;color:#fff;font:700 12px/18px sans-serif;text-align:center;vertical-align:1px;font-style:normal}#cht .ct i .nb.on{display:inline-block}#cht .lg{font-size:15px}}
 #sks{position:absolute;right:max(10px,calc((100vw - 1000px)/2));bottom:calc(100% + var(--o)*.32 + 6px);display:flex;gap:8px;z-index:6}
 #sks .sl{--s:var(--m);width:calc(var(--s) + 8px);height:calc(var(--s) + 8px);border-color:#b48cff;padding-top:5px}
 #sks .sl span{font-size:10px;line-height:1.05;text-align:center;padding:0 2px}#sks .sl.empty{opacity:.45;border-color:#6b5228}#sks .sl.empty span{font-size:10px}
@@ -1743,13 +1743,12 @@ const om=$('div','ov');om.id='om';
 const fsBtn=()=>FSOK?`<button data-a="fs" data-fs>${isFS()?'전체화면 해제':'전체화면'}</button>`:'';
 
 function buildTitle(){
-  const soc=AF.user&&sb?'<div class="mr"><button data-a="rank">랭킹</button><button class="rw" data-a="ref">추천인</button></div><button data-a="atd">출석체크<small>매일 받는 보상 · 28일 주기</small></button>':AF.guest()?'<div class="mr"><button disabled>랭킹<small>로그인 필요</small></button><button disabled>추천인<small>로그인 필요</small></button></div>':'';
   const has=AF.P.lv>1||AF.P.xp>0||AF.stage>1||AF.gold>0||AF.up>0||AF.hu>0;
   tm.innerHTML=`<div class="tt"><small>ASHEN FOREST</small><h1>잿빛 숲의 검사</h1><hr><div id="onl2"></div></div>
   <div class="mb">${gated()?gateBtn():has
     ?`<button class="pri" data-a="cont">이어하기<small>STAGE ${AF.stage} · Lv.${AF.P.lv} · 전투력 ${AF.kn(AF.cp())}</small>${AF.og>0?`<small class="g">방치 보상 ${AF.ogs||'+'+AF.og.toLocaleString()+'G'} 수령 대기</small>`:''}</button><button data-a="new">새 게임</button>`
     :`<button class="pri" data-a="cont">게임 시작</button>`}
-  <button data-a="opt">설정</button>${AF.user&&sb&&AF.synced?'<button data-a="ml">우편함</button>':''}${AF.isAdmin?'<button data-a="adm">관리자</button>':''}${soc}${gated()||AF.guest()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>${AF.guest()?'<p class="gn">☁️ <b>카카오 로그인</b>하면 <b>서버에 자동 저장</b>되고<br>다른 기기에서도 <b>이어서 플레이</b>할 수 있어요<br><small>지금은 로그인 없이 플레이 중이라 진행이 이 기기에만 저장돼요 · 브라우저 데이터를 지우면 사라져요</small></p>':''}
+  <button data-a="opt">설정</button>${gated()||AF.guest()?'':`<button data-a="nick">닉네임 변경<small>${esc(AF.nk||(AF.user&&AF.user.name)||'')}</small></button>`}${fsBtn()}${gated()&&!AF.user?'':acctBtn()}</div>${AF.guest()?'<p class="gn">☁️ <b>카카오 로그인</b>하면 <b>서버에 자동 저장</b>되고<br>다른 기기에서도 <b>이어서 플레이</b>할 수 있어요<br><small>지금은 로그인 없이 플레이 중이라 진행이 이 기기에만 저장돼요 · 브라우저 데이터를 지우면 사라져요</small></p>':''}
   <p class="ofh">💤 <b>오프라인 사냥</b> — 게임을 꺼 둬도 사냥이 계속돼요!<br>최대 ${Math.round(AF.OFF.max/3600)}시간, 골드·경험치·아이템을 ${Math.round(AF.OFF.eff*100)}% 보상으로 받아요</p>
   <p class="tf">↑ ↓ 선택 · Enter 확인 · F 전체화면</p>`;
   onShow();
@@ -1760,7 +1759,7 @@ pm.innerHTML=`<div class="pn"><h2 id="pht">메뉴</h2><div class="st" id="pst"><
 
 const sl=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><input type="range" min="0" max="100" step="5" id="${id}" aria-label="${label}"><b id="${id}v"></b></div>`;
 const tg=(id,label,sub)=>`<div class="or"><span>${label}${sub?`<small>${sub}</small>`:''}</span><button class="tg" id="${id}" data-a="${id}"></button></div>`;
-om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항은 바로 저장돼요</div>
+om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항은 바로 저장돼요</div><div id="o-acct"></div>
   <h3>소리</h3>${tg('o-mute','소리')}${sl('o-vol','전체 볼륨')}${sl('o-sfx','효과음')}${sl('o-mus','배경음')}
   <h3>전투</h3>${tg('o-auto','자동 전투','Q 키로도 전환해요 · 끄면 스킬도 자동으로 안 써요 (스킬별 자동 사용은 장비(I) → 스킬 탭)')}
   <h3>절전</h3>${tg('o-ps','자동 절전','3분 동안 조작이 없으면 절전 화면으로 들어가요 · 끄면 들어가지 않아요 (직접 켜는 절전은 P 키·달 모양 버튼으로 그대로 써요)')}
@@ -1820,7 +1819,12 @@ const move=(r,d)=>{const l=items(r);if(!l.length)return;let i=l.indexOf(document
 const topOv=()=>document.body.classList.contains('nk')?null:pt.classList.contains('on')?pt:ad.classList.contains('on')?ad:ml.classList.contains('on')?ml:iq.classList.contains('on')?iq:bd.classList.contains('on')?bd:rk.classList.contains('on')?rk:rf.classList.contains('on')?rf:om.classList.contains('on')?om:pm.classList.contains('on')?pm:(tm.classList.contains('on')&&!tm.classList.contains('out'))?tm:null;
 
 let opener=null,confirmT=0;
-function openOpt(from){opener=from;sync();om.classList.add('on');focusFirst(om)}
+function openOpt(from){opener=from;{const ac=om.querySelector('#o-acct');if(ac){const inn=AF.user&&sb,r=[],row=(n,sub,act,dis)=>'<div class="or"><span>'+n+(sub?'<small>'+sub+'</small>':'')+'</span><button class="tg on" data-a="'+act+'"'+(dis?' disabled':'')+'>열기</button></div>';
+  if(inn&&AF.synced)r.push(row('우편함','','ml'));
+  if(inn)r.push(row('출석체크','매일 받는 보상 · 28일 주기','atd'));
+  if(inn||AF.guest()){r.push(row('랭킹',inn?'':'로그인 필요','rank',!inn));r.push(row('추천인',inn?'':'로그인 필요','ref',!inn))}
+  if(AF.isAdmin)r.push(row('관리자','','adm'));
+  ac.innerHTML=r.length?'<h3>바로가기</h3>'+r.join(''):''}}sync();om.classList.add('on');focusFirst(om)}
 let rfOpener=null;
 function openRef(from){rfOpener=from;refOpen();rf.classList.add('on');focusFirst(rf)}
 function closeRef(){rf.classList.remove('on');const r=rfOpener&&rfOpener.closest('.ov');const b=rfOpener&&rfOpener.isConnected?rfOpener:null;b?b.focus({preventScroll:true}):r&&focusFirst(r)}
@@ -2115,12 +2119,17 @@ if(sb){sb.auth.getSession().then(r=>setUser(r.data&&r.data.session),()=>setUser(
 
 /* ===== 접속자 수 (로그인한 사람만 센다) — 실시간 연결(Realtime/Presence)은 쓰지 않고, 접속자당 1분에 요청 1번(heartbeat)만 보내요.
    서버: online_users 표 + heartbeat() 함수가 필요해요 (online_users.sql). 아직 안 만들었으면 표시만 조용히 꺼져요. ===== */
-let onN=0,onT=0,onErr=0,onLast=0,onOff=0;
+let onN=0,onT=0,onErr=0,onLast=0,onOff=0,h2Off=0;
 const onB=document.createElement('div');onB.id='onl';document.body.appendChild(onB);
 const onTxt=()=>onN>0?'<i></i>접속 중 <b>'+onN.toLocaleString('ko-KR')+'</b>명':(AF.guest()?'<i class="g"></i>접속 중 <b>?</b>명':'');
 function onShow(){const h=onTxt();onB.innerHTML=h;onB.classList.toggle('on',!!h);const t=document.getElementById('onl2');if(t)t.innerHTML=h}
 async function beat(){onLast=Date.now();if(onOff||!sb||!AF.user)return;/* 게스트는 접속자 수 요청도 보내지 않아요(로그인한 사람만 heartbeat) */
-  try{const r=await sb.rpc('heartbeat');if(r.error)throw r.error;onErr=0;const n=+r.data;if(n>0){onN=n;onShow()}}
+  try{let r=h2Off?null:await sb.rpc('heartbeat2');
+    if(r&&r.error&&(r.error.code==='PGRST202'||r.error.code==='42883'||/Could not find the function|does not exist/i.test(String(r.error.message||'')))){h2Off=1;r=null}
+    if(r&&r.error)throw r.error;
+    if(!r){r=await sb.rpc('heartbeat');if(r.error)throw r.error}
+    onErr=0;const d=r.data,ob=d&&typeof d==='object',n=ob?+d.n:+d;if(n>0){onN=n;onShow()}
+    if(ob){try{if(AF.CHAT&&AF.CHAT.hb)AF.CHAT.hb(+d.c||0,+d.g||0)}catch(e){}}}
   catch(e){onErr++;const m=String((e&&e.message)||'');if(e&&(e.code==='PGRST202'||e.code==='42883'||/Could not find the function|does not exist/i.test(m))){onOff=1;onN=0;onShow();console.warn('접속자 수: heartbeat 함수가 없어요 (online_users.sql 실행 필요)')}}}
 function onLoop(){clearTimeout(onT);if(onOff||!AF.user)return;const base=(document.hidden?360000:300000)*(onErr>=3?4:1);onT=setTimeout(()=>{beat().then(onLoop,onLoop)},base+Math.random()*8000)}
 window.addEventListener('af-user',()=>{onN=0;onShow();clearTimeout(onT);if(AF.user){beat();onLoop()}});
@@ -2367,7 +2376,11 @@ buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirs
    서버 쪽에서도 길이·도배 제한을 꼭 걸어 주세요(클라이언트 제한은 우회 가능). */
 (function(){
 const $=id=>document.getElementById(id),box=$('cht'),lg=$('chlg'),ct=$('chct'),inp=$('chin'),hud=$('hud');
-const TABS=[{id:'all',n:'전체',f:()=>true},{id:'chat',n:'채팅',f:m=>m.ch==='chat'},{id:'sys',n:'시스템',f:m=>m.ch==='sys'},{id:'vl',n:'마을',f:m=>m.ch==='vl',vh:1},{id:'gd',n:'길드',f:m=>m.ch==='gd',vh:1}];/* vh: 마을에 있을 때만 보이는 탭 *//* 탭 추가: 길드·귓속말 등은 여기 한 줄 + 메시지의 ch 값만 늘리면 돼요 */
+const TABS=[{id:'all',n:'전체',f:()=>true},{id:'chat',n:'채팅',f:m=>m.ch==='chat'},{id:'sys',n:'시스템',f:m=>m.ch==='sys'},{id:'vl',n:'마을',f:m=>m.ch==='vl',vh:1},{id:'gd',n:'길드',f:m=>m.ch==='gd',vh:1}];/* vh: 마을에 있을 때만 보이는 탭 */ const UN={chat:0,vl:0,gd:0};let sc=-1,sg=-1,hc=0,hg=0;/* 채팅 버튼 뱃지: 마지막으로 본 채팅·길드채팅 번호(sc·sg)와 하트비트가 알려준 최신 번호(hc·hg) · 서버 요청 없이 하트비트 응답만 써요 */
+const nbb=document.createElement('b');nbb.className='nbb';$('chtg').appendChild(nbb);
+const nbShow=n=>{nbb.textContent=n>9?'9+':n;nbb.classList.toggle('on',n>0)};
+const mark=m=>{const v=typeof m.id==='string'&&m.id[0]==='g'?+m.id.slice(1):+m.id;if(!(v>=0))return;if(m.ch==='gd'){if(v>sg)sg=v}else if(m.ch==='chat'){if(v>sc)sc=v}};
+let hl=0;/* 안 읽은 새 메시지 수(탭 뱃지) · hl: 이전 기록을 불러오는 중이면 세지 않아요 */ const nbSet=id=>{const b=ct.querySelector('i[data-t="'+id+'"] .nb');if(!b)return;const n=UN[id]|0;b.textContent=n>99?'99+':n;b.classList.toggle('on',n>0)};/* 탭 추가: 길드·귓속말 등은 여기 한 줄 + 메시지의 ch 값만 늘리면 돼요 */
 const LIM={len:100,gap:1000,dup:5000,keep:200},SAVE='ashen1c',BMAX=50;
 const TOUCH=matchMedia('(pointer:coarse)').matches,vv=window.visualViewport;
 let vlOn=false,gdOn=false,tab='all',isOpen=false,keep=false,pend=false,hist=[],hi=-1,lastT=0,lastM='',lastMT=0,seq=0,welcomed=false;
@@ -2380,7 +2393,7 @@ const CHAT={me:ME,filter:t=>t/* 욕설 필터 자리: 나중에 여기서 치환
 {const st=document.createElement('style');st.textContent='.ln .gtag{display:inline-flex;align-items:center;gap:3px;margin-right:5px;padding:0 7px 0 4px;border:1px solid #c99a4a99;border-radius:9px;background:linear-gradient(#4a381655,#1a110555);color:#ffd98a;font-size:.84em;line-height:1.4;vertical-align:1px;white-space:nowrap;box-shadow:inset 0 1px 0 #ffe2a822}.ln .gtag svg{width:1em;height:1em;flex:none}.ln .gtag i{font-style:normal}.ln .gch{padding:0 7px;color:#9dffb8;border-color:#4fbf7a99;background:linear-gradient(#17402a66,#06150d66)}';document.head.appendChild(st)}
 function recv(m){
   if(!m||typeof m.text!=='string'||!m.text)return;
-  if(m.id!=null){if(seen.has(m.id))return;seen.add(m.id);if(seen.size>500)seen.delete(seen.values().next().value)}
+  if(m.id!=null){if(seen.has(m.id))return;seen.add(m.id);if(seen.size>500)seen.delete(seen.values().next().value);if(isOpen||m.uid===ME.id)mark(m)}
   if(m.ch!=='sys'&&m.uid!==ME.id){if(m.uid&&blk.has(m.uid))return;if(ignN.has(m.name)){if(m.uid&&blk.size<BMAX){blk.set(m.uid,{n:m.name,t:Date.now()});ignN.delete(m.name);saveMe()}return}}
   m={ch:m.ch==='sys'?'sys':m.ch==='vl'?'vl':m.ch==='gd'?'gd':'chat',uid:m.uid,name:String(m.name||'').slice(0,12),text:m.text.slice(0,200),ts:m.ts||Date.now(),c:m.c,g:m.ch==='chat'&&m.g?String(m.g).slice(0,10):''};
   const el=document.createElement('div');el.className='ln';el._m=m;el._t=Date.now();if(m.ch==='sys'&&m.text.length>18)el._L=1;
@@ -2389,9 +2402,10 @@ function recv(m){
   if(m.ch==='gd'){const l=document.createElement('span');l.className='gtag gch';l.textContent='길드';el.appendChild(l)}
   if(m.ch==='chat'||m.ch==='vl'||m.ch==='gd'){const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=m.name+': ';if(m.uid){b.style.cursor='pointer';b.title='정보 보기';b.addEventListener('pointerdown',e=>e.preventDefault());b.addEventListener('click',()=>{try{AF.showProfile(m.uid,m.name)}catch(e){}})}el.appendChild(b)}
   const tx=document.createElement('span');if(m.ch==='sys')tx.style.color=m.c||'#ffd98a';else if(m.ch==='gd')tx.style.color='#b8f5c8';tx.textContent=m.text;el.appendChild(tx);
-  if(!TABS.find(x=>x.id===tab).f(m))el.style.display='none';
+  if(!TABS.find(x=>x.id===tab).f(m)){el.style.display='none';if(isOpen&&!hl&&m.uid!==ME.id&&m.ch in UN){UN[m.ch]++;nbSet(m.ch)}}
   lg.insertBefore(el,lg.firstChild);/* column-reverse: 첫 자식이 맨 아래 줄 */
   while(lg.children.length>LIM.keep)lg.removeChild(lg.lastChild)}
+const recvH=m=>{hl=1;try{recv(m)}finally{hl=0}};
 const sys=(t,c)=>recv({ch:'sys',text:String(t),c});
 /* ---- 유저 차단: 정보창(AF.showProfile)의 [이 유저 차단] · 설정의 [차단 목록] · /ignore 가 이 함수들을 써요 ---- */
 const purge=f=>{[...lg.children].forEach(el=>{const m=el._m;if(m&&m.ch!=='sys'&&m.uid!==ME.id&&f(m))lg.removeChild(el)})};/* 이미 화면에 있는 채팅 줄도 지워요 */
@@ -2424,15 +2438,15 @@ function submit(raw){let t=raw.replace(/\s+/g,' ').trim();if(!t)return;
   if(CHAT.net.mode!=='supabase')recv(m);/* 서버 모드에선 서버가 돌려준 id로 한 번만 보여요 */
   Promise.resolve().then(()=>CHAT.net.send(m)).catch(()=>sys('전송에 실패했어요.','#ff9a8a'))}
 let lkT=0;const lockUI=()=>box.classList.toggle('lk',!AF.user);
-function open(byClick){if(isOpen)return;if(!AF.user){const n=Date.now();if(n-lkT>4000){lkT=n;sys('로그인 후에 이용할 수 있는 기능이에요. (메뉴 → 카카오로 로그인)','#ff9a8a')}return}isOpen=true;chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
+function open(byClick){if(isOpen)return;if(!AF.user){const n=Date.now();if(n-lkT>4000){lkT=n;sys('로그인 후에 이용할 수 있는 기능이에요. (메뉴 → 카카오로 로그인)','#ff9a8a')}return}isOpen=true;for(const k in UN){UN[k]=0;nbSet(k)}sc=Math.max(sc,hc);sg=Math.max(sg,hg);nbShow(0);chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
 function close(){if(!isOpen)return;isOpen=false;chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
 /* 키보드가 올라오면(visualViewport) 채팅창을 키보드 바로 위로 올리고, 화면이 낮으면 로그 높이를 줄여요 */
 function place(){const h=vv?vv.height:innerHeight,top=vv?vv.offsetTop:0;document.documentElement.style.setProperty('--wbb',((hud.offsetHeight||110)+8)+'px');/* 월드보스 버튼을 채팅 버튼과 같은 높이(하단 바 바로 위)에 맞춰요 */
   if(isOpen){const kb=M_max(0,innerHeight-h-top);box.style.bottom=(kb>60?kb+6:(hud.offsetHeight||110)+8)+'px';lg.style.height=Math.max(56,Math.min(150,h-130))+'px'}
   else box.style.bottom=((hud.offsetHeight||110)+8)+'px'}
 const M_max=Math.max;
-function setTab(id){tab=id;const f=TABS.find(x=>x.id===id).f;for(const el of lg.children)el.style.display=f(el._m)?'':'none';for(const i of ct.children)i.classList.toggle('sel',i.dataset.t===id)}
-TABS.forEach(x=>{const i=document.createElement('i');i.dataset.t=x.id;i.textContent=x.n;if(x.vh)i.style.display='none';i.addEventListener('pointerdown',e=>{e.preventDefault();setTab(x.id);if(isOpen)inp.focus()});ct.appendChild(i)});setTab('all');
+function setTab(id){tab=id;if(id in UN){UN[id]=0;nbSet(id)}const f=TABS.find(x=>x.id===id).f;for(const el of lg.children)el.style.display=f(el._m)?'':'none';for(const i of ct.children)i.classList.toggle('sel',i.dataset.t===id)}
+TABS.forEach(x=>{const i=document.createElement('i');i.dataset.t=x.id;i.textContent=x.n;{const b=document.createElement('b');b.className='nb';i.appendChild(b)}if(x.vh)i.style.display='none';i.addEventListener('pointerdown',e=>{e.preventDefault();setTab(x.id);if(isOpen)inp.focus()});ct.appendChild(i)});setTab('all');
 function send(){const v=inp.value;inp.value='';if(!keep)close();if(v.trim())submit(v);if(keep&&isOpen)setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},0)}
 /* 입력창 키: 게임 조작키(Z X C Space …)가 채팅 글자와 겹치지 않도록 이벤트를 여기서 끊어요 */
 inp.addEventListener('keydown',e=>{e.stopPropagation();
@@ -2463,8 +2477,8 @@ CHAT.vlMode=on=>{on=!!on;if(on===vlOn)return;vlOn=on;const i=ct.querySelector('[
 /* 길드에 가입하면 '길드' 탭이 생기고, 탈퇴·길드 이동 시 사라지면서 길드 대화 기록도 지워져요 */
 CHAT.gdMode=on=>{on=!!on;if(on===gdOn)return;gdOn=on;const i=ct.querySelector('[data-t="gd"]');if(i)i.style.display=on?'':'none';
   if(on){if(CHAT.gdLoad)CHAT.gdLoad()}else{for(const el of [...lg.children])if(el._m&&el._m.ch==='gd')el.remove();if(tab==='gd')setTab('all')}};
-CHAT.recv=recv;CHAT.sys=sys;CHAT.open=open;CHAT.close=close;CHAT.isOpen=()=>isOpen;
-CHAT.start=()=>Promise.resolve(CHAT.net.connect(recv)).then(()=>CHAT.net.history('chat',50)).then(h=>{(h||[]).slice().reverse().forEach(recv)}).catch(()=>sys('채팅 서버에 연결하지 못했어요.','#ff9a8a'));
+CHAT.recv=recv;CHAT.sys=sys;CHAT.open=open;CHAT.close=close;CHAT.isOpen=()=>isOpen;CHAT.hb=(c,g)=>{hc=c;hg=g;if(sc<0)sc=c;if(sg<0)sg=g;if(isOpen){sc=c;sg=g;nbShow(0);return}nbShow(Math.max(0,c-sc)+Math.max(0,g-sg))};
+CHAT.start=()=>Promise.resolve(CHAT.net.connect(recv)).then(()=>CHAT.net.history('chat',50)).then(h=>{(h||[]).slice().reverse().forEach(recvH)}).catch(()=>sys('채팅 서버에 연결하지 못했어요.','#ff9a8a'));
 AF.CHAT=CHAT;AF.chatSys=sys;
 /* 최고 등급 획득 알림: 로그인 상태에서만, 아이템 1개당 1번. 서버 함수가 없거나 실패해도 게임엔 영향 없어요 */
 const ANW=new WeakSet();AF.announce=it=>{try{if(!it||ANW.has(it)||!AF.sb||!AF.user||CHAT.net.mode!=='supabase')return;ANW.add(it);AF.sb.rpc('announce_drop',{p_name:ME.name,p_item:String(it.n||'').slice(0,40),p_u:it.u!=null}).then(()=>{},()=>{})}catch(e){}};
@@ -2474,7 +2488,7 @@ const row=x=>({id:x.id,ch:x.ch==='sys'?'sys':'chat',uid:x.uid,name:x.name,g:x.gn
 const RT_PRIVATE=false;
 function goNet(){const sb=AF.sb,u=AF.user;if(!sb||!u)return;if(chCh&&ME.id===u.id&&CHAT.net.mode==='supabase')return;ME.id=u.id;ME.name=String(AF.nk||u.name).slice(0,12);
   const gload=n=>sb.from('guild_chat').select().order('id',{ascending:false}).limit(n).then(r=>{if(r.error)throw r.error;return(r.data||[]).map(grow)});
-  CHAT.gdLoad=()=>{if(gdOn&&chCh)gload(50).then(h=>h.slice().reverse().forEach(recv)).catch(()=>{})};
+  CHAT.gdLoad=()=>{if(gdOn&&chCh)gload(50).then(h=>h.slice().reverse().forEach(recvH)).catch(()=>{})};
   CHAT.net={mode:'supabase',
     connect(on){if(chCh)sb.removeChannel(chCh);chCh=sb.channel('chat',RT_PRIVATE?{config:{private:true}}:{}).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>on(row(p.new))).on('postgres_changes',{event:'INSERT',schema:'public',table:'guild_chat'},p=>on(grow(p.new))).subscribe();return Promise.resolve()},
     send(m){if(!AF.user)return Promise.reject(new Error('login'));const go=b=>sb.from('chat_messages').insert(b).select().single();/* 닉네임을 같이 보내 보고, 서버가 name 을 거부하면 이름 없이 다시 보내요(서버가 이름을 정하는 경우) */
