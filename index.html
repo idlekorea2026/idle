@@ -677,7 +677,7 @@ const TR={a:.00005,h:.000035},CDS=.0001,CDM=()=>1.8+cdu*CDS+bx('cd')/100,mhp=q=>
 const SM={k:15,a:.12,b:.26},smf=n=>{const s=n-1;return 1+M.min(s,SM.k)*SM.a+M.max(0,s-SM.k)*SM.b};
 /* 난이도 벽: s0 스테이지부터 몬스터가 지수로 강해져요(체력은 th, 공격력은 td 스테이지마다 약 2.7배 = e배).
    숫자가 작을수록 벽이 빨리·가파르게 와요. 경험치·골드는 벽의 영향을 안 받아서 벽에서 사냥해도 계속 성장해요. */
-const WALL={s0:70,th:35,td:62},wallf=(n,t)=>M.exp(M.min(40,M.max(0,n-WALL.s0)/t));
+const WALL={s0:70,th:35,td:60},wallf=(n,t)=>M.exp(M.min(40,M.max(0,n-WALL.s0)/t));
 /* 몹 공격력 보정: 스테이지가 올라갈수록 장비·단련으로 체력이 훨씬 빨리 커져서 몹 공격이 체력바에 티가 안 났어요.
    g 스테이지당 추가 배율(+1.2%p) · cap 최대 추가 배율(+60% = 최대 ×1.6, 약 STAGE 51부터). 초반은 거의 그대로고 갈수록 따끔해져요.
    접촉·탄·폭탄·충격파·보스 공격 전부에 적용돼요. 더 세게 하려면 g·cap을 올리세요. 경험치·골드·몹 체력은 그대로예요. */
@@ -1018,7 +1018,7 @@ function swapMsg(it,c,v,did,kp){try{const d=v.a?(v.b-v.a)/v.a*100:0,ds=(d>=0?'+'
 if(did)csys(nm+' 교체: '+it.n+' · 전투력 '+ds+ls,d>=0?'#8fe3a0':'#ffb36b');
 else{const t=Date.now();if(t-(HT[it.sl]||0)<10000)return;HT[it.sl]=t;csys(nm+' 유지('+LKN[LK[it.sl]]+'): '+it.n+'이(가) 나왔지만 바꾸지 않았어요 · 전투력 '+ds+ls+(kp?' · 보관함에 보관':''),'#9fb5b0')}}catch(x){}}
 let bigAt=-1e9;/* 큰 상승 소리는 0.5초에 한 번만 (스테이지 끝 일괄 습득 때 겹치지 않게) */
-function coinG(){const cg=M.round((4+stage*2+(P.lv>>1))*(1+bon('gd')/100)*(1+evG()));gold+=cg;IR.g+=cg;IR2.g+=cg;psAdd(cg,0);return cg}
+/* 후반 골드 보너스: s0 스테이지부터 스테이지마다 r(복리)씩 동전 골드가 늘어요. 540→580 같은 차이가 눈에 보이게 하려는 거예요. 길드 비용 기준표(AF.gld.ref)에도 같은 배율이 들어가요. 던전 보상엔 안 들어가요. 숫자만 바꾸면 조절돼요. */ const GBOOST={s0:500,r:.003},gboost=n=>M.pow(1+GBOOST.r,M.max(0,n-GBOOST.s0)); function coinG(){const cg=M.round((4+stage*2+(P.lv>>1))*gboost(stage)*(1+bon('gd')/100)*(1+evG()));gold+=cg;IR.g+=cg;IR2.g+=cg;psAdd(cg,0);return cg}
 function coinAll(){let n=0;for(const o of OB)if(o.t=='c'){coinG();n++}OB=OB.filter(o=>o.t!='c');if(n)TX.push({x:P.x,y:P.y-150,t:'동전 '+n+'개 자동 획득',l:.9,c:'#ffcf4a'})}
 /* 절전 중 획득 기록: 교체할 때마다 쌓지 않고 '슬롯별 교체 횟수'와 '스킬북 종류별 개수'만 숫자로 모아요 (많이 얻어도 메모리·화면이 늘지 않아요) */
 /* ===== 보관함: 판매할 장비 중 등급이 INVT 이상(그 등급 포함, 기본 2=희귀)이면 팔지 않고 슬롯별 INVC칸까지 보관해요 (9=꺼짐) · 가득 차면 등급→유니크 여부→점수 순으로 가장 낮은 '보호' 안 한 것부터 판매 ===== */
@@ -1631,7 +1631,7 @@ doll(c){try{drawDoll(c,EQ,0,WB.cape|0,WB.mv?WB.mt|0:0)}catch(e){}},
 ap(){try{const o=[];for(const k of['h','a','w','r','n','f']){const x=EQ[k];o.push(x?(x.ri|0)+'.'+(x.k|0):'-')}o.push(WB.cape|0,WB.mv?WB.mt|0:0);return o.join(',')}catch(e){return''}},/* 마을에서 남에게 보내는 내 겉모습(장비 등급·종류, 망토, 탈것) */
 dq(c,q){try{const a=String(q).split(',');if(a.length!=8)return;const eq={};'hawrnf'.split('').forEach((sl,i)=>{if(a[i]==='-')return;const z=a[i].split('.'),ri=+z[0],k=+z[1];if(!isFinite(ri)||!isFinite(k))return;eq[sl]={sl,ri:M.max(0,M.min(TIERS.length-1,ri|0)),k:M.max(0,M.min(sl=='w'?3:2,k|0)),v:0,n:'',o:[]}});drawDoll(c,eq,0,M.max(0,M.min(CAPES.length-1,+a[6]|0)),M.max(0,M.min(MT_MAX,+a[7]|0)))}catch(e){}},
 info(){return{lv:P.lv,xp:P.xp,need:need(),stage:stage,gold:gold}}};
-AF.gld={cost(){return 4+M.max(1,best|0)*2+(P.lv>>1)},ref(){/* 최고 스테이지별 '보통 유저가 들고 있는 골드' (실유저 보유 골드 중앙값 기준, 2026-10 측정) — 길드 비용은 이 값의 %로 정해요 */const A=[[1,100],[25,1500],[75,8000],[125,18000],[175,30000],[225,40000],[275,1e5],[325,4e5],[375,3e6],[425,1e7],[475,4e7],[525,8e7],[600,3e8]],s=M.max(1,best|0);if(s>=600)return M.round(3e8*M.pow(10,(s-600)*.006));let i=1;while(A[i][0]<s)i++;const a=A[i-1],c=A[i];return M.round(a[1]*M.pow(c[1]/a[1],(s-a[0])/(c[0]-a[0])))},gold(){return gold},spend(n){n=M.floor(+n)||0;if(n<=0)return;gold=M.max(0,gold-n);save()}};/* 길드: 비용 기준·보유 골드·차감 */
+AF.gld={cost(){return 4+M.max(1,best|0)*2+(P.lv>>1)},ref(){/* 최고 스테이지별 '보통 유저가 들고 있는 골드' (실유저 보유 골드 중앙값 기준, 2026-10 측정) — 길드 비용은 이 값의 %로 정해요 */const A=[[1,100],[25,1500],[75,8000],[125,18000],[175,30000],[225,40000],[275,1e5],[325,4e5],[375,3e6],[425,1e7],[475,4e7],[525,8e7],[600,3e8]],s=M.max(1,best|0);if(s>=600)return M.round(3e8*M.pow(10,(s-600)*.006)*gboost(s));let i=1;while(A[i][0]<s)i++;const a=A[i-1],c=A[i];return M.round(a[1]*M.pow(c[1]/a[1],(s-a[0])/(c[0]-a[0]))*gboost(s))},gold(){return gold},spend(n){n=M.floor(+n)||0;if(n<=0)return;gold=M.max(0,gold-n);save()}};/* 길드: 비용 기준·보유 골드·차감 */
 addEventListener('keydown',e=>{if(psv&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^F\d+$/.test(e.code)){e.preventDefault();e.stopImmediatePropagation()}},true);
 let psAct=performance.now();['pointerdown','pointermove','keydown','touchstart','wheel'].forEach(ev=>addEventListener(ev,()=>{psAct=performance.now()},{capture:true,passive:true}));
 setInterval(()=>{if(psAuto&&!psv&&!vlv&&!pz&&st==1&&!document.hidden&&performance.now()-psAct>18e4){const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;psEnter()}},5000);
@@ -1781,6 +1781,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
+{v:'2026103001',d:'10/30',t:['500스테이지부터 동전 골드가 스테이지마다 조금씩 더 늘어요 · 길드 비용 기준도 함께 맞췄어요','길드 채팅이 재접속 뒤에 예전 기록이 최신처럼 나오던 문제를 고쳐 봤어요 — 확실하지 않아서, 계속 이상하면 문의하기로 알려 주세요']},
 {v:'2026102702',d:'10/27',t:['채팅에 길드 탭을 추가했어요 — 길드에 가입하면 같은 길드원끼리만 대화할 수 있어요 (전체 탭에도 초록색 "길드" 표시로 함께 보여요)','채팅에서 닉네임 앞에 소속 길드 이름이 배지로 붙어요','정보창(프로필)에도 소속 길드 이름과 길드 레벨이 보여요','길드 설정의 탈퇴 부분을 빨간색으로 바꿔 한눈에 알아보기 쉽게 했어요']},
 {v:'2026102604',d:'10/26',t:['길드를 추가했어요 — 마을 오른쪽 끝 길드 회관에서 길드를 만들거나 가입할 수 있어요 (자유 가입 · 승인제)','기부와 일일 활동(출석·월드보스·던전)으로 공헌도를 쌓으면 길드 레벨이 올라 정원이 늘고, 골드·경험치 획득량이 늘어요','길드 랭킹은 이번 주 월드보스 피해를 길드원끼리 합산해 매겨요 · 길장·부길장은 신청 수락, 공지, 추방을 할 수 있어요','길드원 목록에 마지막 접속 시각이 보여요 · 가입 신청에는 현재 닉네임이 보이고, 추방·탈퇴 안내와 길장 위임 문구를 정확하게 고쳤어요','추천인 화면에 최근 7일 보상 현황을 추가했어요 — 7일 안에 받은 인원(10명 한도), 한도가 찼을 때 다음 자리가 열리는 시각, 대기 중인 친구 수를 볼 수 있어요','추천인 월드보스 코인 한도 안내를 "주 10명"에서 "최근 7일간 10명"으로 바꿨어요 — 요일마다 한꺼번에 초기화되는 게 아니라, 받은 시점부터 7일 뒤에 자리가 하나씩 열려요']},
 ];
@@ -2404,7 +2405,7 @@ function recv(m){
   if(m.ch==='chat'||m.ch==='vl'||m.ch==='gd'){const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=m.name+': ';if(m.uid){b.style.cursor='pointer';b.title='정보 보기';b.addEventListener('pointerdown',e=>e.preventDefault());b.addEventListener('click',()=>{try{AF.showProfile(m.uid,m.name)}catch(e){}})}el.appendChild(b)}
   const tx=document.createElement('span');if(m.ch==='sys')tx.style.color=m.c||'#ffd98a';else if(m.ch==='gd')tx.style.color='#b8f5c8';tx.textContent=m.text;el.appendChild(tx);
   if(!TABS.find(x=>x.id===tab).f(m)){el.style.display='none';if(isOpen&&!hl&&m.uid!==ME.id&&m.ch in UN){UN[m.ch]++;nbSet(m.ch)}}
-  lg.insertBefore(el,lg.firstChild);/* column-reverse: 첫 자식이 맨 아래 줄 */
+  /* column-reverse: 첫 자식이 맨 아래 줄 · 시간(ts) 순으로 끼워 넣어요: 나중에 도착한 옛 기록이 맨 아래(최신 자리)로 가지 않게 */let ref=lg.firstChild;while(ref&&ref._m&&ref._m.ts>m.ts)ref=ref.nextSibling;lg.insertBefore(el,ref);
   while(lg.children.length>LIM.keep)lg.removeChild(lg.lastChild)}
 const recvH=m=>{hl=1;try{recv(m)}finally{hl=0}};
 const sys=(t,c)=>recv({ch:'sys',text:String(t),c});
@@ -2477,7 +2478,7 @@ CHAT.vlMode=on=>{on=!!on;if(on===vlOn)return;vlOn=on;const i=ct.querySelector('[
   if(on)setTab('vl');else{for(const el of [...lg.children])if(el._m&&el._m.ch==='vl')el.remove();if(tab==='vl')setTab('all')}};
 /* 길드에 가입하면 '길드' 탭이 생기고, 탈퇴·길드 이동 시 사라지면서 길드 대화 기록도 지워져요 */
 CHAT.gdMode=on=>{on=!!on;if(on===gdOn)return;gdOn=on;const i=ct.querySelector('[data-t="gd"]');if(i)i.style.display=on?'':'none';
-  if(on){if(CHAT.gdLoad)CHAT.gdLoad()}else{for(const el of [...lg.children])if(el._m&&el._m.ch==='gd')el.remove();if(tab==='gd')setTab('all')}};
+  if(on){if(CHAT.gdLoad)CHAT.gdLoad()}else{for(const el of [...lg.children])if(el._m&&el._m.ch==='gd')el.remove();/* 지운 길드 줄의 중복 표시(seen)도 같이 비워야 다시 불러올 때 최신 글이 걸러지지 않아요 */for(const id of [...seen])if(typeof id==='string'&&id.charAt(0)==='g')seen.delete(id);if(tab==='gd')setTab('all')}};
 CHAT.recv=recv;CHAT.sys=sys;CHAT.open=open;CHAT.close=close;CHAT.isOpen=()=>isOpen;CHAT.hb=(c,g)=>{hc=c;hg=g;if(sc<0)sc=c;if(sg<0)sg=g;if(isOpen){sc=c;sg=g;nbShow(0);return}nbShow(Math.max(0,c-sc)+Math.max(0,g-sg))};
 CHAT.start=()=>Promise.resolve(CHAT.net.connect(recv)).then(()=>CHAT.net.history('chat',50)).then(h=>{(h||[]).slice().reverse().forEach(recvH)}).catch(()=>sys('채팅 서버에 연결하지 못했어요.','#ff9a8a'));
 AF.CHAT=CHAT;AF.chatSys=sys;
