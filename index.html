@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202610211600">
+<meta name="build" content="202611010010">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -508,11 +508,11 @@ const CAPES=[null,['달빛','#2e2d78','#6a5acd',150,['ms',3]],['심해','#134d5a
 /* ===== 탈것 (월드보스 코인) =====
    WB.mt=탈것 레벨(0=미해금, 1~MT_MAX) · WB.mp=강화 연속 실패 횟수(천장) · WB.mv=모습 표시 1/0 (효과는 항상 적용)
    해금·강화는 로그인한 계정만 쓸 수 있어요. (굴림은 아직 이 기기에서 Math.random 으로 해요. 서버 RPC 로 옮기는 건 별도 작업) */
-const MT_MAX=20,MT_NAME='늑대',MT_UNLOCK=100,MT_PITY=2,
-MT_UP=[0,[10,90],[12,80],[15,70],[18,60],[22,50],[26,45],[30,40],[36,35],[42,30],[46,70],[48,65],[50,60],[52,55],[55,52],[58,48],[62,45],[66,42],[70,38],[75,35]],/* MT_UP[현재 레벨]=[강화 비용, 기본 성공률%] */
-MT_GD=[2,2.5,3,3.5,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20],MT_XP=[0,.5,1,1.5,2,2.5,3,3.5,4,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10],MT_AT=[.6,1.2,1.8,2.4,3,3.6,4.2,4.8,5.4,6,7.4,8.8,10.2,11.6,13,14.4,15.8,17.2,18.6,20],MT_HP=[.3,.6,.9,1.2,1.5,1.8,2.1,2.4,2.7,3,3.7,4.4,5.1,5.8,6.5,7.2,7.9,8.6,9.3,10],/* 최종 공격력(MT_AT)·최대 체력(MT_HP) %: 상한 없는 곱연산 */MT_MS=3,MT_MS2=5,/* 군마(Lv11~) 이동 속도 *//* 레벨별 골드·경험치 보너스(%), 이동 속도는 고정 */
-MT_STG=l=>l>=20?8:l>=17?7:l>=14?6:l>=11?5:l>=10?4:l>=7?3:l>=4?2:1,MT_STN=['','새끼 늑대','무장 늑대','날개 늑대','불꽃 군주 늑대','해골 망아지','철갑 흑마','불꽃 갈기 군마','재의 기사단장 군마'];
-const mtMs=l=>l>10?MT_MS2:MT_MS;
+const MT_MAX=29,MT_UNLOCK=100,MT_PITY=2,
+MT_UP=[0,[10,90],[12,80],[15,70],[18,60],[22,50],[26,45],[30,40],[36,35],[42,30],[46,70],[48,65],[50,60],[52,55],[55,52],[58,48],[62,45],[66,42],[70,38],[75,35],[80,65],[84,60],[88,55],[92,50],[96,45],[100,41],[105,37],[110,33],[115,29]],/* MT_UP[현재 레벨]=[강화 비용, 기본 성공률%] */
+MT_GD=[2,2.5,3,3.5,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],MT_XP=[0,.5,1,1.5,2,2.5,3,3.5,4,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12,12.5,13,13.5,14,14.5],MT_AT=[.6,1.2,1.8,2.4,3,3.6,4.2,4.8,5.4,6,7.4,8.8,10.2,11.6,13,14.4,15.8,17.2,18.6,20,21.4,22.8,24.2,25.6,27,28.4,29.8,31.2,32.6],MT_HP=[.3,.6,.9,1.2,1.5,1.8,2.1,2.4,2.7,3,3.7,4.4,5.1,5.8,6.5,7.2,7.9,8.6,9.3,10,10.7,11.4,12.1,12.8,13.5,14.2,14.9,15.6,16.3],/* 최종 공격력(MT_AT)·최대 체력(MT_HP) %: 상한 없는 곱연산 */MT_MS=3,MT_MS2=5,MT_MS3=7,/* 군마(Lv11~) · 용(Lv21~) 이동 속도 *//* 레벨별 골드·경험치 보너스(%), 이동 속도는 고정 */
+MT_STG=l=>l>=27?11:l>=24?10:l>=21?9:l>=20?8:l>=17?7:l>=14?6:l>=11?5:l>=10?4:l>=7?3:l>=4?2:1,MT_STN=['','새끼 늑대','무장 늑대','날개 늑대','불꽃 군주 늑대','해골 망아지','철갑 흑마','불꽃 갈기 군마','재의 기사단장 군마','새끼 비룡','철갑 비룡','불꽃 용'];
+const mtMs=l=>l>20?MT_MS3:l>10?MT_MS2:MT_MS;
 const mtB=t=>{const l=WB.mt|0;if(l<1)return 0;return t=='gd'?MT_GD[l-1]:t=='xp'?MT_XP[l-1]:t=='ms'?mtMs(l):t=='atp'?MT_AT[l-1]:t=='hpp'?MT_HP[l-1]:0};
 const MU_B=15,mtU=()=>AF.mtTk&&WB.mu>0?1:0,mtB0=l=>Math.min(100,MT_UP[l][1]+(WB.mp|0)*MT_PITY),mtP=l=>{const b=mtB0(l);return mtU()&&b<100?Math.min(100,b+MU_B):b};
 const mtEff=l=>'골드 +'+MT_GD[l-1]+'%'+(MT_XP[l-1]>0?' · 경험치 +'+MT_XP[l-1]+'%':'')+' · 공격력 +'+MT_AT[l-1]+'% · 체력 +'+MT_HP[l-1]+'%'+' · 이동 속도 +'+mtMs(l)+'%';
@@ -534,7 +534,7 @@ h+='<div class="nt"><span>해금하면 자동 탑승이고, 효과는 모습을 
 if(!l)h+='<div class="r"><span>탈것<small>'+mtEff(1)+'</small></span><button data-a="mt_buy"'+(W.c<MT_UNLOCK?' disabled':'')+'>'+MT_UNLOCK+' 코인</button></div>';
 else{h+='<div class="r"><span>'+MT_STN[MT_STG(l)]+' Lv.'+l+' / '+MT_MAX+'<small>'+mtEff(l)+'</small></span><button data-a="mt_vis">'+(W.mv?'모습 숨기기':'모습 보이기')+'</button></div>';
 if(l<MT_MAX){const c=MT_UP[l][0];h+='<div class="r"><span>강화 Lv.'+l+' → Lv.'+(l+1)+'<small>성공 확률 '+mtP(l)+'%'+(W.mp?' (연속 실패 보너스 +'+W.mp*MT_PITY+'%)':'')+' · 다음 '+mtEff(l+1)+'</small></span><button data-a="mt_up"'+(W.c<c?' disabled':'')+'>'+c+' 코인</button></div>'+(W.mu>0?'<div class="r"><span>탈것 강화권 '+W.mu+'장<small>켜면 이번 강화 성공 확률 +'+MU_B+'%p · 강화할 때 1장 사용 (성공·실패 모두) · 이미 확률이 100%면 쓰지 않아요</small></span><button data-a="mt_tk">'+(AF.mtTk?'사용 중':'사용 안 함')+'</button></div>':'')}
-else h+='<div class="nt ok">최대 레벨이에요. 다음 종은 추후 추가돼요</div>'}
+else h+='<div class="nt ok">최대 레벨이에요</div>'}
 return h}
 function mtPrev(cv){if(!cv)return;const tk=++mtTok;(function lp(){if(tk!==mtTok||!cv.isConnected)return;
 drawDoll(cv,EQ,0,WB.cape|0,WB.mt||1);
@@ -542,7 +542,7 @@ const dt=(performance.now()-MTF.t)/1000,dur=MTF.k==2?1.3:.8;
 if(MTF.k&&dt<dur){const g=cv.getContext('2d'),q=dt/dur,w=cv.width,h=cv.height;g.save();g.globalAlpha=(1-q)*.85;g.strokeStyle=MTF.k==2?'#ffe08a':'#7dffe0';g.lineWidth=5*(1-q)+1;g.beginPath();g.arc(w/2,h*.55,20+q*(MTF.k==2?170:110),0,7);g.stroke();g.globalAlpha=(1-q)*.3;g.fillStyle='#fff';g.fillRect(0,0,w,h);g.restore()}
 requestAnimationFrame(lp)})()}
 /* 탈것 그리기: 캐릭터 원점(발 중앙)에 오른쪽을 보고 그려요. 반환값=기수를 들어 올릴 높이(px). t=초 단위 시간
-   구조: mountD(공통: 그림자·아우라·위치) → 종 몸체 mbWolf(Lv1~10) / mbHorse(Lv11~20) → 공유 부품 mtLg(다리)·mtSad(안장)
+   구조: mountD(공통: 그림자·아우라·위치) → 종 몸체 mbWolf(Lv1~10) / mbHorse(Lv11~20) / mbDragon(Lv21~29) → 공유 부품 mtLg(다리)·mtSad(안장)
    새 종(곰 등)은 mb종 함수 하나 + 색 팔레트(MT_PAL) + MT_STN 이름 4개 + MT_STG 구간만 추가하면 돼요. */
 function seatD(g){/* 탈것 위에 앉은 기수 다리: 허벅지는 앞으로, 종아리는 옆구리에 걸쳐요 */
 g.fillStyle='#1b2638';g.fillRect(-2,-25,18,8);g.fillRect(11,-19,7,13);g.fillStyle='#2a1f16';g.fillRect(10,-7,10,5);
@@ -654,7 +654,57 @@ if(S>=3){for(let n=0;n<6+li*2;n++){const q=(t*1.3+n*.157)%1;k.globalAlpha=1-q;k.
 if(S==3){for(let n=0;n<4;n++){const q=(t*1.4+n*.25)%1;k.globalAlpha=1-q;k.fillStyle=q<.5?'#ffd84a':'#ff6a2a';k.fillRect(-20+n*14,-1-q*9,3,3)}k.globalAlpha=1}
 if(S==4){for(let n=0;n<4;n++){const x=-20+n*13,h=8+3*Math.sin(t*10+n*2);fl(x,4,x-3-lean*.4,4-h,3,F1);fl(x,4,x-2-lean*.3,4-h*.6,1.8,F2)}
 for(let n=0;n<8;n++){const q=(t*.5+n*.125)%1;k.globalAlpha=1-q*.6;k.fillStyle=n%2?'#cfd6e6':'#fff';k.fillRect(-26+n*8+Math.sin(t*2.4+n)*5,-82+q*80,3,3)}k.globalAlpha=1}}
-function mountD(k,lv,sp,t){lv=Math.max(1,Math.min(MT_MAX,lv|0));
+/* 용(Lv21~29): 3단계 · 1 새끼 비룡 · 2 철갑 비룡 · 3 불꽃 용 (몸체 크기 DSC · 오른쪽 이동 DDX · 낮춤 DDY 는 프로필·화면에서 잘리지 않게 맞춘 값) */
+const DPAL=[null,
+{body:'#7a2a22',dark:'#2b0a08',belly:'#d9a24a',m0:'#b8472c',m1:'#4a100c',bone:'#2e0c08',glow:'#ff9a3a',glow2:'#ffd84a',eye:'#ffe08a',horn:'#e8dcc0',aura:'255,120,50',ar:'',ah:''},
+{body:'#3a2a34',dark:'#0e0709',belly:'#c9b27a',m0:'#7a4a52',m1:'#240c14',bone:'#150a0d',glow:'#ff9a4a',glow2:'#ffd84a',eye:'#ffb347',horn:'#d4dcec',aura:'200,170,150',ar:'#8a93a8',ah:'#d4dcec'},
+{body:'#2a0f14',dark:'#07030a',belly:'#ffd84a',m0:'#ff8a2a',m1:'#5a0e08',bone:'#14060a',glow:'#ff7a2a',glow2:'#ffd84a',eye:'#fff0b0',horn:'#fff6e0',aura:'255,110,40',ar:'#4a3a44',ah:'#ff9a4a'}];
+const dfl=(k,x,y,tx,ty,w,c)=>{const dx=tx-x,dy=ty-y,l=Math.hypot(dx,dy)||1,nx=-dy/l*w,ny=dx/l*w,mx=(x+tx)/2,my=(y+ty)/2;k.fillStyle=c;k.beginPath();k.moveTo(x+nx,y+ny);k.quadraticCurveTo(mx+nx*.7,my+ny*.7,tx,ty);k.quadraticCurveTo(mx-nx*.7,my-ny*.7,x-nx,y-ny);k.closePath();k.fill()};
+const dlit=(k,f)=>{k.save();k.globalCompositeOperation='lighter';f();k.restore()};
+function dwing(k,t,P,ang,sc,far){k.save();k.translate(far?4:-2,-66);k.rotate(ang);k.scale(sc,sc);k.globalAlpha=far?.7:1;
+const T=[[-60,-64],[-78,-32],[-66,0],[-38,16]],E=[-18,-36],cp=(a,b)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;return[mx+(E[0]-mx)*.3,my+(E[1]-my)*.3]};
+const g=k.createLinearGradient(0,0,-76,-30);g.addColorStop(0,P.m0);g.addColorStop(1,P.m1);
+const path=()=>{k.beginPath();k.moveTo(0,0);k.lineTo(E[0],E[1]);k.lineTo(T[0][0],T[0][1]);for(let i=0;i<3;i++){const c=cp(T[i],T[i+1]);k.quadraticCurveTo(c[0],c[1],T[i+1][0],T[i+1][1])}k.lineTo(0,9);k.closePath()};
+k.fillStyle=g;path();k.fill();
+k.strokeStyle=P.bone;k.lineWidth=2.4;k.lineCap='round';k.beginPath();k.moveTo(0,0);k.lineTo(E[0],E[1]);T.forEach(p=>{k.moveTo(E[0],E[1]);k.lineTo(p[0],p[1])});k.stroke();
+dlit(k,()=>{k.globalAlpha=.55+.25*Math.sin(t*4);k.strokeStyle=P.glow;k.lineWidth=1.6;path();k.stroke()});
+k.restore()}
+function mbDragon(C){const{k,S,run:RUN,t}=C,P=DPAL[S],f=RUN?9.5:4.2,flap=-.15+Math.sin(t*f)*.45;k.save();k.scale(DSC,DSC);
+if(S==3)dlit(k,()=>{const r=k.createRadialGradient(4,-70,6,4,-70,140);r.addColorStop(0,'rgba('+P.aura+','+(.4+.12*Math.sin(t*3))+')');r.addColorStop(1,'rgba('+P.aura+',0)');k.fillStyle=r;k.beginPath();k.arc(4,-70,140,0,7);k.fill()});
+const ws=[0,.7,.85,1][S];
+dwing(k,t,P,flap+.35,ws*.86,1);
+/* 꼬리 */
+let px=-24,py=-46;k.lineCap='round';for(let i=0;i<12;i++){const nx=-24-i*7.5,ny=-46+i*1.3+Math.sin(t*(RUN?7:2.4)-i*.55)*(1.5+i*.8);k.strokeStyle=P.body;k.lineWidth=15-i*1.1;k.beginPath();k.moveTo(px,py);k.lineTo(nx,ny);k.stroke();px=nx;py=ny}
+if(S==3)dlit(k,()=>{for(const[c,s]of[[P.glow,1],[P.glow2,.6]])dfl(k,px,py,px-(RUN?34:22)*s,py+Math.sin(t*9)*4,5*s+.5,c)});
+/* 몸통 */
+k.fillStyle=P.body;k.beginPath();k.ellipse(0,-48,31,18,-.06,0,7);k.fill();
+k.strokeStyle=P.belly;k.lineWidth=5;k.beginPath();k.ellipse(1,-47,28,15,-.06,.25,Math.PI-.25);k.stroke();
+k.strokeStyle=P.dark;k.globalAlpha=.3;k.lineWidth=1;for(let n=0;n<5;n++){k.beginPath();k.arc(-18+n*9,-56,6,.2,2.9);k.stroke()}k.globalAlpha=1;
+k.fillStyle=P.horn;for(let n=0;n<7;n++){const x=-22+n*7,y=-48-18*Math.sqrt(Math.max(0,1-(x/31)**2));k.beginPath();k.moveTo(x-3,y+1);k.lineTo(x-1,y-7-S*2-(n%2)*2);k.lineTo(x+3,y+1);k.fill()}
+/* 다리 */
+const sw=Math.sin(t*f)*(RUN?3.5:1);k.strokeStyle=P.body;k.lineWidth=7;k.lineJoin='round';
+k.beginPath();k.moveTo(16,-38);k.lineTo(25,-27+sw);k.lineTo(32,-28+sw);k.stroke();k.beginPath();k.moveTo(-14,-36);k.lineTo(-21,-24-sw);k.lineTo(-13,-21-sw);k.stroke();
+k.fillStyle=P.horn;for(const[x,y]of[[33,-28+sw],[-12,-21-sw]]){k.beginPath();k.moveTo(x-2,y-3);k.lineTo(x+6,y+1);k.lineTo(x-2,y+3);k.fill()}
+if(S>=2){k.fillStyle=P.ar;k.strokeStyle=P.ah;k.lineWidth=.9;k.beginPath();k.moveTo(14,-62);k.lineTo(27,-52);k.lineTo(25,-34);k.lineTo(14,-32);k.closePath();k.fill();k.stroke();k.beginPath();k.moveTo(-28,-58);k.lineTo(-12,-64);k.lineTo(-10,-40);k.lineTo(-26,-38);k.closePath();k.fill();k.stroke();k.fillStyle=P.ah;[[19,-52],[20,-44],[-20,-56],[-18,-48]].forEach(q=>k.fillRect(q[0],q[1],2,2))}
+dwing(k,t,P,flap,ws,0);
+/* 목·머리 */
+k.strokeStyle=P.body;k.lineWidth=15;k.beginPath();k.moveTo(20,-56);k.quadraticCurveTo(40,-60,41,-86);k.stroke();
+k.strokeStyle=P.belly;k.lineWidth=4;k.beginPath();k.moveTo(26,-50);k.quadraticCurveTo(46,-56,47,-84);k.stroke();
+if(S>=3)dlit(k,()=>{for(const[c,s]of[[P.glow,1],[P.glow2,.6]])for(let n=0;n<7;n++){const q=n/7,x=22+q*18,y=-60-q*34,h=(10+n)*s+3*Math.sin(t*9+n);dfl(k,x,y,x-9-h*.5-(RUN?6:0),y-h*.5,2.6*s+.4,c)}});
+k.fillStyle=P.body;k.beginPath();k.moveTo(34,-102);k.quadraticCurveTo(48,-108,62,-97);k.lineTo(68,-91);k.lineTo(61,-85);k.lineTo(44,-79);k.quadraticCurveTo(33,-82,34,-102);k.fill();
+k.strokeStyle=P.dark;k.lineWidth=1.3;k.beginPath();k.moveTo(46,-85);k.lineTo(64,-90);k.stroke();k.fillStyle='#fff';for(let n=0;n<4;n++){k.beginPath();k.moveTo(51+n*3.6,-87.5-n*.7);k.lineTo(52.4+n*3.6,-84-n*.7);k.lineTo(53.8+n*3.6,-88-n*.7);k.fill()}
+if(S>=2){k.fillStyle=P.ar;k.strokeStyle=P.ah;k.lineWidth=.9;k.beginPath();k.moveTo(36,-102);k.quadraticCurveTo(48,-107,62,-97);k.lineTo(55,-95);k.lineTo(38,-96);k.closePath();k.fill();k.stroke()}
+k.strokeStyle=P.horn;k.lineWidth=4.5;k.beginPath();k.moveTo(38,-103);k.quadraticCurveTo(26,-118,6,-113);k.stroke();k.lineWidth=3;k.beginPath();k.moveTo(36,-99);k.quadraticCurveTo(24,-106,10,-98);k.stroke();
+dlit(k,()=>{k.globalAlpha=.8;k.fillStyle=P.eye;k.beginPath();k.arc(51,-96,6,0,7);k.fill()});k.fillStyle=P.eye;k.fillRect(48.5,-98,5.5,3);k.fillStyle='#fff';k.fillRect(51,-97.4,2.2,1.4);
+if(RUN&&S==3)dlit(k,()=>{for(const[c,s]of[[P.glow,1],[P.glow2,.55]]){const L=(34+8*Math.sin(t*14))*s;dfl(k,66,-89,66+L,-92+Math.sin(t*11)*3,5*s+1,c)}});
+/* 번개·불씨 */
+dlit(k,()=>{for(let n=0;n<[0,0,6,16][S];n++){const q=(t*.7+n*.0625)%1;k.globalAlpha=1-q;k.fillStyle=n%2?P.glow:P.glow2;k.fillRect(-66+(n*29)%130,-24-q*120,2.6,2.6)}k.globalAlpha=1});
+k.restore();mtSad(C,-66*DSC-2,'#5a3a22','#c9a46a','#ffd84a')}
+const DSC=.66,DDX=4,DDY=14;
+function mountDr(k,lv,sp,t){const S=Math.min(3,((lv-21)/3|0)+1),run=sp>.05,hv=6+Math.sin(t*2.6)*1.6,ph=t*(run?13:2.4),bob=run?-Math.abs(Math.sin(ph))*2.2:Math.sin(t*2.4)*.6,C={k,S,run,t,bob,hv,li:S-1,dk:'#07030a'};
+k.save();k.fillStyle='#0008';k.beginPath();k.ellipse(0,0,50-hv*.7,7,0,0,7);k.fill();k.translate(DDX,-hv+DDY);k.scale(1.25,1.25);k.translate(0,bob);mbDragon(C);k.restore();return 66*DSC*1.25-29+hv-bob-DDY}
+
+function mountD(k,lv,sp,t){lv=Math.max(1,Math.min(MT_MAX,lv|0));if(lv>20)return mountDr(k,lv,sp,t);
 const sk=lv>10?1:0,S=(MT_STG(lv)-1)%4+1,li=(lv-(sk?10:0)-1)-[0,0,3,6,9][S],run=sp>.05,
 PL=MT_PAL[sk][S-1],fly=sk?S==4:S>=3,
 hv=fly?(sk?5+Math.sin(t*2.6)*1.6:(S==3?6:11)+Math.sin(t*2.6)*2):0,
@@ -1466,7 +1516,7 @@ const CIC={w:'<path d="M19 5 9 15M6.5 12.5l5 5M9 15 5 19"/>',h:'<path d="M5 15a7
 let PUT=0;const PUL=864e5;
 function mkPv(){try{return{cp:cp(),sh:PUB?1:0,bd:WB.bd|0,cape:WB.cape|0,mt:WB.mv?WB.mt|0:0,pt:PUT}}catch(e){return null}}
 const PCL=(x,sl)=>{if(!x||typeof x!='object')return null;const r={sl,ri:M.max(0,M.min(TIERS.length-1,x.ri|0)),v:+x.v||0,k:M.max(0,M.min(sl=='w'?3:2,x.k|0)),n:String(x.n||'').slice(0,24)};if(x.u!=null&&UQ[x.u|0])r.u=x.u|0;r.o=(Array.isArray(x.o)?x.o.slice(0,6):[]).filter(q=>Array.isArray(q)&&OP[q[0]]).map(q=>[q[0],+q[1]||0]);return r};
-function drawDoll(c2,eq,bd,cp,mt){try{const g=c2.getContext('2d'),w=c2.width,h=c2.height,s=+(c2.dataset&&c2.dataset.s)||h/150;g.clearRect(0,0,w,h);if(bd&&BORDERS[bd]){g.strokeStyle=BORDERS[bd][1];g.lineWidth=3;g.strokeRect(2,2,w-4,h-4)}g.save();g.translate(w/2,h-12*s);g.scale(s,s);let _o;{const q=g.createRadialGradient(0,-55,0,0,-55,95);q.addColorStop(0,'rgba(185,168,255,.22)');q.addColorStop(1,'rgba(185,168,255,0)');g.fillStyle=q;g.fillRect(-100,-155,200,200)}_o=OLon(g);
+function drawDoll(c2,eq,bd,cp,mt){try{const g=c2.getContext('2d'),w=c2.width,h=c2.height,s0=+(c2.dataset&&c2.dataset.s)||h/150,s=mt>20?Math.min(s0,w/175):s0,dx=mt>20?20*s:0;/* 용(Lv21+)은 꼬리가 길어서 작은 캔버스에선 배율을 줄이고 오른쪽으로 옮겨 안 잘리게 해요 */g.clearRect(0,0,w,h);if(bd&&BORDERS[bd]){g.strokeStyle=BORDERS[bd][1];g.lineWidth=3;g.strokeRect(2,2,w-4,h-4)}g.save();g.translate(w/2+dx,h-12*s);g.scale(s,s);let _o;{const q=g.createRadialGradient(0,-55,0,0,-55,95);q.addColorStop(0,'rgba(185,168,255,.22)');q.addColorStop(1,'rgba(185,168,255,0)');g.fillStyle=q;g.fillRect(-100,-155,200,200)}_o=OLon(g);
 g.fillStyle='#0008';g.beginPath();g.ellipse(0,0,24,6,0,0,7);g.fill();
 const _ml=mt>0?mountD(g,mt,0,performance.now()/1000):0;if(_ml)g.translate(0,-_ml);
 if(_ml)seatD(g);else{g.fillStyle='#2a3a52';g.fillRect(-9,-24,8,24);g.fillRect(2,-24,8,24)}
@@ -1781,9 +1831,8 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
+{v:'2026110102',d:'11/1',t:['새로운 탈것이 추가됐어요 (Lv.21~29)']},
 {v:'2026103001',d:'10/30',t:['500스테이지부터 동전 골드가 스테이지마다 조금씩 더 늘어요','길드 채팅이 재접속 뒤에 예전 기록이 최신처럼 나오던 문제를 고쳐 봤어요 — 확실하지 않아서, 계속 이상하면 문의하기로 알려 주세요']},
-{v:'2026102702',d:'10/27',t:['채팅에 길드 탭을 추가했어요 — 길드에 가입하면 같은 길드원끼리만 대화할 수 있어요 (전체 탭에도 초록색 "길드" 표시로 함께 보여요)','채팅에서 닉네임 앞에 소속 길드 이름이 배지로 붙어요','정보창(프로필)에도 소속 길드 이름과 길드 레벨이 보여요','길드 설정의 탈퇴 부분을 빨간색으로 바꿔 한눈에 알아보기 쉽게 했어요']},
-{v:'2026102604',d:'10/26',t:['길드를 추가했어요 — 마을 오른쪽 끝 길드 회관에서 길드를 만들거나 가입할 수 있어요 (자유 가입 · 승인제)','기부와 일일 활동(출석·월드보스·던전)으로 공헌도를 쌓으면 길드 레벨이 올라 정원이 늘고, 골드·경험치 획득량이 늘어요','길드 랭킹은 이번 주 월드보스 피해를 길드원끼리 합산해 매겨요 · 길장·부길장은 신청 수락, 공지, 추방을 할 수 있어요','길드원 목록에 마지막 접속 시각이 보여요 · 가입 신청에는 현재 닉네임이 보이고, 추방·탈퇴 안내와 길장 위임 문구를 정확하게 고쳤어요','추천인 화면에 최근 7일 보상 현황을 추가했어요 — 7일 안에 받은 인원(10명 한도), 한도가 찼을 때 다음 자리가 열리는 시각, 대기 중인 친구 수를 볼 수 있어요','추천인 월드보스 코인 한도 안내를 "주 10명"에서 "최근 7일간 10명"으로 바꿨어요 — 요일마다 한꺼번에 초기화되는 게 아니라, 받은 시점부터 7일 뒤에 자리가 하나씩 열려요']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
 function pmark(){try{localStorage.setItem(PSK,PATCH[0].v)}catch(e){}document.body.classList.remove('pnew')}
