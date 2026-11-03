@@ -877,7 +877,7 @@ addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const k=
 addEventListener('keyup',e=>{const k=KC[e.code];if(k)K[k]=0});addEventListener('blur',()=>{for(const k in K)K[k]=0});
 document.querySelectorAll('button').forEach(b=>{const k=b.dataset.k;b.addEventListener('pointerdown',e=>{e.preventDefault();press(k)});['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,()=>K[k]=0))});
 cv.addEventListener('pointerdown',()=>{if(st>1)go()});
-let PUB=true,PL=[],auto=true,stage=1,sm=1,xm=1,dm=1,up=0,hu=0,cdu=0,clr=0,bn=0,dtm=0,best=1,farm=false,uc=0,og=0,mute=false,RG=[],ab=true,ae=true,LK={w:0,a:0,h:0,r:0,n:0,f:0},HT={},atr=false,frm=false,frt=0,fal=-1,fft=0,abt=0,LT=[],EQ={w:null,a:null,h:null,r:null,n:null,f:null},shopOpen=false,AC=null;
+let PUB=true,PSD=false,PL=[],auto=true,stage=1,sm=1,xm=1,dm=1,up=0,hu=0,cdu=0,clr=0,bn=0,dtm=0,best=1,farm=false,uc=0,og=0,mute=false,RG=[],ab=true,ae=true,LK={w:0,a:0,h:0,r:0,n:0,f:0},HT={},atr=false,frm=false,frt=0,fal=-1,fft=0,abt=0,LT=[],EQ={w:null,a:null,h:null,r:null,n:null,f:null},shopOpen=false,AC=null;
 const TH=[
 {n:'잿빛 숲',sky:['#08141f','#15343a','#26483f'],moon:'#cfeee6',r1:'#10262e',r2:'#0d1f25',t1:'#0a1a1d',t2:'#071316',gr:'#24352c',g1:'#4b8f63',g2:'#78c48a',gl:'#ff9a3a',sl:'#4fb58f',bs:'#5b5548',b:'폐허의 수호자',mons:['s','b','d'],mn:['이끼 슬라임','숲 박쥐','분열 이끼덩이']},
 {n:'보랏빛 늪',sky:['#120a24','#2a1a45','#3a2a5a'],moon:'#e6cfff',r1:'#1e1338',r2:'#170e2c',t1:'#120a26',t2:'#0c061a',gr:'#2e2440',g1:'#6a4fa0',g2:'#9a7ad8',gl:'#c07aff',sl:'#a06bd8',bs:'#4a3d66',b:'늪의 군주',mons:['s','r','x','h'],mn:['독개구리','늪 주술사','독기 포자','늪 치유사']},
@@ -1130,7 +1130,7 @@ if(Array.isArray(d.pu))d.pu=d.pu.filter(pi);else delete d.pu;
 if(ob(d.ir)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir)o[k]=n(d.ir[k],0,1e12,0);d.ir=o}else delete d.ir; if(ob(d.ir2)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir2)o[k]=n(d.ir2[k],0,1e12,0);d.ir2=o}else delete d.ir2;
 let lc=0;const ic={};d.inv=Array.isArray(d.inv)?d.inv.map(x=>x&&SK.includes(x.sl)?it(x,x.sl):null).filter(Boolean).filter(x=>(ic[x.sl]=(ic[x.sl]||0)+1)<=INVC).map(x=>{x.lk=x.lk&&lc<INVLK?(lc++,1):0;return x}):[];d.invt=[0,1,2,3,9].includes(+d.invt)?+d.invt:2;
 return d}
-function applySave(d){INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}PUB=!(d.pv&&d.pv.sh===0);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.ir2)Object.assign(IR2,d.ir2);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
+function applySave(d){INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}PUB=!(d.pv&&d.pv.sh===0);PSD=!!(d.pv&&d.pv.sd===1);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.ir2)Object.assign(IR2,d.ir2);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
 function load(){let d;try{d=JSON.parse(localStorage.getItem('ashen1'))}catch(e){return}if(!d||typeof d!='object'||Array.isArray(d))return;try{applySave(sane(migrate(d)))}catch(e){console.warn('load',e)}}
 function offCalc(){if(ot<60)return;const w=IR.w;
 if(!(w>=OFF.minw)){og=M.round(ot*(.2+stage*.05));return}
@@ -1511,7 +1511,7 @@ BU.style.setProperty('--cd',cu);BS.style.setProperty('--cd',cs);BU.classList.tog
 let chrOpen=false,chrSel='w',chrMsg='',chrPS=0,chrTab=0;
 const CIC={w:'<path d="M19 5 9 15M6.5 12.5l5 5M9 15 5 19"/>',h:'<path d="M5 15a7 7 0 0 1 14 0v3H5zM9 18v2M15 18v2"/>',a:'<path d="M8 4 4 7l2.5 3.5L8 10v10h8V10l1.5.5L20 7l-4-3q-4 3-8 0z"/>',r:'<circle cx="12" cy="15" r="5.5"/><path d="M9.5 6h5l1.2 2.5H8.3z"/>',n:'<path d="M6 4c0 8 2.5 11 6 11s6-3 6-11"/><circle cx="12" cy="18.5" r="2.3"/>',f:'<path d="M8 4h6v8l5 3v4H6z"/><path d="M8 8h6"/>'};
 /* ===== 상대 정보창: 채팅 닉네임을 누르면 레벨·전투력·장비와 캐릭터 모습을 보여줘요 (요청은 누를 때 1번) =====
-   공개용 요약은 저장 데이터의 pv({cp,sh})와 lv·stage·eq·en 에서 서버 함수 get_profile 이 뽑아 줘요. 골드·단련 같은 수치는 보내지 않아요. */
+   공개용 요약은 저장 데이터의 pv({cp,sh})와 lv·stage·eq·en 에서 서버 함수 get_profile 이 뽑아 줘요. 골드는 보내지 않아요. 단련·스탯·패시브·스킬(dt)은 상대가 '상세 정보 공개'(pv.sd=1)를 켠 경우에만 보내고, 기본값은 비공개예요. */
 /* 공개 설정 변경 제한: 마지막으로 바꾼 시각(PUT)을 저장 데이터(pv.pt)에 같이 넣어서 기기를 바꿔도 이어져요. 처음 한 번은 제한 없이 바꿀 수 있어요 */
 let PUT=0;const PUL=864e5;
 /* 아레나: 전투력 공식과 같은 값(공격·체력·치명·공속·피해감소·흡혈)을 저장 데이터(pv.ar)에 같이 넣어요. 상대가 나와 싸울 때 서버가 이 값으로 판정해요 */ /* 스킬·패시브 반영: 서버 판정식은 그대로 두고, 12초 전투를 가정해 스킬(쿨타임·마나·위력·버프·회복)과 패시브(처형자·불굴)가 주는 이득을 공격·체력·피해감소 값에 미리 녹여서 보내요 */
@@ -1533,7 +1533,8 @@ function arFx(asp){const T=12,DT=.25,fx={dm:1,hm:1,wd:0};try{
  fx.dm=M.min(2.2,dmg/(b0*T)*(pas(13)?1.075:1));/* 처형자: 상대 체력 30% 이하일 때 피해 +25% → 전투 평균 약 +7.5% */
  fx.hm=M.min(2,1+heal+(pas(7)?.3:0));/* 불굴: 죽을 피해를 한 번 버텨서 체력 30%로 */
  fx.wd=M.min(.25,wsum/T)}catch(e){fx.dm=1;fx.hm=1;fx.wd=0}return fx}
-function mkAr(){try{const cr=M.min(.8,.15+(bon('cr',EQ)+bx('cr'))/100),asp=M.min(CAP.as,bon('as',EQ)),dr0=M.min(CAP.dr,bon('dr',EQ)+(pas(6)?10:0)),f=arFx(asp);return{at:M.round(atk(EQ)*f.dm),hp:M.round(mhp(EQ)*f.hm),cr:+cr.toFixed(3),cd:+CDM().toFixed(3),as:asp,dr:+(100*(1-(1-dr0/100)*(1-f.wd))).toFixed(2),ls:M.min(CAP.ls,bon('ls',EQ)+bx('ls'))}}catch(e){return null}} function mkPv(){try{return{cp:cp(),sh:PUB?1:0,bd:WB.bd|0,cape:WB.cape|0,mt:WB.mv?WB.mt|0:0,pt:PUT,ar:mkAr()}}catch(e){return null}}
+function mkAr(){try{const cr=M.min(.8,.15+(bon('cr',EQ)+bx('cr'))/100),asp=M.min(CAP.as,bon('as',EQ)),dr0=M.min(CAP.dr,bon('dr',EQ)+(pas(6)?10:0)),f=arFx(asp);return{at:M.round(atk(EQ)*f.dm),hp:M.round(mhp(EQ)*f.hm),cr:+cr.toFixed(3),cd:+CDM().toFixed(3),as:asp,dr:+(100*(1-(1-dr0/100)*(1-f.wd))).toFixed(2),ls:M.min(CAP.ls,bon('ls',EQ)+bx('ls'))}}catch(e){return null}} function mkDt(){try{return{up:up|0,hu:hu|0,cdu:cdu|0,pt:{str:PT.str|0,vit:PT.vit|0,dex:PT.dex|0,wis:PT.wis|0},ps:PS.slice(0,3),sk:SKS.eq.slice(0,3).map(id=>id&&SKS.own[id]?{id,lv:SKS.own[id].lv|0}:null),am:SKS.am.slice(0,3)}}catch(e){return null}}
+function mkPv(){try{return{cp:cp(),sh:PUB?1:0,sd:PSD?1:0,bd:WB.bd|0,cape:WB.cape|0,mt:WB.mv?WB.mt|0:0,pt:PUT,ar:mkAr()}}catch(e){return null}}
 const PCL=(x,sl)=>{if(!x||typeof x!='object')return null;const r={sl,ri:M.max(0,M.min(TIERS.length-1,x.ri|0)),v:+x.v||0,k:M.max(0,M.min(sl=='w'?3:2,x.k|0)),n:String(x.n||'').slice(0,24)};if(x.u!=null&&UQ[x.u|0])r.u=x.u|0;r.o=(Array.isArray(x.o)?x.o.slice(0,6):[]).filter(q=>Array.isArray(q)&&OP[q[0]]).map(q=>[q[0],+q[1]||0]);return r};
 function drawDoll(c2,eq,bd,cp,mt,wa){try{const g=c2.getContext('2d'),w=c2.width,h=c2.height,s0=+(c2.dataset&&c2.dataset.s)||h/150,s=mt>20?Math.min(s0,w/190):s0,dx=mt>20?12*s:0;/* 용(Lv21+)은 꼬리가 길어서 작은 캔버스에선 배율을 줄이고 오른쪽으로 옮겨 안 잘리게 해요 */g.clearRect(0,0,w,h);if(bd&&BORDERS[bd]){g.strokeStyle=BORDERS[bd][1];g.lineWidth=3;g.strokeRect(2,2,w-4,h-4)}g.save();g.translate(w/2+dx,h-12*s);g.scale(s,s);let _o;{const q=g.createRadialGradient(0,-55,0,0,-55,95);q.addColorStop(0,'rgba(185,168,255,.22)');q.addColorStop(1,'rgba(185,168,255,0)');g.fillStyle=q;g.fillRect(-100,-155,200,200)}_o=OLon(g);
 g.fillStyle='#0008';g.beginPath();g.ellipse(0,0,24,6,0,0,7);g.fill();
@@ -1568,13 +1569,21 @@ function pfShow(title,body,sub){if(!pfEl){pfEl=document.createElement('div');pfE
 cancelAnimationFrame(pfRaf);pfEl.innerHTML=`<div class="pc"><div class="pt"><h2>${pfx(title)}</h2>${sub?`<small>${pfx(sub)}</small>`:''}<button class="px" aria-label="닫기">✕</button></div><div class="pb">${body}${blkRow()}</div></div>`;pfEl.classList.add('on')}
 function pfView(d,name,me){const nm=String(d.nk||name||'모험가').slice(0,12),eq={},en=d.en&&typeof d.en=='object'?d.en:{};for(const k of['w','a','h','r','n','f'])eq[k]=PCL(d.eq&&d.eq[k],k);
 if(!me&&pfWho&&!pfWho.name)pfWho.name=nm;
+const dt=d.dt&&typeof d.dt=='object'?d.dt:null,nf=v=>M.max(0,M.min(1e6,+v||0)).toLocaleString('ko-KR'),dl=(a,b)=>`<div class="pi"><div class="l"><span>${a}</span><b style="font-weight:400;color:#ffe7a8;text-align:right">${b}</b></div></div>`;
+let dtH='';if(dt){const pt=dt.pt&&typeof dt.pt=='object'?dt.pt:{},ps=Array.isArray(dt.ps)?dt.ps.slice(0,3):[],sk=Array.isArray(dt.sk)?dt.sk.slice(0,3):[],am=Array.isArray(dt.am)?dt.am:[];
+dtH='<div style="margin:12px 0 4px;color:#9fb5b0;font-size:.85em">세부 세팅'+(me&&!PSD?' · <span style="color:#ffcf4a">지금은 나만 볼 수 있어요 (설정 → 공개 → 상세 정보 공개)</span>':'')+'</div>'
++dl('단련','공격 '+nf(dt.up)+' · 체력 '+nf(dt.hu)+' · 치명 '+nf(dt.cdu))
++dl('스탯 포인트','힘 '+nf(pt.str)+' · 활력 '+nf(pt.vit)+' · 민첩 '+nf(pt.dex)+' · 지혜 '+nf(pt.wis))
++dl('패시브',[0,1,2].map(i=>Number.isInteger(ps[i])&&PV[ps[i]]?pfx(PV[ps[i]].n):'—').join(' · '))
++dl('스킬',[0,1,2].map(i=>{const z=sk[i],t=z&&SKT.find(y=>y.id==z.id);return t?pfx(t.n)+' Lv.'+M.max(1,M.min(5,z.lv|0))+' <small>('+['항상','보스만','끔'][am[i]|0]+')</small>':'—'}).join(' · '))}
+else if(!me)dtH='<div class="pn" style="padding:0;margin:12px 0 0;color:#9fb5b0;font-size:.85em">이 모험가는 세부 세팅(단련·스탯·패시브·스킬)을 공개하지 않았어요.</div>';
 const row=k=>{const x=eq[k];if(!x)return `<div class="pi em"><div class="l"><span>${SL[k][0]}</span><span>비어 있음</span></div></div>`;const e=M.max(0,M.min(999,en[k]|0)),v=M.round(x.v*(1+ENH.st*e));
 return `<div class="pi"><div class="l"><span style="color:${icol(x)}">${e?'+'+e+' ':''}${pfx(x.n)}</span><b style="font-weight:400;color:#ffe7a8">${SL[k][1]} +${v}</b></div><small>${iname(x)} ${SL[k][0]}${sn(x)?' · '+pfx(sn(x))+' 세트':''}</small>${x.o.length?`<small>${pfx(ots(x))}</small>`:''}</div>`};
-pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas>${d.gn?`<div style="text-align:center;margin:8px 0 2px"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px 3px 7px;border:1px solid #c99a4a99;border-radius:13px;background:linear-gradient(#4a381655,#1a110555);color:#ffd98a;box-shadow:inset 0 1px 0 #ffe2a822"><svg viewBox="0 0 32 32" width="16" height="16" aria-hidden="true"><path d="M16 3l11 4v9c0 7-5 11-11 13C10 27 5 23 5 16V7z" fill="#2d5a8a" stroke="#ffd98a" stroke-width="2.4"/><path d="M16 9v13M11 14h10" stroke="#ffd98a" stroke-width="2.4" stroke-linecap="round"/></svg><span>${pfx(String(d.gn).slice(0,10))}</span>${d.gl?`<i style="font-style:normal;opacity:.75;font-size:.85em">Lv.${d.gl|0}</i>`:''}</span></div>`:''}<div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${kn(+d.cp||0)}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>`,me?'내 정보':'');
+pfShow(nm,`${me&&!PUB?'<div class="pn" style="padding:0">비공개 상태예요. 다른 사람에게는 이 정보가 보이지 않아요.</div>':''}<canvas width="330" height="390"></canvas>${d.gn?`<div style="text-align:center;margin:8px 0 2px"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px 3px 7px;border:1px solid #c99a4a99;border-radius:13px;background:linear-gradient(#4a381655,#1a110555);color:#ffd98a;box-shadow:inset 0 1px 0 #ffe2a822"><svg viewBox="0 0 32 32" width="16" height="16" aria-hidden="true"><path d="M16 3l11 4v9c0 7-5 11-11 13C10 27 5 23 5 16V7z" fill="#2d5a8a" stroke="#ffd98a" stroke-width="2.4"/><path d="M16 9v13M11 14h10" stroke="#ffd98a" stroke-width="2.4" stroke-linecap="round"/></svg><span>${pfx(String(d.gn).slice(0,10))}</span>${d.gl?`<i style="font-style:normal;opacity:.75;font-size:.85em">Lv.${d.gl|0}</i>`:''}</span></div>`:''}<div class="ps"><span>Lv.<b>${d.lv|0}</b></span><span>STAGE<b>${d.st|0}</b></span><span>전투력<b>${kn(+d.cp||0)}</b></span></div><div>${['h','w','a','r','n','f'].map(row).join('')}</div>${dtH}`,me?'내 정보':'');
 const c2=pfEl.querySelector('canvas'),t0=++pfTok;(function lp(){if(t0!==pfTok||!pfEl.classList.contains('on'))return;drawDoll(c2,eq,me?WB.bd:(d.bd|0),me?WB.cape:(d.cape|0),me?(WB.mv?WB.mt|0:0):(d.mt|0));pfRaf=requestAnimationFrame(lp)})()}
 AF.showProfile=async function(uid,name){if(!uid)return;const tk=++pfTok;pfWho=(uid==='me'||uid===(AF.user&&AF.user.id))?null:{uid,name:String(name||'').slice(0,12)};
  if(!AF.user&&uid!=='me'){pfShow(name,'<div class="pn">로그인하면 다른 모험가의 정보를 볼 수 있어요.</div>');return}
- if(uid==='me'||uid===(AF.user&&AF.user.id)){const gt=AF.gdTag&&AF.gdTag();pfView({nk:NK||name,lv:P.lv,st:stage,cp:cp(),eq:EQ,en:EN,gn:gt?gt.n:'',gl:gt?gt.l:0},name,1);return}
+ if(uid==='me'||uid===(AF.user&&AF.user.id)){const gt=AF.gdTag&&AF.gdTag();pfView({nk:NK||name,lv:P.lv,st:stage,cp:cp(),eq:EQ,en:EN,gn:gt?gt.n:'',gl:gt?gt.l:0,dt:mkDt()},name,1);return}
  if(!AF.pub){pfShow(name,'<div class="pn">내 정보를 공개해야 다른 모험가의 정보를 볼 수 있어요.<br><small>설정 → 공개에서 "내 정보 공개"를 켜 주세요.</small></div>');return}
  const hit=PFC.get(uid);if(hit&&Date.now()-hit.t<60000){pfView(hit.d,name,0);return}
  pfShow(name,'<div class="pn">불러오는 중…</div>');
@@ -1756,6 +1765,7 @@ Object.defineProperties(AF,{
   resetting:{get:()=>resetting,set:v=>{resetting=v},enumerable:true},
   nk:{get:()=>NK,set:v=>{NK=String(v||'').slice(0,12)},enumerable:true},
   pub:{get:()=>PUB,set:v=>{PUB=!!v},enumerable:true},
+  psd:{get:()=>PSD,set:v=>{PSD=!!v},enumerable:true},
   psAuto:{get:()=>psAuto,set:v=>{psAuto=!!v;try{localStorage.setItem('ashen_psa',psAuto?'1':'0')}catch(e){}},enumerable:true}
 });
 Object.assign(AF,{mkAr,drawDoll,PCL,arSk:()=>SKS.eq.map((id,i)=>{const z=id&&P.lv>=SKL[i]&&SKT.find(y=>y.id==id);return z?{k:z.k,n:z.n,col:z.col}:null}).filter(Boolean),arMe:()=>({eq:EQ,bd:WB.bd|0,cape:WB.cape|0,mt:WB.mv?WB.mt|0:0,nk:NK}),mtAct,mtUI,mtPrev,mtLabel,guide:()=>guidePop(),refGrant,refMsGrant,mailGrant,attendGrant,toast,wbStart,wbBusy:()=>!!WBM,wbEnd,OP,WB,CAPES,BORDERS,wbRoll:(sl,ri)=>(ri>4)?null:mk(sl,ri,3+stage*4+P.lv*1.2),
@@ -1834,6 +1844,7 @@ om.innerHTML=`<div class="pn wide"><h2>설정</h2><div class="st">변경 사항�
   <h3>절전</h3>${tg('o-ps','자동 절전','3분 동안 조작이 없으면 절전 화면으로 들어가요 · 끄면 들어가지 않아요 (직접 켜는 절전은 P 키·달 모양 버튼으로 그대로 써요)')}
   <h3>화면</h3>${FSOK?tg('o-fs','전체화면','F 키로도 전환해요'):''}${tg('o-sh','화면 흔들림')}${tg('o-fx','전투 연출','슬로모션 · 확대')}
   <h3>공개</h3>${tg('o-pub','내 정보 공개','채팅에서 내 닉네임을 누르면 레벨·전투력·장비가 보여요 · 끄면 다른 사람의 정보도 볼 수 없어요 · 한 번 바꾸면 24시간 동안 다시 바꿀 수 없어요 (로그인 시 서버에 반영)')}
+  ${tg('o-psd','상세 정보 공개','단련·스탯 포인트·패시브·스킬 세팅을 다른 사람이 볼 수 있어요 · 기본은 꺼짐(비공개)이고 장비 외 세부 세팅은 숨겨져요 · 내 정보 공개가 켜져 있을 때만 적용돼요 · 언제든 바꿀 수 있어요')}
   <div class="or"><span>차단 목록<small>차단한 사람을 확인하고 해제할 수 있어요 · 채팅에서 닉네임을 눌러 차단해요</small></span><button class="tg on" data-a="blk">열기</button></div>
   <h3>고객지원</h3><div class="or"><span>업데이트 내역<small>최근 바뀐 내용을 볼 수 있어요</small></span><button class="tg on" data-a="pat">열기</button></div><div class="or"><span>문의하기<small>버그 제보·건의 · 답변도 여기서 확인해요</small></span><button class="tg on" data-a="inq">열기</button></div>
   <h3 class="kh">조작</h3>
@@ -1850,7 +1861,8 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026110103',d:'11/1',t:['새로운 탈것이 추가됐어요 (Lv.21~29)','아레나가 테스트 오픈했어요 — 비슷한 전투력의 상대와 겨뤄요 (테스트 중에는 보상이 없어요 · 월드보스 코인은 정식 오픈하면 받아요 · 점수·순위도 그때 초기화돼요)','테스트 중에는 정보 비공개 유저와 제재받은 유저도 순위에 보여요 — 정식 오픈부터는 나오지 않아요']},
+{v:'2026110301',d:'11/3',t:['아레나가 테스트 오픈했어요 — 비슷한 전투력의 상대와 겨뤄요 (테스트 중에는 보상이 없어요 · 월드보스 코인은 정식 오픈하면 받아요 · 점수·순위도 그때 초기화돼요)','테스트 중에는 정보 비공개 유저와 제재받은 유저도 순위에 보여요 — 정식 오픈부터는 나오지 않아요','설정 → 공개에 "상세 정보 공개"가 생겼어요 — 켜면 다른 사람이 내 단련·스탯 포인트·패시브·스킬 세팅을 볼 수 있어요 (기본은 꺼짐이고, 내 정보 공개가 켜져 있을 때만 적용돼요)','월드보스 개인 도전의 피해 상한이 늘었어요 — 상한에 걸리던 높은 피해도 그대로 기록돼요']},
+{v:'2026110103',d:'11/1',t:['새로운 탈것이 추가됐어요 (Lv.21~29)']},
 {v:'2026103001',d:'10/30',t:['500스테이지부터 동전 골드가 스테이지마다 조금씩 더 늘어요','길드 채팅이 재접속 뒤에 예전 기록이 최신처럼 나오던 문제를 고쳐 봤어요 — 확실하지 않아서, 계속 이상하면 문의하기로 알려 주세요']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
@@ -1868,7 +1880,7 @@ function pubLeftTxt(){const m=Math.ceil(AF.pubLeft()/6e4);return m>=60?Math.ceil
 function sync(){
   paint(q('o-vol'),Math.round(AF.VOL*100));paint(q('o-sfx'),Math.round(AF.SV*100));paint(q('o-mus'),Math.round(AF.MV*100));
   const t=(id,on,a,b)=>{const e=q(id);if(!e)return;e.classList.toggle('on',on);e.textContent=on?a:b};
-  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-auto',!!AF.auto,'켜짐','꺼짐');t('o-ps',!!AF.psAuto,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pub',!!AF.pub,'켜짐','꺼짐');{const pb=q('o-pub');if(pb&&AF.pubLeft()>0){pb.textContent+=' · '+pubLeftTxt()+' 후 변경';pb.style.whiteSpace='nowrap'}}t('o-fs',isFS(),'켜짐','꺼짐');
+  t('o-mute',!AF.mute,'켜짐','꺼짐');t('o-auto',!!AF.auto,'켜짐','꺼짐');t('o-ps',!!AF.psAuto,'켜짐','꺼짐');t('o-sh',!!AF.OPT.sh,'켜짐','꺼짐');t('o-fx',!!AF.OPT.fx,'켜짐','꺼짐');t('o-pub',!!AF.pub,'켜짐','꺼짐');t('o-psd',!!AF.psd,'켜짐','꺼짐');{const pb=q('o-pub');if(pb&&AF.pubLeft()>0){pb.textContent+=' · '+pubLeftTxt()+' 후 변경';pb.style.whiteSpace='nowrap'}}t('o-fs',isFS(),'켜짐','꺼짐');
   document.querySelectorAll('[data-fs]').forEach(b=>b.textContent=isFS()?'전체화면 해제':'전체화면');
 }
 let ping=0;
@@ -1935,6 +1947,7 @@ async function act(a,btn){
   if(a=='o-ps'){AF.psAuto=!AF.psAuto;sync();return}
   if(a=='o-sh'){AF.OPT.sh=AF.OPT.sh?0:1;AF.saveOpt();sync();return}
   if(a=='o-pub'){if(!AF.pubToggle()){try{AF.toast('공개 설정은 '+pubLeftTxt()+' 뒤에 바꿀 수 있어요','#ff7a7a')}catch(e){}sync();return}try{AF.save()}catch(e){}AF.pubFlush();sync();return}
+  if(a=='o-psd'){AF.psd=!AF.psd;try{AF.save()}catch(e){}AF.pubFlush();sync();return}
   if(a=='o-fx'){AF.OPT.fx=AF.OPT.fx?0:1;AF.saveOpt();sync();return}
 }
 [tm,pm,om,rf,rk,bd,iq,pt,ad,ml].forEach(r=>r.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.a)act(b.dataset.a,b)}));
