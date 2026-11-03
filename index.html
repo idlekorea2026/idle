@@ -2596,7 +2596,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now(
 </script>
 <script>
 (function(){const AF=window.AF;if(!AF||!AF.WB)return;
-let ST=null,err='',busy=0;const W=AF.WB,DO={v:0},NW=()=>Date.now()+DO.v,EXP=Infinity,/* EXP: 미수령 보상 보관 일수 (Infinity=안 사라짐, 3으로 바꾸면 3일) */KEY='wbmock',HP0=2e10,FHP=2e14,/* HP0=공용 목표 200억: 실측 도전 1회 피해≈전투력×100 → 상위 2명(1200만) 하루 ~70억 + 평균 300만 유저 1인 하루 ~7억 기준, 10명 64%·15명 82%·20명 처치. FHP=개인 도전 보스 HP(상한 방지) · 2e13→2e14 (10/23: 상위 유저가 20조 상한에 걸려 10배 상향) */wk=()=>Math.floor((NW()+324e5)/864e5),wkw=()=>Math.floor((NW()+324e5-3456e5)/6048e5),dy=()=>ST?ST.d:'';/* 한국 시간 기준: 보스·도전 횟수·정산은 매일 0시, 교환소 주간 한도는 월요일 0시에 리셋 */
+let ST=null,err='',busy=0;const W=AF.WB,DO={v:0},NW=()=>Date.now()+DO.v,EXP=Infinity,/* EXP: 미수령 보상 보관 일수 (Infinity=안 사라짐, 3으로 바꾸면 3일) */KEY='wbmock',HP0=2e10,FHP=1e15,/* HP0=공용 목표 200억: 실측 도전 1회 피해≈전투력×100 → 상위 2명(1200만) 하루 ~70억 + 평균 300만 유저 1인 하루 ~7억 기준, 10명 64%·15명 82%·20명 처치. FHP=개인 도전 보스 HP(상한 방지) · 2e13→2e14 (10/23: 상위 유저가 20조 상한에 걸려 10배 상향) → 1e15 (11/3: 1위 유저 1회 피해가 200조 상한에 걸려 5배 상향) */wk=()=>Math.floor((NW()+324e5)/864e5),wkw=()=>Math.floor((NW()+324e5-3456e5)/6048e5),dy=()=>ST?ST.d:'';/* 한국 시간 기준: 보스·도전 횟수·정산은 매일 0시, 교환소 주간 한도는 월요일 0시에 리셋 */
 const kf0=n=>n>=9.9995e11?(+(n/1e12).toFixed(n>=1e13?1:2))+'조':n>=99995000?(+(n/1e8).toFixed(n>=1e9?1:2))+'억':n>=1e4?Math.round(n/1e4).toLocaleString()+'만':String(Math.round(n)),kf=n=>AF.kn?AF.kn(n):kf0(n); const SLN={w:'무기',a:'갑옷',h:'투구',r:'반지',n:'목걸이',f:'장화'},MS=[[.25,'25%',2],[.5,'50%',2],[.75,'75%',3],[1,'처치',8]],/* 협동 마일스톤: 공용 HP가 이만큼 깎이면 참여자 전원에게 코인 */BOX=[[2,'희귀',20,3],[3,'영웅',60,2],[4,'전설',300,1]];
 /* ※ 지금은 브라우저에 저장하는 '가짜 서버'예요. 나중에 Supabase RPC로 같은 함수 4개(get/hit/settle/claim)만 바꾸면 돼요 */
 const NOST={hp:HP0,hp0:HP0,my:0,att:0,n:0,buys:{},pend:null,d:''},S={get(){return ST||NOST}},
@@ -3896,7 +3896,7 @@ function battle(op,r){return new Promise(res=>{
  +'<div class="arhb l"><div class="arnm">'+esc(me.nk||'나')+'</div><div class="arbar"><i></i></div></div>'
  +'<div class="arhb r"><div class="arnm">'+esc(op.nk||'상대')+'</div><div class="arbar"><i></i></div></div>'
  +'<canvas class="ardl a" width="260" height="240"></canvas><canvas class="ardl b" width="260" height="240"></canvas><canvas class="arfc" width="720" height="450"></canvas><div class="arfx"></div></div>'
- +'<div class="arrs"></div><div class="arbt"><button class="arsk">건너뛰기</button></div></div>';
+ +'<div class="arrs"></div><div class="arbt"></div></div>';
  B.classList.add('on');
  const $=s=>B.querySelector(s),ca=$('.ardl.a'),cb=$('.ardl.b'),fx=$('.arfx'),fc=$('.arfc'),fg=fc.getContext('2d'),sg=$('.arsg'),ba=$('.arhb.l i'),bb=$('.arhb.r i');bg($('.arbg'));
  let skip=0,end=0,shk=0;
@@ -3927,7 +3927,7 @@ function battle(op,r){return new Promise(res=>{
   const all=[['spin','회전베기','#ffb84a'],['pierce','관통검기','#7dffe0'],['slam','대지강타','#ff9a5a'],['flurry','난무','#e8f1ee'],['drain','생명 흡수','#ff7a9a'],['ward','강철 의지','#86ccff'],['rally','전투 함성','#ffd84a']];
   for(let i=0;i<n;i++){const z=all[(h+i*3)%7];if(!L.some(q=>q.k==z[0]))L.push({k:z[0],n:z[1],col:z[2]})}return L})();
  const SK=[mySk.filter(z=>z.k!='heal'&&z.k!='focus'),opSk],cnt=[0,0];
- $('.arsk').addEventListener('click',()=>{skip=1;$('.arsk').style.display='none'});
+ 
  /* 한 번의 공격: side가 공격자. 스킬은 3턴에 한 번 · 치명타 땐 반드시 */
  async function act(side,dmg,crit,i,pp,pq){
   const tg=side?ca:cb,bar=side?ba:bb,pv=side?pp:pq,lst=SK[side];let z=null;
