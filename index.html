@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202611031953">
+<meta name="build" content="202611032017">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -1553,7 +1553,7 @@ const pfx=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 #pf .pbk{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid #3a2c12}#pf .pbk button{flex:1;width:auto;height:40px;border-radius:8px;font-size:16px}#pf .pbk .pbq{flex:2;color:#ffb0b0;font-size:15px;line-height:1.3}#pf .pbk .dg,#pf .bu.dg{border-color:#ff7a7a88;color:#ff9a9a}#pf .pi .bu{flex:none;width:auto;height:34px;border-radius:8px;padding:0 14px;font-size:15px}`;document.head.appendChild(st)})();
 const PFC=new Map();let pfEl=null,pfRaf=0,pfTok=0,pfWho=null;/* pfWho: 지금 정보창에 떠 있는 상대 {uid,name} — 있으면 맨 아래에 차단 버튼이 붙어요 */
 function pfClose(){pfTok++;cancelAnimationFrame(pfRaf);if(pfEl)pfEl.classList.remove('on')}
-function blkRow(){const C=AF.CHAT;if(!pfWho||!C||!C.block||pfWho.uid===(C.me&&C.me.id))return '';const on=C.isBlocked(pfWho.uid);return `<div class="pbk"><button${on?'':' class="dg"'} data-pb="${on?'ublk':'blk'}">${on?'차단 해제':'이 유저 차단'}</button></div>`}
+function blkRow(){return '';/* 차단은 채팅 닉네임 메뉴로 옮겼어요 */const C=AF.CHAT;if(!pfWho||!C||!C.block||pfWho.uid===(C.me&&C.me.id))return '';const on=C.isBlocked(pfWho.uid);return `<div class="pbk"><button${on?'':' class="dg"'} data-pb="${on?'ublk':'blk'}">${on?'차단 해제':'이 유저 차단'}</button></div>`}
 function pfBAct(e){const b=e.target.closest&&e.target.closest('[data-pb]');if(!b)return;const C=AF.CHAT,a=b.dataset.pb;if(!C||!C.block)return;
  if(a==='bl-u'){C.unblock(b.dataset.k);AF.pfBlockList();return}
  const bx=pfEl.querySelector('.pbk');if(!pfWho||!bx)return;
@@ -1861,7 +1861,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026110301',d:'11/3',t:['아레나가 테스트 오픈했어요 — 비슷한 전투력의 상대와 겨뤄요 (테스트 중에는 보상이 없어요 · 월드보스 코인은 정식 오픈하면 받아요 · 점수·순위도 그때 초기화돼요)','테스트 중에는 정보 비공개 유저와 제재받은 유저도 순위에 보여요 — 정식 오픈부터는 나오지 않아요','설정 → 공개에 "상세 정보 공개"가 생겼어요 — 켜면 다른 사람이 내 단련·스탯 포인트·패시브·스킬 세팅을 볼 수 있어요 (기본은 꺼짐이고, 내 정보 공개가 켜져 있을 때만 적용돼요)','월드보스 개인 도전의 피해 상한이 늘었어요 — 상한에 걸리던 높은 피해도 그대로 기록돼요']},
+{v:'2026110303',d:'11/3',t:['아레나가 테스트 오픈했어요 — 비슷한 전투력의 상대와 겨뤄요 (테스트 중에는 보상이 없어요 · 월드보스 코인은 정식 오픈하면 받아요 · 점수·순위도 그때 초기화돼요)','테스트 중에는 정보 비공개 유저와 제재받은 유저도 순위에 보여요 — 정식 오픈부터는 나오지 않아요','설정 → 공개에 "상세 정보 공개"가 생겼어요 — 켜면 다른 사람이 내 단련·스탯 포인트·패시브·스킬 세팅을 볼 수 있어요 (기본은 꺼짐이고, 내 정보 공개가 켜져 있을 때만 적용돼요)','월드보스 개인 도전의 피해 상한이 늘었어요 — 상한에 걸리던 높은 피해도 그대로 기록돼요','채팅에서 다른 사람 닉네임을 누르면 작은 메뉴가 떠요 — 프로필 보기와 차단을 할 수 있어요 (차단은 프로필 창에서 이 메뉴로 옮겼어요 · 친선 PvP·귓속말은 준비 중이에요)']},
 {v:'2026110103',d:'11/1',t:['새로운 탈것이 추가됐어요 (Lv.21~29)']},
 {v:'2026103001',d:'10/30',t:['500스테이지부터 동전 골드가 스테이지마다 조금씩 더 늘어요','길드 채팅이 재접속 뒤에 예전 기록이 최신처럼 나오던 문제를 고쳐 봤어요 — 확실하지 않아서, 계속 이상하면 문의하기로 알려 주세요']},
 ];
@@ -2474,6 +2474,27 @@ const saveMe=()=>{try{localStorage.setItem(SAVE,JSON.stringify({name:ME.name,id:
 const hue=n=>{let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%360;return h},hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 const CHAT={me:ME,filter:t=>t/* 욕설 필터 자리: 나중에 여기서 치환 */,net:{mode:'local',connect(){return Promise.resolve()},send(){return Promise.resolve()},history(){return Promise.resolve([])}}};
 {const st=document.createElement('style');st.textContent='.ln .gtag{display:inline-flex;align-items:center;gap:3px;margin-right:5px;padding:0 5px 0 3px;border:0;border-radius:4px;background:#ffd98a24;color:#ffd98a;opacity:1;font-size:.88em;line-height:1.45;vertical-align:1px;white-space:nowrap}.ln .gtag svg{width:.95em;height:.95em;flex:none}.ln .gtag svg path{fill:none;stroke:currentColor}.ln .gtag i{font-style:normal}.ln .gch{padding:0 7px;color:#9dffb8;border:1px solid #4fbf7a99;border-radius:9px;background:linear-gradient(#17402a66,#06150d66);opacity:1;font-size:.84em;vertical-align:1px}';document.head.appendChild(st)}
+/* ---- 닉네임 메뉴: 채팅에서 닉네임을 누르면 작은 메뉴(프로필 · 친선 PvP · 귓속말 · 차단)가 닉네임 근처에 떠요. 친선 PvP·귓속말은 아직 준비 중이라 누르면 안내만 나와요. 차단은 예전 정보창 아래 버튼에서 이 메뉴로 옮겼어요 ---- */
+let nmEl=null;
+{const st=document.createElement('style');st.textContent="#nmenu{position:fixed;z-index:9100;min-width:160px;max-width:min(240px,calc(100vw - 16px));display:flex;flex-direction:column;gap:2px;padding:4px;border:2px solid #8a6a30;border-radius:10px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 10px 30px #000a;font-family:'Do Hyeon',sans-serif;color:#e8f1ee}#nmenu .nh{padding:6px 10px 5px;margin-bottom:2px;border-bottom:1px solid #3a2c12;color:#ffd98a;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#nmenu .nh.q{white-space:normal;color:#ffb0b0;line-height:1.3}#nmenu button{all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:42px;padding:8px 10px;border-radius:6px;font-size:16px;color:#e8f1ee;cursor:pointer;-webkit-tap-highlight-color:transparent}#nmenu button:active{background:#ffffff14}#nmenu button.off{color:#7d8c88;cursor:default}#nmenu button.dg{color:#ff9a9a}#nmenu button small{font-size:12px;color:#7d8c88}";document.head.appendChild(st)}
+function nmClose(){if(nmEl){nmEl.remove();nmEl=null}}
+function nmOpen(anchor,m){nmClose();const d=document.createElement('div');d.id='nmenu';d.setAttribute('role','menu');
+  const place=()=>{const r=anchor.getBoundingClientRect(),w=d.offsetWidth,h=d.offsetHeight,vw=innerWidth,vh=innerHeight;let x=Math.max(8,Math.min(r.left,vw-w-8)),y=r.bottom+4;if(y+h>vh-8)y=Math.max(8,r.top-h-4);d.style.left=x+'px';d.style.top=y+'px'};
+  const head=(t,q)=>{d.innerHTML='<div class="nh'+(q?' q':'')+'"></div>';d.firstChild.textContent=t};
+  const main=()=>{const on=!!(CHAT.isBlocked&&CHAT.isBlocked(m.uid));head(m.name);
+    d.insertAdjacentHTML('beforeend','<button type="button" role="menuitem" data-n="pf">프로필</button><button type="button" role="menuitem" class="off" data-n="pvp" aria-disabled="true">친선 PvP <small>(준비중)</small></button><button type="button" role="menuitem" class="off" data-n="wh" aria-disabled="true">귓속말 <small>(준비중)</small></button><button type="button" role="menuitem"'+(on?'':' class="dg"')+' data-n="'+(on?'ublk':'blk')+'">'+(on?'차단 해제':'차단')+'</button>');place()};
+  d.addEventListener('pointerdown',e=>e.stopPropagation());
+  d.addEventListener('click',e=>{const bt=e.target.closest&&e.target.closest('button');if(!bt)return;const k=bt.dataset.n;
+    if(k==='pf'){nmClose();try{AF.showProfile(m.uid,m.name)}catch(x){}}
+    else if(k==='blk'){head((m.name||'이 유저')+' 님을 차단할까요?',1);d.insertAdjacentHTML('beforeend','<button type="button" role="menuitem" class="dg" data-n="blk2">차단</button><button type="button" role="menuitem" data-n="x">취소</button>');place()}
+    else if(k==='blk2'){nmClose();let er='';try{er=CHAT.block(m.uid,m.name)}catch(x){er='차단하지 못했어요.'}if(er){try{AF.toast(er,'#ff9a8a')}catch(x){}}}
+    else if(k==='ublk'){nmClose();try{CHAT.unblock(m.uid)}catch(x){}}
+    else if(k==='x'){main()}
+    else{try{AF.toast('아직 준비 중인 기능이에요','#9fb5b0')}catch(x){}}});
+  d._pl=()=>{if(!anchor.isConnected){nmClose();return}const r=anchor.getBoundingClientRect(),q=lg.getBoundingClientRect();if(r.bottom<q.top||r.top>q.bottom){nmClose();return}place()};document.body.appendChild(d);nmEl=d;main()}
+document.addEventListener('pointerdown',e=>{if(nmEl&&!nmEl.contains(e.target))nmClose()},true);
+addEventListener('keydown',e=>{if(e.key==='Escape'&&nmEl){e.preventDefault();e.stopPropagation();nmClose()}},true);
+addEventListener('resize',nmClose);if(lg)lg.addEventListener('scroll',nmClose,{passive:true});
 function recv(m){
   if(!m||typeof m.text!=='string'||!m.text)return;
   if(m.id!=null){if(seen.has(m.id))return;seen.add(m.id);if(seen.size>500)seen.delete(seen.values().next().value);if(isOpen||m.uid===ME.id)mark(m)}
@@ -2483,14 +2504,14 @@ function recv(m){
   const ts=document.createElement('span');ts.className='ts';ts.textContent=hm(m.ts);el.appendChild(ts);
   if(m.g){const g=document.createElement('span');g.className='gtag';g.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l11 4v9c0 7-5 11-11 13C10 27 5 23 5 16V7z" fill="#2d5a8a" stroke="#ffd98a" stroke-width="2.4"/><path d="M16 9v13M11 14h10" stroke="#ffd98a" stroke-width="2.4" stroke-linecap="round"/></svg><i></i>';g.lastChild.textContent=m.g;el.appendChild(g)}
   if(m.ch==='gd'){const l=document.createElement('span');l.className='gtag gch';l.textContent='길드';el.appendChild(l)}
-  if(m.ch==='chat'||m.ch==='vl'||m.ch==='gd'){const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=m.name+': ';if(m.uid){b.style.cursor='pointer';b.title='정보 보기';b.addEventListener('pointerdown',e=>e.preventDefault());b.addEventListener('click',()=>{try{AF.showProfile(m.uid,m.name)}catch(e){}})}el.appendChild(b)}
+  if(m.ch==='chat'||m.ch==='vl'||m.ch==='gd'){const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=m.name+': ';if(m.uid){b.style.cursor='pointer';b.title='프로필·메뉴';b.addEventListener('pointerdown',e=>e.preventDefault());b.addEventListener('click',()=>{try{if(m.uid===ME.id)AF.showProfile(m.uid,m.name);else nmOpen(b,m)}catch(e){}})}el.appendChild(b)}
   const tx=document.createElement('span');if(m.ch==='sys')tx.style.color=m.c||'#ffd98a';else if(m.ch==='gd')tx.style.color='#b8f5c8';tx.textContent=m.text;el.appendChild(tx);
   if(!TABS.find(x=>x.id===tab).f(m)){el.style.display='none';if(isOpen&&!hl&&m.uid!==ME.id&&m.ch in UN){UN[m.ch]++;nbSet(m.ch)}}
   /* column-reverse: 첫 자식이 맨 아래 줄 · 시간(ts) 순으로 끼워 넣어요: 나중에 도착한 옛 기록이 맨 아래(최신 자리)로 가지 않게 */let ref=lg.firstChild;while(ref&&ref._m&&ref._m.ts>m.ts)ref=ref.nextSibling;lg.insertBefore(el,ref);
-  while(lg.children.length>LIM.keep)lg.removeChild(lg.lastChild)}
+  while(lg.children.length>LIM.keep)lg.removeChild(lg.lastChild);if(nmEl&&nmEl._pl)nmEl._pl()}
 const recvH=m=>{hl=1;try{recv(m)}finally{hl=0}};
 const sys=(t,c)=>recv({ch:'sys',text:String(t),c});
-/* ---- 유저 차단: 정보창(AF.showProfile)의 [이 유저 차단] · 설정의 [차단 목록] · /ignore 가 이 함수들을 써요 ---- */
+/* ---- 유저 차단: 채팅 닉네임 메뉴의 [차단] · 설정의 [차단 목록] · /ignore 가 이 함수들을 써요 ---- */
 const purge=f=>{[...lg.children].forEach(el=>{const m=el._m;if(m&&m.ch!=='sys'&&m.uid!==ME.id&&f(m))lg.removeChild(el)})};/* 이미 화면에 있는 채팅 줄도 지워요 */
 CHAT.max=BMAX;
 CHAT.isBlocked=u=>!!u&&blk.has(u);
@@ -2522,7 +2543,7 @@ function submit(raw){let t=raw.replace(/\s+/g,' ').trim();if(!t)return;
   Promise.resolve().then(()=>CHAT.net.send(m)).catch(()=>sys('전송에 실패했어요.','#ff9a8a'))}
 let lkT=0;const lockUI=()=>box.classList.toggle('lk',!AF.user);
 function open(byClick){if(isOpen)return;if(!AF.user){const n=Date.now();if(n-lkT>4000){lkT=n;sys('로그인 후에 이용할 수 있는 기능이에요. (메뉴 → 카카오로 로그인)','#ff9a8a')}return}isOpen=true;for(const k in UN){UN[k]=0;nbSet(k)}sc=Math.max(sc,hc);sg=Math.max(sg,hg);nbShow(0);chWake();keep=TOUCH||byClick===true;box.classList.add('on');for(const k in AF.K)AF.K[k]=0;inp.value='';hi=-1;place();try{inp.focus({preventScroll:true})}catch(e){inp.focus()}lg.scrollTop=0;setTimeout(place,120);setTimeout(place,350)}
-function close(){if(!isOpen)return;isOpen=false;chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
+function close(){if(!isOpen)return;isOpen=false;nmClose();chSleep();pend=false;box.classList.remove('on');inp.value='';inp.blur();lg.style.height='';place();setTimeout(()=>dispatchEvent(new Event('resize')),350)}
 /* 키보드가 올라오면(visualViewport) 채팅창을 키보드 바로 위로 올리고, 화면이 낮으면 로그 높이를 줄여요 */
 function place(){const h=vv?vv.height:innerHeight,top=vv?vv.offsetTop:0;document.documentElement.style.setProperty('--wbb',((hud.offsetHeight||110)+8)+'px');/* 월드보스 버튼을 채팅 버튼과 같은 높이(하단 바 바로 위)에 맞춰요 */
   if(isOpen){const kb=M_max(0,innerHeight-h-top);box.style.bottom=(kb>60?kb+6:(hud.offsetHeight||110)+8)+'px';lg.style.height=Math.max(56,Math.min(150,h-130))+'px'}
