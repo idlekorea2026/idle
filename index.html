@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202611032017">
+<meta name="build" content="202611041200">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -1565,13 +1565,13 @@ function arFx(asp){const T=12,DT=.25,fx={dm:1,hm:1,wd:0};try{
 function mkAr(){try{const cr=M.min(.8,.15+(bon('cr',EQ)+bx('cr'))/100),asp=M.min(CAP.as,bon('as',EQ)),dr0=M.min(CAP.dr,bon('dr',EQ)+(pas(6)?10:0)),f=arFx(asp);return{at:M.round(atk(EQ)*f.dm),hp:M.round(mhp(EQ)*f.hm),cr:+cr.toFixed(3),cd:+CDM().toFixed(3),as:asp,dr:+(100*(1-(1-dr0/100)*(1-f.wd))).toFixed(2),ls:M.min(CAP.ls,bon('ls',EQ)+bx('ls'))}}catch(e){return null}} function mkDt(){try{return{up:up|0,hu:hu|0,cdu:cdu|0,pt:{str:PT.str|0,vit:PT.vit|0,dex:PT.dex|0,wis:PT.wis|0},ps:PS.slice(0,3),sk:SKS.eq.slice(0,3).map(id=>id&&SKS.own[id]?{id,lv:SKS.own[id].lv|0}:null),am:SKS.am.slice(0,3)}}catch(e){return null}}
 function mkPv(){try{return{cp:cp(),sh:PUB?1:0,sd:PSD?1:0,bd:WB.bd|0,cape:WB.cape|0,mt:WB.mv?WB.mt|0:0,pt:PUT,ar:mkAr()}}catch(e){return null}}
 const PCL=(x,sl)=>{if(!x||typeof x!='object')return null;const r={sl,ri:M.max(0,M.min(TIERS.length-1,x.ri|0)),v:+x.v||0,k:M.max(0,M.min(sl=='w'?3:2,x.k|0)),n:String(x.n||'').slice(0,24)};if(x.u!=null&&UQ[x.u|0])r.u=x.u|0;r.o=(Array.isArray(x.o)?x.o.slice(0,6):[]).filter(q=>Array.isArray(q)&&OP[q[0]]).map(q=>[q[0],+q[1]||0]);return r};
-function drawDoll(c2,eq,bd,cp,mt,wa){try{const g=c2.getContext('2d'),w=c2.width,h=c2.height,s0=+(c2.dataset&&c2.dataset.s)||h/150,s=mt>20?Math.min(s0,w/190):s0,dx=mt>20?12*s:0;/* 용(Lv21+)은 꼬리가 길어서 작은 캔버스에선 배율을 줄이고 오른쪽으로 옮겨 안 잘리게 해요 */g.clearRect(0,0,w,h);if(bd&&BORDERS[bd]){g.strokeStyle=BORDERS[bd][1];g.lineWidth=3;g.strokeRect(2,2,w-4,h-4)}g.save();g.translate(w/2+dx,h-12*s);g.scale(s,s);let _o;{const q=g.createRadialGradient(0,-55,0,0,-55,95);q.addColorStop(0,'rgba(185,168,255,.22)');q.addColorStop(1,'rgba(185,168,255,0)');g.fillStyle=q;g.fillRect(-100,-155,200,200)}_o=OLon(g);
+function drawDoll(c2,eq,bd,cp,mt,wa){try{const g=c2.getContext('2d'),w=c2.width,h=c2.height,s0=+(c2.dataset&&c2.dataset.s)||h/150,s=mt>20?Math.min(h/178,w/164):s0,dx=mt>20?13*s:0;/* 용(Lv21+): 꼬리(왼쪽 약 88)·머리(오른쪽 약 62)·칼끝까지 실제 폭 약 150에 맞춰 배율을 잡고 가운데로 옮겨요 */g.clearRect(0,0,w,h);if(bd&&BORDERS[bd]){g.strokeStyle=BORDERS[bd][1];g.lineWidth=3;g.strokeRect(2,2,w-4,h-4)}g.save();g.translate(w/2+dx,h-12*s);g.scale(s,s);let _o;{const q=g.createRadialGradient(0,-55,0,0,-55,95);q.addColorStop(0,'rgba(185,168,255,.22)');q.addColorStop(1,'rgba(185,168,255,0)');g.fillStyle=q;g.fillRect(-100,-155,200,200)}_o=OLon(g);
 g.fillStyle='#0008';g.beginPath();g.ellipse(0,0,24,6,0,0,7);g.fill();
 const _ml=mt>0?mountD(g,mt,0,performance.now()/1000):0;if(_ml)g.translate(0,-_ml);
 if(_ml)seatD(g);else{g.fillStyle='#2a3a52';g.fillRect(-9,-24,8,24);g.fillRect(2,-24,8,24)}
 capeD(0,M.sin(T*3)*2,cp|0,g);
 dA(g,eq);g.fillStyle='#f0cfa8';g.fillRect(-9,-86,20,20);dH(g,eq);g.fillStyle='#222';g.fillRect(5,-78,3,4);
-g.save();g.translate(10,-48);g.rotate(wa==null?-1:wa);dW(g,eq);g.restore();_o();g.restore()}catch(e){}}
+g.save();g.translate(10,-48);g.rotate(wa==null?(mt>20?-1.2:-1):wa);dW(g,eq);g.restore();_o();g.restore()}catch(e){}}
 const pfx=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 (function(){const st=document.createElement('style');st.textContent=`#pf{display:none;position:fixed;inset:0;z-index:9200;background:#02060acc;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px calc(env(safe-area-inset-bottom,0px) + 10px);touch-action:pan-y;font-family:'Do Hyeon',sans-serif;color:#e8f1ee}#pf.on{display:flex}
 #pf .pc{width:min(440px,100%);max-height:100%;overflow:auto;border:2px solid #8a6a30;border-radius:12px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 20px 60px #000}
@@ -3575,10 +3575,14 @@ const AF=window.AF;if(!AF||!AF.gld)return;
 const GC={make:1000000,don:[30000,100000,300000]};/* 길드 만들기 · 소/중/대 기부 골드 — 모두에게 같은 고정 금액이에요 */
 const $=id=>document.getElementById(id),esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]),nf=n=>Math.floor(+n||0).toLocaleString('ko-KR');
 const U=/^[0-9a-f-]{36}$/i,RN={leader:'길장',officer:'부길장',member:'길드원'};
-const EM={auth:'로그인이 필요해요',banned:'이용이 제한된 계정이에요',in_guild:'이미 길드에 가입돼 있어요',cooldown:'탈퇴·추방 후 잠시 기다려야 해요',name:'길드 이름은 한글·영문·숫자 2~10자예요',dup:'이미 있는 길드 이름이에요',nogd:'없어진 길드예요',full:'정원이 가득 찼어요',dup_req:'이미 가입 신청을 했어요',req_user:'동시에 신청할 수 있는 길드는 3곳까지예요',req_guild:'이 길드는 대기 중인 신청이 가득 찼어요',forbidden:'권한이 없어요',noreq:'이미 처리된 신청이에요',no_guild:'길드에 가입돼 있지 않아요',self:'자기 자신에게는 할 수 없어요',nomember:'길드원을 찾을 수 없어요',officer_max:'부길장은 더 임명할 수 없어요',don_max:'오늘 기부 횟수를 모두 썼어요',len:'공지는 100자까지 쓸 수 있어요',tier:'기부 종류가 올바르지 않아요',role:'직책이 올바르지 않아요',mode:'가입 방식이 올바르지 않아요'};
+const EM={auth:'로그인이 필요해요',banned:'이용이 제한된 계정이에요',in_guild:'이미 길드에 가입돼 있어요',cooldown:'탈퇴·추방 후 잠시 기다려야 해요',name:'길드 이름은 한글·영문·숫자 2~10자예요',dup:'이미 있는 길드 이름이에요',nogd:'없어진 길드예요',full:'정원이 가득 찼어요',dup_req:'이미 가입 신청을 했어요',req_user:'동시에 신청할 수 있는 길드는 3곳까지예요',req_guild:'이 길드는 대기 중인 신청이 가득 찼어요',forbidden:'권한이 없어요',noreq:'이미 처리된 신청이에요',no_guild:'길드에 가입돼 있지 않아요',self:'자기 자신에게는 할 수 없어요',nomember:'길드원을 찾을 수 없어요',officer_max:'부길장은 더 임명할 수 없어요',don_max:'오늘 기부 횟수를 모두 썼어요',len:'공지는 100자까지 쓸 수 있어요',tier:'기부 종류가 올바르지 않아요',role:'직책이 올바르지 않아요',mode:'가입 방식이 올바르지 않아요',closed:'공성전은 아직 준비 중이에요',sg_time:'지금은 변경할 수 없는 시간이에요',sg_slot:'자리가 올바르지 않아요',sg_dup:'이미 다른 자리에 배치된 길드원이에요',sg_young:'가입한 지 얼마 안 된 길드원은 배치할 수 없어요',sg_cp:'전투력 정보가 아직 없어요'};
 const em=e=>{const m=String(e&&e.message||'').trim(),c=String(e&&e.code||'');if(c==='PGRST202'||c==='42883'||/Could not find the function/i.test(m))return '길드 기능을 준비 중이에요';if(Object.prototype.hasOwnProperty.call(EM,m))return EM[m];if(c==='40P01')return '다른 요청과 겹쳤어요. 잠시 후 다시 시도해 주세요';if(c)return '요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요';return '서버에 연결하지 못했어요. 네트워크를 확인해 주세요'};
 const dur=s=>s>=3600?Math.ceil(s/3600)+'시간':Math.max(1,Math.ceil(s/60))+'분';
-const G={me:null,tab:'',msg:'',bad:0,busy:0,tok:0,list:null,q:'',more:0,roster:null,reqs:null,rank:null,mk:{name:'',mode:'free'},nt:''};
+const G={me:null,tab:'',msg:'',bad:0,busy:0,tok:0,list:null,q:'',more:0,roster:null,reqs:null,rank:null,mk:{name:'',mode:'free'},nt:'',sg:null,sgp:null};
+/* 공성전: 아직 준비 중이라 SIEGE_ON=false 면 탭도 호출도 모두 막혀요. 서버(siege_cfg.open)도 따로 닫혀 있어요 */
+const SIEGE_ON=false;AF.siegeOn=SIEGE_ON;/* 도크 버튼도 이 값을 따라가요 */
+const SG_SLOTS=[['gate','성문','피해감소 +8%'],['tower','망루','치명타 +6%'],['wall','성벽','체력 +10%'],['barr','병영','흡혈 +5%'],['keep','본성','전체 +15%']];
+const sgRpc=(f,a)=>{if(!SIEGE_ON)return Promise.reject({message:'closed'});return rpc(f,a)};
 const rpc=async(f,a)=>{const r=await AF.sb.rpc(f,a||{});if(r.error)throw r.error;return r.data};
 const apply=m=>{const o=G.me&&G.me.in?G.me.id:0,n=m&&m.in?m.id:0;G.me=m;AF.gb=m&&m.in?(m.bonus|0):0;try{const C=AF.CHAT;if(C&&C.gdMode){if(o&&n&&o!==n)C.gdMode(false);C.gdMode(!!n)}}catch(e){}};
 const mkCost=()=>GC.make,donCost=i=>GC.don[i];
@@ -3608,7 +3612,7 @@ const css=document.createElement('style');css.textContent=`#gd{z-index:23;align-
 const gd=document.createElement('div');gd.className='ov';gd.id='gd';document.body.appendChild(gd);
 
 const tabs=()=>{const m=G.me;if(!m)return[];if(!m.in)return[['find','찾기'],['make','만들기'],['rank','랭킹']];
-  return[['info','정보'],['ros','길드원'],...(AF.isAdmin?[['find','이동']]:[]),...(m.role!=='member'?[['req','신청'+(m.reqn>0?' '+m.reqn:'')]]:[]),['rank','랭킹'],['set','설정']]};
+  return[['info','정보'],['ros','길드원'],...(AF.isAdmin?[['find','이동']]:[]),...(m.role!=='member'?[['req','신청'+(m.reqn>0?' '+m.reqn:'')]]:[]),...(SIEGE_ON?[['siege','공성']]:[]),['rank','랭킹'],['set','설정']]};
 const cdNote=()=>G.me&&G.me.cd>0?'<div class="nt">탈퇴·추방 후 대기 중이에요 · '+dur(G.me.cd)+' 뒤에 가입하거나 만들 수 있어요</div>':'';
 
 const myReqs=()=>{const m=G.me,r=(m&&!m.in&&m.reqs)||[];if(!r.length)return'';const dd=(m.req_days||7)*864e5,now=Date.now();
@@ -3662,7 +3666,18 @@ const vSet=()=>{const m=G.me,off=m.role==='member';
   h+='<h3 style="color:#ff7a7a">탈퇴</h3><div class="or"><span style="color:#ff8a8a">길드 나가기<small style="color:#d97a7a">'+(m.role==='leader'?(m.n>1?'길장은 부길장 → 공헌도 높은 길드원 순으로 자동 위임돼요':'혼자 남은 길드는 해체돼요'):(AF.isAdmin?'관리자는 나간 뒤 대기시간이 없어요':'나간 뒤 한동안 다른 길드에 가입할 수 없어요'))+'</small></span><button class="tg dg" data-g="lv"'+(G.busy?' disabled':'')+'>탈퇴</button></div>';
   return h};
 
-const BODY={find:vFind,make:vMake,info:vInfo,ros:vRos,req:vReq,rank:vRank,set:vSet};
+const vSiege=()=>{if(!SIEGE_ON)return'<div class="em">공성전은 아직 준비 중이에요</div>';const S=G.sg;if(!S)return'<div class="em">불러오는 중…</div>';
+  if(!S.open)return'<div class="em">공성전은 아직 준비 중이에요</div>';
+  const lead=G.me.role!=='member',lock=!!S.locked,can=lead&&!lock,own=!!S.mine_owner,
+    ow=S.owner?'<b style="color:#ffd98a">'+esc(S.owner)+'</b> 길드':'주인 없음';
+  if(G.sgp){const L=(G.roster||[]).filter(x=>U.test(x.uid));return'<h3>'+SG_SLOTS[G.sgp.i][1]+(G.sgp.k==='d'?' 방어':' 공략')+' 배치<small>길드원을 골라요</small></h3>'+(L.length?L.map(x=>'<div class="or"><span>'+esc(x.name)+'<small>Lv.'+(x.lv||'?')+'</small></span><button class="tg on" data-g="sp:'+x.uid+'"'+(G.busy?' disabled':'')+'>선택</button></div>').join(''):'<div class="em">배치할 수 있는 길드원이 없어요</div>')+'<button class="mo" data-g="sq">취소</button>'}
+  /* 서버는 배치된 자리만 {slot,name,cp} 로 주므로 자리 번호로 맞춰요 */
+  const by=k=>{const m={};(Array.isArray(S[k])?S[k]:[]).forEach(x=>{if(x&&x.slot!=null)m[x.slot]=x});return m},mk=by(own?'def':'atk'),cnt=Object.keys(mk).length;
+  let h='<div class="nt">이번 주 성 주인: '+ow+' · 마감 '+esc(S.ends||'')+'<br>'+(own?'우리 길드가 성을 지키고 있어요. 방어를 배치해 주세요':S.owner?'성 주인 길드를 공략해요. 5자리 중 3자리에서 이기면 성을 차지해요':'성 주인이 없는 첫 주예요. 공격을 편성한 길드끼리 대결해요 (한 곳뿐이면 NPC와 싸워요)')+'<br>마감 시점의 전투 정보로 서버가 한 번에 판정해요'+(lock?'<br><b style="color:#ff9a8a">편성이 마감됐어요</b>':'')+'</div>'
+    +'<h3>'+(own?'방어 배치':'공격 편성')+'<small>'+cnt+'/5 · '+(lock?'마감됐어요':lead?'길장·부길장이 정해요':'길장·부길장만 바꿀 수 있어요')+'</small></h3>';
+  SG_SLOTS.forEach(([k,n,b],i)=>{const x=mk[i];h+='<div class="or"><span>'+n+(own?'':' 공략')+'<small>'+(own?b+' · ':'')+(x?esc(x.name)+' · 전투력 '+nf(x.cp):'비어 있음')+'</small></span>'+(can?'<button class="tg on" data-g="'+(own?'sd':'sa')+':'+i+'"'+(G.busy?' disabled':'')+'>'+(x?'변경':'배치')+'</button>':'')+'</div>'});
+  return h};
+const BODY={find:vFind,make:vMake,info:vInfo,ros:vRos,req:vReq,rank:vRank,set:vSet,siege:vSiege};
 const tabOk=()=>{const t=tabs();return !G.me||!t.length||t.some(x=>x[0]===G.tab)};
 function draw(){const bd=gd.querySelector('.bd'),sp=bd?bd.scrollTop:0,m=G.me;if(m&&!tabOk())G.tab=tabs()[0][0];
   const T=tabs().map(([k,n])=>'<button class="'+(G.tab===k?'on':'')+'" data-g="tab:'+k+'">'+n+'</button>').join('');
@@ -3679,15 +3694,16 @@ async function tabTo(t){const k=++G.tok;G.tab=t;say('');draw();
     else if(t==='ros')G.roster=await rpc('guild_roster');
     else if(t==='req')G.reqs=await rpc('guild_reqs');
     else if(t==='rank')G.rank=await rpc('guild_rank');
-    else if(t==='set')G.nt=G.me.notice||''}catch(e){if(k===G.tok)fail(e)}
+    else if(t==='set')G.nt=G.me.notice||'';
+    else if(t==='siege'&&SIEGE_ON)G.sg=await sgRpc('siege_state')}catch(e){if(k===G.tok)fail(e)}
   if(k===G.tok)draw()}
 let sq=0;
 async function loadList(off){const s=sq,d=await rpc('guild_list',{p_q:G.q.trim()||null,p_off:off});if(s!==sq)return;G.list=off?(G.list||[]).concat(d):d;G.more=d.length>=20}
 async function run(f){if(G.busy)return;G.busy=1;say('');draw();try{await f()}catch(e){fail(e)}G.busy=0;draw()}
 
-async function open(){G.tok++;gd.classList.add('on');G.me=null;G.tab='';G.list=null;G.roster=G.reqs=G.rank=null;say('');draw();
+async function open(tab){G.tok++;gd.classList.add('on');G.me=null;G.tab='';G.list=null;G.roster=G.reqs=G.rank=G.sg=G.sgp=null;say('');draw();
   try{apply(await rpc('guild_me'))}catch(e){fail(e);draw();return}
-  await tabTo(G.me.in?'info':'find');
+  await tabTo(G.me.in?((tab==='siege'&&SIEGE_ON)?'siege':'info'):'find');
   if(G.me&&G.me.in){try{const r=await rpc('guild_act');apply(r);if(r.got>0)say('오늘의 활동 공헌도 +'+r.got);if(G.tab==='info')draw()}catch(e){}}}
 function close(){G.tok++;gd.classList.remove('on');gd.innerHTML=''}
 AF.openGd=open;AF.gdTag=()=>G.me&&G.me.in?{n:G.me.name,l:G.me.lv}:null;
@@ -3730,7 +3746,10 @@ const leave=async()=>{const m=G.me;if(!await afAsk(m.role==='leader'&&m.n<=1?'�
 gd.addEventListener('click',e=>{if(e.target===gd&&dn===gd){close();return}const b=e.target.closest('[data-g]');if(!b||b.disabled)return;const[a,p,q]=b.dataset.g.split(':');
   if(a==='x')close();else if(a==='tab')tabTo(p);else if(a==='q')search();else if(a==='more')more();else if(a==='j')join(+p);else if(a==='cx')cancel(+p);else if(a==='am')adminMove(+p);
   else if(a==='md'){G.mk.mode=G.mk.mode=='free'?'approve':'free';draw()}else if(a==='mk')make();else if(a==='d')donate(+p);else if(a==='act')actNow();
-  else if(a==='r')role(p,q);else if(a==='k')kick(p);else if(a==='ok')decide(p,true);else if(a==='no')decide(p,false);else if(a==='sv')saveNote();else if(a==='sm')setMode();else if(a==='lv')leave()});
+  else if(a==='r')role(p,q);else if(a==='k')kick(p);else if(a==='ok')decide(p,true);else if(a==='no')decide(p,false);else if(a==='sv')saveNote();else if(a==='sm')setMode();else if(a==='lv')leave();else if(a==='sd')sgPick('d',+p);else if(a==='sa')sgPick('a',+p);else if(a==='sp')sgSet(p);else if(a==='sq'){G.sgp=null;draw()}});
+const sgPick=(kind,i)=>{if(!SIEGE_ON||G.busy)return;run(async()=>{G.roster=await rpc('guild_roster');G.sgp={k:kind,i}})};/* 열 때마다 길드원 목록을 새로 받아요 */
+const sgSet=uid=>{if(!SIEGE_ON||!G.sgp||!U.test(uid))return;const q=G.sgp;
+  run(async()=>{G.sg=await sgRpc(q.k==='d'?'siege_set_def':'siege_set_atk',{p_slot:q.i,p_uid:uid});G.sgp=null;say('배치했어요')})};/* 실패하면 선택 창을 그대로 두고 이유만 보여줘요 */
 let dn=null;gd.addEventListener('pointerdown',e=>{dn=e.target===gd?gd:null},true);
 gd.addEventListener('input',e=>{const t=e.target;if(t.id==='gq')G.q=t.value;else if(t.id==='gn')G.mk.name=t.value;else if(t.id==='gt')G.nt=t.value});
 gd.addEventListener('keydown',e=>{if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){e.stopPropagation();if(e.key==='Enter'&&e.target.id==='gq'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();search()}}});
@@ -3794,6 +3813,8 @@ body.ttl #dock{display:none}
 #dock .dkb:hover,#dock .dkt:hover{transform:translateY(-2px);filter:brightness(1.22)}
 #dock .dkb:active,#dock .dkt:active{transform:scale(.93);filter:brightness(.9)}
 #dock .dkb.off{filter:grayscale(.85) brightness(.7)}
+#dock .sgx,#dock .sgx:hover,#dock .sgx:active{filter:grayscale(1) brightness(.6);transform:none;cursor:not-allowed}
+#dock .sgx::after{content:'준비중';position:absolute;left:50%;top:-7px;transform:translateX(-50%);padding:0 5px;border-radius:8px;font:11px/16px "Do Hyeon",sans-serif;color:#e8e8e8;background:#444a55;border:1px solid #9aa0aa;white-space:nowrap}
 #dock .dkb.al{animation:wbpulse 1.5s ease-in-out infinite}
 #dock .dkt{width:26px;height:66px;border-radius:10px;background:#0b1014e6;box-shadow:inset 0 0 0 1px #6b5228,0 3px 8px #000a;display:flex;align-items:center;justify-content:center}
 #dock .dkt svg{width:14px;height:14px;transition:transform .15s}
@@ -3815,7 +3836,10 @@ const mk=(id,cls,lb,html,gl,b1)=>{const b=document.createElement('button');b.id=
 const dg=mk('dgb','','일일던전',sv('<path d="M5 29V13a11 11 0 0 1 22 0v16z" fill="#5a5a70" stroke="#15151f" stroke-width="1.2"/><path d="M9.500 29V14a6.500 6.500 0 0 1 13 0v15z" fill="#1a0f33"/><path d="M12 29v-5h8v5M14 24v-3h4v3" fill="#7a5cff" opacity=".9"/><circle cx="16" cy="15" r="3" fill="#c9a0ff"/>','던전'),'#7a5cff66','#2a1f4a');
 const at=mk('atb','','출석체크',sv('<rect x="5" y="7" width="22" height="20" rx="3" fill="#e8f1ee" stroke="#15302a"/><rect x="5" y="7" width="22" height="6" rx="3" fill="#3fae6a"/><path d="M10 4v5M22 4v5" stroke="#d9ffe6" stroke-width="2" stroke-linecap="round"/><path d="M10.500 20l4 4 7-8" fill="none" stroke="#2a8a50" stroke-width="2.600" stroke-linecap="round" stroke-linejoin="round"/>','출석'),'#3fae6a66','#123a24');
 const gl=mk('glb','','길드',sv('<path d="M16 3l11 4v9c0 7-5 11-11 13C10 27 5 23 5 16V7z" fill="#2d5a8a" stroke="#0d1a2a" stroke-width="1.2"/><path d="M16 8l6 2.200V16c0 4-3 6.500-6 7.800C13 22.500 10 20 10 16v-5.800z" fill="#ffb84a"/><path d="M16 11v9M12.500 15h7" stroke="#3a2c12" stroke-width="2" stroke-linecap="round"/>','길드'),'#6fb8ff66','#10283f');
-const ar=mk('arb','','아레나',sv('<path d="M5 4h6l15 15-3 3L5 10z" fill="#cfd8e0" stroke="#15151f" stroke-width="1.2" stroke-linejoin="round"/><path d="M27 4h-6L6 19l3 3L27 10z" fill="#e8c36a" stroke="#15151f" stroke-width="1.2" stroke-linejoin="round"/><path d="M21 25l4 4M11 25l-4 4" stroke="#7a4a1a" stroke-width="3" stroke-linecap="round"/>','아레나'),'#ff6a5a66','#3a1414'); const kx=document.createElement('div');kx.className='dkx';kx.append(dg,at,gl,ar);
+const ar=mk('arb','','아레나',sv('<path d="M5 4h6l15 15-3 3L5 10z" fill="#cfd8e0" stroke="#15151f" stroke-width="1.2" stroke-linejoin="round"/><path d="M27 4h-6L6 19l3 3L27 10z" fill="#e8c36a" stroke="#15151f" stroke-width="1.2" stroke-linejoin="round"/><path d="M21 25l4 4M11 25l-4 4" stroke="#7a4a1a" stroke-width="3" stroke-linecap="round"/>','아레나'),'#ff6a5a66','#3a1414'); const kx=document.createElement('div');kx.className='dkx';
+const sg=mk('sgb','sgx','공성전 (준비중)',sv('<path d="M4 28V12h4v-3h4v3h2V8h4v4h2V9h4v3h4v16z" fill="#8a8f99" stroke="#15151f" stroke-width="1.2"/><path d="M13 28v-7a3 3 0 0 1 6 0v7z" fill="#2a2230"/><path d="M16 3v6" stroke="#c9a0a0" stroke-width="1.5"/><path d="M16 3l5 2-5 2z" fill="#ff6a5a"/>','공성전'),'#9aa0aa44','#262a33');
+if(A.siegeOn){sg.disabled=false;sg.classList.remove('sgx');sg.removeAttribute('aria-disabled');sg.tabIndex=0;sg.setAttribute('aria-label','공성전');sg.title='공성전'}else{sg.disabled=true;sg.setAttribute('aria-disabled','true');sg.tabIndex=-1}
+kx.append(dg,at,gl,ar,sg);
 const tg=document.createElement('button');tg.type='button';tg.className='dkt';tg.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2l6 6-6 6" fill="none" stroke="#f0d9a0" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"/></svg><i class="dn"></i>';
 const dock=document.createElement('div');dock.id='dock';dock.append(kx,tg);document.body.appendChild(dock);
 let col;try{const v=localStorage.getItem('dockc');col=v==null?matchMedia('(pointer:coarse),(max-width:640px)').matches:v=='1'}catch(e){col=false}
@@ -3824,13 +3848,14 @@ setC(col,0);
 tg.addEventListener('click',()=>setC(!col,1));
 dg.addEventListener('click',()=>{try{A.dgEnter(true)}catch(e){}});
 at.addEventListener('click',()=>{try{A.atdOpen()}catch(e){}}); ar.addEventListener('click',()=>{try{if(!A.arenaOpen){A.toast('아직 준비 중이에요','#ffb84a');return}A.arenaOpen()}catch(e){}});
+sg.addEventListener('click',()=>{try{if(!A.siegeOn)return;if(!A.user){A.toast('로그인하면 공성전을 이용할 수 있어요','#ff7a7a');return}if(!A.synced||!A.openGd){A.toast('서버와 동기화 중이에요. 잠시 후 다시 눌러 주세요','#ffb84a');return}A.openGd('siege')}catch(e){}});
 gl.addEventListener('click',()=>{try{if(!A.user){A.toast('로그인하면 길드를 이용할 수 있어요','#ff7a7a');return}if(!A.synced||!A.openGd){A.toast('서버와 동기화 중이에요. 잠시 후 다시 눌러 주세요','#ffb84a');return}A.openGd(null)}catch(e){}});
 /* 월드보스(#wbb)·마을(#vlb)은 원래 버튼을 그대로 옮겨요 (동작·배지 그대로) */
 function adopt(){const w=document.getElementById('wbb'),v=document.getElementById('vlb');if(w&&w.parentNode!==dock)dock.insertBefore(w,kx);if(v&&v.parentNode!==kx)kx.appendChild(v)}
 function upd(){adopt();const lg=!!A.user;let n=0,di={};try{di=A.dgInfo?A.dgInfo():{}}catch(e){}
 const w=document.getElementById('wbb');if(w&&(w.classList.contains('al')||w.classList.contains('rm')))n++;
 const da=lg&&di.done===false,dt=lg&&di.done===true&&di.tk>0;dg.classList.toggle('al',da);dg.classList.toggle('rm',dt);dg.classList.toggle('off',!lg||(!da&&!dt));dg.querySelector('.dn').textContent=da?'!':(dt?di.tk:'');if(da||dt)n++;
-gl.classList.toggle('off',!lg);const al=lg&&A.arenaLeft>0;ar.classList.toggle('off',!lg);ar.classList.toggle('rm',!!al);ar.querySelector('.dn').textContent=al?A.arenaLeft:'';if(al)n++;const aa=lg&&A.atdDone===false;at.classList.toggle('al',aa);at.classList.toggle('off',!lg||A.atdDone===true);at.querySelector('.dn').textContent=aa?'!':'';if(aa)n++;
+sg.classList.toggle('off',!(A.siegeOn&&lg));gl.classList.toggle('off',!lg);const al=lg&&A.arenaLeft>0;ar.classList.toggle('off',!lg);ar.classList.toggle('rm',!!al);ar.querySelector('.dn').textContent=al?A.arenaLeft:'';if(al)n++;const aa=lg&&A.atdDone===false;at.classList.toggle('al',aa);at.classList.toggle('off',!lg||A.atdDone===true);at.querySelector('.dn').textContent=aa?'!':'';if(aa)n++;
 tg.classList.toggle('has',n>0);tg.querySelector('.dn').textContent=n>0?n:''}
 upd();setInterval(upd,1000);addEventListener('af-atd',upd);addEventListener('af-user',()=>setTimeout(upd,1700));
 /* 한국 시간 0시가 지나면 출석 상태를 다시 읽어요 */
