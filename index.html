@@ -1921,6 +1921,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
+{v:'2026110603',d:'11/6',t:['아레나가 11월 7일 0시에 정식 오픈해요 — 그때부터 이기면 월드보스 코인 4개, 져도 1개를 받아요','정식 오픈과 함께 아레나 전적과 기록이 새로 시작해요','정식 오픈 후에는 하루 3승·5승을 달성하면 보너스로 코인이 +4씩 더 들어와요 (하루 최대 28코인 · 한국시간 0시에 새로 시작해요)','아레나에서 점수와 순위가 없어졌어요 — 대신 [기록] 탭에서 내가 건 도전과 나에게 온 도전의 결과를 볼 수 있어요','월드보스 도움말의 보상 숫자를 실제 지급 값에 맞게 고쳤어요']},
 {v:'2026110602',d:'11/6',t:['스킬·패시브 프리셋이 생겼어요 — 스킬 탭과 패시브 탭 맨 위에서 지금 끼운 스킬·패시브를 세트 1~3에 저장해 두고, 필요할 때 [적용]으로 한 번에 바꿔요','저장·적용을 직접 누를 때만 바뀌어요 — 이번 업데이트로 지금 끼고 있는 스킬·패시브는 바뀌지 않아요','프리셋 세트에 이름을 붙일 수 있어요 — 세트 이름을 누르면 바꿀 수 있고(최대 8자), 지금 끼운 구성과 같은 세트에는 "사용 중"이 떠요 · 필요 없는 세트는 ✕로 비워요']},
 {v:'2026110502',d:'11/5',t:['추천인 보상 한도가 늘었어요 — 최근 7일간 받을 수 있는 인원이 10명에서 20명으로 올랐어요 (한도 때문에 대기 중이던 친구는 자동으로 지급돼요)','귓속말이 열렸어요 — 채팅에서 닉네임을 누르고 [귓속말]을 고르거나 /w 닉네임 내용 으로 보내요 · /r 은 마지막 상대에게 답장, 귓속말 탭에서는 그냥 입력해도 돼요','귓속말은 나와 상대에게만 보이고 7일 뒤 지워져요 — 다만 신고·제재 확인을 위해 운영자는 볼 수 있어요']},
 ];
@@ -2762,7 +2763,7 @@ return '<div class="rs">다음 보스까지 '+hh+'시간 '+mm+'분</div><details
 +'<li><b>도전</b>: 하루 <b>3번</b>, 한 번에 최대 <b>60초</b>예요. 도중에 끝내거나 나가도 그때까지 낸 피해는 인정돼요.</li>'
 +'<li><b>함께 쓰러뜨려요</b>: 모든 모험가가 같은 보스의 HP를 함께 깎아요. 보스가 쓰러진 뒤에도 도전할 수 있고, 피해·순위·보상은 똑같이 인정돼요.</li>'
 +'<li><b>순위</b>: 위쪽 <b>순위</b> 버튼을 누르면 오늘·어제 피해 순위 상위 30명과 내 순위를 볼 수 있어요.</li>'
-+'<li><b>보상</b>은 <b>0시에 정산</b>돼서 \'보스 보상\'으로 나타나요. 피해를 낸 사람만 받아요.<br>· 도전 1회당 <b>3코인</b><br>· 보스 HP 진행 보상: '+MS.map(m=>m[1]+' +'+m[2]).join(', ')+' 코인 (참여자 모두)<br>· 피해 순위: 상위 50% +8, 10% +20, 1% +40<br>· 1~3등: 추가 +80 / +60 / +40, 그리고 <b>전설 상자 1개</b></li>'
++'<li><b>보상</b>은 <b>0시에 정산</b>돼서 \'보스 보상\'으로 나타나요. 피해를 낸 사람만 받아요.<br>· 도전 1회당 <b>5코인</b><br>· 보스 HP 진행 보상: '+MS.slice(0,3).map(m=>m[1]+' +'+m[2]).join(', ')+', 처치 +12 코인 (참여자 모두)<br>· 피해 순위: 상위 50% +12, 10% +30, 1% +40<br>· 1~3등: 도전 1회당 3코인·처치 +8·순위 보상은 상위 50% +8, 10% +20으로 계산하고, 추가 +80 / +60 / +40, 그리고 <b>전설 상자 1개</b></li>'
 +'<li><b>받기</b>: 안 받아도 보상은 사라지지 않고 계속 쌓여 있어요.</li>'
 +'<li><b>교환소</b>: 상자·쿠폰 구매 한도는 매주 <b>월요일 0시</b>에 초기화돼요. 골드가 아니라 월보 코인으로 사요.</li>'
 +'<li><b>꾸미기</b>: 망토와 프로필 테두리는 <b>갖고만 있어도</b> 효과가 적용돼요. 어떤 걸 입을지는 모양만 바뀌어요.</li>'
@@ -3934,7 +3935,7 @@ upd();setInterval(upd,1000);addEventListener('af-atd',upd);addEventListener('af-
 let kd=Math.floor((Date.now()+324e5)/864e5);setInterval(()=>{const d=Math.floor((Date.now()+324e5)/864e5);if(d!==kd){kd=d;try{A.atdRefresh&&A.atdRefresh()}catch(e){}}},30000);
 })();
 
-/* ===== 아레나 (테스트 오픈) =====
+/* ===== 아레나 =====
    서버(arena_state · arena_fight)가 상대 후보·전투 판정·점수·코인을 정해요. 여기서는 화면과 전투 연출만 해요.
    · 상대: 비슷한 전투력 5명 중에서 고르고, 상대 능력치는 저장 데이터(pv.ar)를 그대로 써요
    · 승리 월드보스 코인 / 패배 코인은 서버 설정(arena_cfg)값이고, 받은 코인은 여기서 WB.c 에 더해요
@@ -3953,7 +3954,7 @@ const css=document.createElement('style');css.textContent=`
 #arp .ax{width:36px;height:36px;font-size:16px;border:2px solid #8a6a30;border-radius:50%;background:#1a1408;color:#ffd98a;cursor:pointer}
 #arp .ab{padding:12px 14px 16px}
 #arp .an{margin:0 0 10px;padding:7px 10px;border:1px solid #6b5228;border-radius:8px;background:#2a211033;color:#ffd98a;font-size:14px;line-height:1.4}
-#arp .ast{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 10px}
+#arp .ast{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 10px}
 #arp .ast span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:8px;background:#0a0f13;border:1px solid #26333b;color:#9fb5b0;font-size:12px}
 #arp .ast b{font-weight:400;font-size:16px;color:#ffe7a8}
 #arp .atb{display:flex;gap:6px;margin:0 0 10px}
@@ -3970,7 +3971,7 @@ const css=document.createElement('style');css.textContent=`
 #arp .rf{display:block;margin:4px auto 0;padding:7px 18px;font-size:14px;border-color:#3a4a48;background:#0a0f13;color:#9fb5b0}
 #arp.bz{pointer-events:none;opacity:.85}
 #arp .tp{display:flex;align-items:center;gap:10px;margin:0 0 6px;padding:7px 10px;border:1px solid #26333b;border-radius:8px;background:#0a0f13}
-#arp .tp.me{border-color:#5dff8a;background:#5dff8a14}#arp .tp .n{width:26px;text-align:center;color:#ffd98a}#arp .tp .m{flex:1;min-width:0}#arp .tp small{display:block;color:#9fb5b0;font-size:12px}#arp .tp .s{color:#ffe7a8}
+#arp .tp.me{border-color:#5dff8a;background:#5dff8a14}#arp .tp .n{width:26px;text-align:center;color:#ffd98a}#arp .tp .m{flex:1;min-width:0}#arp .tp small{display:block;color:#9fb5b0;font-size:12px}#arp .tp .s{color:#ffe7a8}#arp .tp .t{width:72px;flex:none;color:#9fb5b0;font-size:12px}#arp .tp .s.w{color:#7dffb0}#arp .tp .s.x{color:#ff9a8a}#arp .lgh{margin:10px 0 6px;font-size:14px;color:#ffd98a}
 #arp .em{padding:22px 8px;text-align:center;color:#9fb5b0;line-height:1.6}
 #arf .arbc{padding:10px;width:min(560px,100%);display:flex;flex-direction:column;gap:10px;border-color:#6b2a1a}
 #arf .arsg{position:relative;width:100%;aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:#0a0d1c;box-shadow:inset 0 0 0 2px #00000099}
@@ -4000,32 +4001,40 @@ const css=document.createElement('style');css.textContent=`
 const P=document.createElement('div');P.id='arp';document.body.appendChild(P);
 const B=document.createElement('div');B.id='arf';document.body.appendChild(B);
 [P,B].forEach(el=>['keydown','keyup'].forEach(t=>el.addEventListener(t,e=>e.stopPropagation())));
-let S=null,tab=0,busy=0,raf=0;
+let S=null,tab=0,busy=0,raf=0,LG=null;
+async function loadLog(){LG=null;if(tab==1)draw();try{LG=await rpc('arena_log')}catch(e){LG={err:1}}if(tab==1)draw()}
 const ERR={snapshot:'내 정보가 아직 서버에 저장되지 않았어요. 잠시 뒤 다시 눌러 주세요',tries:'오늘 도전 횟수를 모두 썼어요',refresh:'오늘 새로고침을 다 썼어요',target:'상대를 찾을 수 없어요. 목록을 새로 불러올게요',closed:'아레나가 지금 닫혀 있어요',login:'로그인 후에 이용할 수 있어요'};
 const errMsg=e=>{const m=String((e&&e.message)||'');for(const k in ERR)if(m.indexOf(k)>=0)return ERR[k];return'서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요'};
 function close(){P.classList.remove('on')}
 /* 상대 다시 찾기: 하루 5회 (기기 기준, 한국시간 0시에 초기화) */
 /* 상대 목록과 '다시 찾기' 횟수는 서버(arena_state · arena_refresh)가 관리해요. 예전 기기 저장값은 지워요 */
 try{localStorage.removeItem('ashen_arrf');localStorage.removeItem('ashen_arop')}catch(e){}
-async function load(q,fresh){if(!q){P.innerHTML='<div class="ac"><div class="at"><h2>아레나</h2><small>테스트 오픈</small><button class="ax" aria-label="닫기">✕</button></div><div class="ab"><div class="em">불러오는 중…</div></div></div>'}
+async function load(q,fresh){if(!q){P.innerHTML='<div class="ac"><div class="at"><h2>아레나</h2><small></small><button class="ax" aria-label="닫기">✕</button></div><div class="ab"><div class="em">불러오는 중…</div></div></div>'}
  try{S=await rpc('arena_state');A.arenaLeft=S.open?S.tries_left|0:0;}catch(e){S=null;P.innerHTML='<div class="ac"><div class="at"><h2>아레나</h2><button class="ax" aria-label="닫기">✕</button></div><div class="ab"><div class="em">'+esc(errMsg(e))+'</div><button class="rf" data-r="1">다시 불러오기</button></div></div>';return}
  draw()}
-function draw(){if(!S)return;const head='<div class="ac"><div class="at"><h2>아레나</h2><small>테스트 오픈</small><button class="ax" aria-label="닫기">✕</button></div><div class="ab">';
+function draw(){if(!S)return;const head='<div class="ac"><div class="at"><h2>아레나</h2><small></small><button class="ax" aria-label="닫기">✕</button></div><div class="ab">';
  if(!S.open){P.innerHTML=head+'<div class="em">아레나는 지금 닫혀 있어요.<br>다시 열리면 알려 드릴게요.</div></div></div>';return}
  const mycp=+A.cp()||0;
- let h=head+'<div class="an">테스트 오픈 중이에요 · 보상은 정식 오픈하면 받아요 · 점수와 순위도 그때 초기화돼요</div>'
- +'<div class="ast"><span>점수<b>'+S.score+'</b></span><span>순위<b>'+(S.rank?S.rank+'위':'-')+'</b></span><span>전적<b>'+S.wins+'승 '+S.losses+'패</b></span><span>오늘 도전<b>'+S.tries_left+'/'+S.tries_max+'</b></span></div>'
- +'<div class="atb"><button data-t="0" class="'+(tab==0?'on':'')+'">도전</button><button data-t="1" class="'+(tab==1?'on':'')+'">순위</button></div>';
+ let h=head
+ +'<div class="ast"><span>전적<b>'+S.wins+'승 '+S.losses+'패</b></span><span>승률<b>'+((S.wins+S.losses)>0?Math.round(S.wins/(S.wins+S.losses)*100)+'%':'-')+'</b></span><span>오늘 도전<b>'+S.tries_left+'/'+S.tries_max+'</b></span></div>'
+ +'<div class="atb"><button data-t="0" class="'+(tab==0?'on':'')+'">도전</button><button data-t="1" class="'+(tab==1?'on':'')+'">기록</button></div>';
  if(tab==0){if((S.coin_win|0)>0||(S.coin_lose|0)>0)h+='<div class="rw">승리 <b>월드보스 코인 +'+S.coin_win+'</b> · 패배 <b>+'+S.coin_lose+'</b></div>';
+  if((S.bonus3|0)>0||(S.bonus5|0)>0){const wt=S.wins_today|0,mk=(n,b)=>(b>0?'<span style="color:'+(wt>=n?'#7dffb0':'#9fb5b0')+'">'+n+'승 달성 <b>+'+b+'</b>'+(wt>=n?' ✓':'')+'</span>':'');h+='<div class="rw">오늘 <b>'+wt+'승</b> · '+[mk(3,S.bonus3|0),mk(5,S.bonus5|0)].filter(Boolean).join(' · ')+'</div>'}
   if(!S.opp.length)h+='<div class="em">지금 붙을 수 있는 상대가 없어요.<br>잠시 뒤 다시 찾아보세요.</div>';
   S.opp.forEach((o,i)=>{const r=mycp>0?o.cp/mycp:1,t=r>1.15?['강적','#ff7a7a']:r<.87?['약자','#7dffb0']:['비슷','#ffd98a'];
-   h+='<div class="ao"><div class="oi"><b>'+esc(o.nk||'모험가')+'<i style="color:'+t[1]+'">'+t[0]+'</i></b><small>Lv.'+(o.lv|0)+' · STAGE '+(o.st|0)+' · 전투력 '+kf(o.cp)+' · 점수 '+(o.score|0)+'</small></div><button data-f="'+i+'"'+(S.tries_left<1?' disabled':'')+'>도전</button></div>'});
+   h+='<div class="ao"><div class="oi"><b>'+esc(o.nk||'모험가')+'<i style="color:'+t[1]+'">'+t[0]+'</i></b><small>Lv.'+(o.lv|0)+' · STAGE '+(o.st|0)+' · 전투력 '+kf(o.cp)+'</small></div><button data-f="'+i+'"'+(S.tries_left<1?' disabled':'')+'>도전</button></div>'});
   h+='<button class="rf" data-r="1" data-rf="1"'+((S.rf_left|0)<1?' disabled':'')+'>상대 다시 찾기 ('+(S.rf_left|0)+'/'+(S.rf_max|0)+')</button>'+((S.rf_left|0)<1?'<div class="em" style="padding:6px 0 0;font-size:13px">오늘 새로고침을 다 썼어요. 내일 다시 찾을 수 있어요</div>':'')}
- else{if(!S.top.length)h+='<div class="em">아직 기록이 없어요.<br>첫 번째 도전자가 되어 보세요!</div>';
-  S.top.forEach((t,i)=>{h+='<div class="tp'+(t.me?' me':'')+'"><span class="n">'+(i+1)+'</span><div class="m"><b style="font-weight:400">'+esc(t.nk||'모험가')+'</b><small>Lv.'+(t.lv|0)+' · '+(t.wins|0)+'승 '+(t.losses|0)+'패</small></div><span class="s">'+(t.score|0)+'점</span></div>'})}
+ else{if(LG===null)h+='<div class="em">불러오는 중…</div>';
+  else if(LG.err)h+='<div class="em">기록을 불러오지 못했어요.</div><button class="rf" data-lg="1">다시 불러오기</button>';
+  else{const fm=t=>{try{return new Date(t).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})}catch(e){return''}};
+   const row=(x,ok,okT,noT)=>'<div class="tp"><span class="t">'+esc(fm(x.at))+'</span><div class="m"><b style="font-weight:400">'+esc(x.nk||'모험가')+'</b><small>Lv.'+(x.lv|0)+'</small></div><span class="s '+(ok?'w':'x')+'">'+(ok?okT:noT)+'</span></div>';
+   h+='<div class="lgh">내 도전</div>'+((LG.mine&&LG.mine.length)?LG.mine.map(x=>row(x,x.win,'승리','패배')).join(''):'<div class="em">아직 도전한 기록이 없어요.</div>');
+   h+='<div class="lgh">나에게 온 도전</div>'+((LG.incoming&&LG.incoming.length)?LG.incoming.map(x=>row(x,x.held,'방어 성공','방어 실패')).join(''):'<div class="em">아직 나에게 도전한 모험가가 없어요.</div>');
+   h+='<div class="rw" style="margin-top:8px">최근 30건까지만 보여줘요</div>'}}
  P.innerHTML=h+'</div></div>'}
 P.addEventListener('click',e=>{const t=e.target;if(t===P||t.closest('.ax')){close();return}
- const tb=t.closest('[data-t]');if(tb){tab=+tb.dataset.t;draw();return}
+ const tb=t.closest('[data-t]');if(tb){tab=+tb.dataset.t;draw();if(tab==1)loadLog();return}
+ if(t.closest('[data-lg]')){loadLog();return}
  if(t.closest('[data-rf]')){if(busy||!S||(S.rf_left|0)<1)return;busy=1;rpc('arena_refresh').then(d=>{S=d;A.arenaLeft=S.open?S.tries_left|0:0;draw()}).catch(e=>{A.toast(errMsg(e),'#ff7a7a')}).finally(()=>{busy=0});return}  if(t.closest('[data-r]')){if(!busy)load();return}
  const f=t.closest('[data-f]');if(f&&!f.disabled)fight(+f.dataset.f)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&P.classList.contains('on')&&!B.classList.contains('on')){e.preventDefault();e.stopPropagation();close()}},true);
@@ -4116,8 +4125,7 @@ function battle(op,r){return new Promise(res=>{
   }catch(e){}
   $('.arbt').innerHTML='<button class="arok">확인</button>';
   $('.arrs').innerHTML='<div class="'+(r.win?'w':'l')+'">'+(r.win?'승리!':'패배…')+'</div>'
-   +'<div class="d">점수 <b>'+(r.delta>=0?'+':'')+r.delta+'</b> → '+r.score+'점</div>'
-   +((r.coin|0)>0?'<div class="d">월드보스 코인 <b>+'+(r.coin|0)+'</b></div>':'')
+   +((r.coin|0)>0?'<div class="d">월드보스 코인 <b>+'+(r.coin|0)+'</b>'+((r.bonus|0)>0?' <span class="s">(오늘 '+(r.wins_today|0)+'승 달성 보너스 +'+(r.bonus|0)+')</span>':'')+'</div>':'')
    +'<div class="d s">오늘 남은 도전 '+r.tries_left+'/'+(S?S.tries_max:'')+'</div>';
   try{A.toast((r.win?'아레나 승리!':'아레나 패배')+((r.coin|0)>0?' · 월드보스 코인 +'+(r.coin|0):''),r.win?'#ffd84a':'#9fb5b0')}catch(e){}
   $('.arok').addEventListener('click',()=>{cancelAnimationFrame(raf);sg.style.transform='';B.classList.remove('on');B.innerHTML='';res()})})()})}
