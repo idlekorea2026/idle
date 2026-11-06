@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202611061900">
+<meta name="build" content="202611062000">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -792,13 +792,13 @@ const TB={spin:[.06,.08],pierce:[.07,.095],slam:[.1,.13],flurry:[.08,.105],drain
 SKT.forEach(z=>{z.t=0;z.m=1});
 SKT.slice().forEach(b=>{for(let t=1;t<3;t++){const f=[1,1.35,1.8][t];SKT.push(Object.assign({},b,{id:b.id+t,t,m:[1,1.2,1.4][t],p:b.p*f,g:b.g*f,mpp:TB[b.k][t-1]}))}});
 const SKN=[3,6,12,24],SKL=[20,100,300];
-let LDP=[null,null,null],ldCf={i:-1,t:0};let NK='',SKS={own:{},eq:[null,null,null],am:[0,0,0]},SKC=[0,0,0],SKQ=[],sbT=0,sbA=0,sdT=0,sdV=0,SKRES=0,chrSK=0;
+let LDP=[null,null,null],ldCf={i:-1,t:0};let NK='',SKS={own:{},eq:[null,null,null],am:[0,0,0]},SKC=[0,0,0],SKCD={},SKQ=[],sbT=0,sbA=0,sdT=0,sdV=0,SKRES=0,chrSK=0;
 const skMp=z=>z.mpp?M.max(1,M.round(mmp()*z.mpp)):z.mp,skHi=()=>SKS.eq.some((q,i)=>{if(!q||P.lv<SKL[i])return 0;const z=SKT.find(y=>y.id==q);return z&&z.t>0}),skDup=id=>{const k=SKT.find(z=>z.id==id).k;return SKS.eq.some(q=>q&&SKT.find(z=>z.id==q).k==k)},skW=z=>{if(stage<TMIN[z.t])return 0;const o=SKS.own[z.id];return !o?3:o.lv<5?1:0},skTP=q=>{const w=SKT.map(z=>z.t==q?skW(z):0),tot=w.reduce((a,b)=>a+b,0);if(!tot)return null;let r=R()*tot,i=0;for(;i<w.length-1;i++){r-=w[i];if(r<0)break}return SKT[i].id},skRoll=()=>{const r=R();let t=r<TDP[1]?2:r<TDP[0]+TDP[1]?1:0;if(stage<TMIN[t])t=0;for(let q=t;q>=0;q--){const id=skTP(q);if(id)return id}for(let q=t+1;q<3;q++){const id=skTP(q);if(id)return id}return null},skN=z=>z.n+(z.t?'('+TN[z.t]+')':'');
 const skd=(s,L)=>{const pw=s.p+s.g*(L-1),q=v=>M.round(v*100);return({spin:'주변 적에게 공격력 '+q(pw)+'%',pierce:'적을 관통하는 검기 · 공격력 '+q(pw)+'%',slam:'전방 강타 공격력 '+q(pw)+'% · 방패 무시',flurry:'5연타 · 타당 공격력 '+q(pw)+'%',drain:'주변 공격 '+q(pw)+'% · 적중 시 체력 회복',heal:'최대 체력의 '+q((.25+.08*L)*s.m)+'% 회복',rally:'8초간 주는 피해 +'+q((.15+.05*L)*s.m)+'%',ward:'8초간 받는 피해 -'+q((.2+.04*L)*s.m)+'%',focus:'최대 마나의 '+q((.3+.05*L)*s.m)+'% 회복'})[s.k]};
 const skNear=(r,fw)=>E.filter(e=>!e.dead&&!e.gh&&M.abs(e.x-P.x)<r+e.w/2&&(!fw||(e.x-P.x)*P.f>-20)&&e.y>P.y-190&&e.y-e.h<P.y+20);
 const skCd=s=>s.cd*(pas(10)?.85:1);
-function skCast(i){if(ci>0||st!=1||pz)return 0;const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0)return 0;const s=SKT.find(z=>z.id==id),o=SKS.own[id];if(!s||!o||P.mp<skMp(s))return 0;
-P.mp-=skMp(s);SKC[i]=skCd(s);P.at=.25;const L=o.lv,pw=(s.p+s.g*(L-1))*(pas(11)?1.25:1);TX.push({x:P.x,y:P.y-125,t:s.n,l:.9,c:s.col});
+function skCast(i){if(ci>0||st!=1||pz)return 0;const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0||SKCD[id]>0)return 0;const s=SKT.find(z=>z.id==id),o=SKS.own[id];if(!s||!o||P.mp<skMp(s))return 0;
+P.mp-=skMp(s);SKC[i]=SKCD[id]=skCd(s);skCdSave();P.at=.25;const L=o.lv,pw=(s.p+s.g*(L-1))*(pas(11)?1.25:1);TX.push({x:P.x,y:P.y-125,t:s.n,l:.9,c:s.col});
 if(s.k=='spin'){shake=8;sfx(220,.3,'sawtooth',.07,2);nz(.4,1400,60,'lowpass',.3,.8);RG.push({x:P.x,t:0});for(const e of skNear(s.r))hit(e,atk()*pw,e.x>=P.x?1:-1)}
 else if(s.k=='pierce'){sfx(600,.3,'sawtooth',.05,2.2);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*900,l:1.2,d:P.f,h:new Set(),m:pw})}
 else if(s.k=='slam'){shake=14;sfx(70,.4,'sine',.15,.5);nz(.5,500,40,'lowpass',.3,.8);burst(P.x+P.f*140,P.y-6,22,'#ffb84a');for(const e of skNear(300,1))hit(e,atk()*pw,P.f,1)}
@@ -819,7 +819,7 @@ case 'heal':return P.hp<mhp()*.7;
 case 'rally':return sbT<=0&&(bo||el||nb(600)>=2);
 case 'ward':return sdT<=0&&(bo||el||nb(380)>=2||P.hp<mhp()*.85);
 case 'focus':return P.mp<mmp()*.45}return 0}
-function SKU(dt){for(let i=0;i<3;i++)if(SKC[i]>0)SKC[i]=M.max(0,SKC[i]-dt);sbT-=dt;sdT-=dt;SKQ=SKQ.filter(q=>{q.t-=dt;if(q.t<=0){q.f();return false}return true});SKRES=0;if(!auto||ci>0)return;
+function SKU(dt){for(let i=0;i<3;i++)if(SKC[i]>0)SKC[i]=M.max(0,SKC[i]-dt);for(const k in SKCD)if((SKCD[k]-=dt)<=0)delete SKCD[k];sbT-=dt;sdT-=dt;SKQ=SKQ.filter(q=>{q.t-=dt;if(q.t<=0){q.f();return false}return true});SKRES=0;if(!auto||ci>0)return;
 const bsOn=E.some(e=>e.t=='g'&&!e.dead&&e.intro);for(let i=0;i<3;i++){const id=SKS.eq[i];if(!id||P.lv<SKL[i]||SKC[i]>0)continue;const am=SKS.am[i]|0;if(am==2||(am==1&&!bsOn))continue;const s=SKT.find(z=>z.id==id);if(!s||!skWant(s))continue;if(P.mp>=skMp(s))skCast(i);else SKRES=M.max(SKRES,skMp(s))}}
 function skGain(id){const s=SKT.find(z=>z.id==id);if(!s)return;try{toast('스킬북 · '+skN(s),'#c9a0ff')}catch(e){}let o=SKS.own[id];psSk(id,!o);
 if(!o){SKS.own[id]={lv:1,c:0};for(let i=0;i<3;i++)if(!SKS.eq[i]&&P.lv>=SKL[i]&&!skDup(id)){SKS.eq[i]=id;break}TX.push({x:P.x,y:P.y-150,t:'새 스킬 '+skN(s)+'!',l:2.2,c:'#c9a0ff'});csys('새 스킬북: '+skN(s)+' — '+skd(s,1),'#c9a0ff')}
@@ -829,7 +829,7 @@ function skGainQ(id){let o=SKS.own[id];psSk(id,!o);if(!o){SKS.own[id]={lv:1,c:0}
 function skPick(){return skRoll()}
 const SKMIN=80;/* 스킬북은 이 스테이지부터만 떨어져요 */
 function skDrop(e){if(stage<SKMIN)return;const isBoss=e.t=='g',pr=isBoss?(e.mini?.01:.03):e.el?.003:0;if(pr){IR.k+=pr;IR2.k+=pr}if(!pr||R()>=pr)return;const id=skRoll();if(id)skGain(id)}
-function skEq(id){if(P.lv<SKL[chrSK]||!SKS.own[id])return;const c=SKS.eq.indexOf(id);if(c==chrSK)SKS.eq[chrSK]=null;else{if(c>=0)SKS.eq[c]=null;const kk=SKT.find(z=>z.id==id).k;SKS.eq.forEach((q,j)=>{if(q&&j!=chrSK&&SKT.find(z=>z.id==q).k==kk)SKS.eq[j]=null});SKS.eq[chrSK]=id}}
+function skEq(id){if(P.lv<SKL[chrSK]||!SKS.own[id])return;const c=SKS.eq.indexOf(id);if(c==chrSK)SKS.eq[chrSK]=null;else{if(c>=0)SKS.eq[c]=null;const kk=SKT.find(z=>z.id==id).k;SKS.eq.forEach((q,j)=>{if(q&&j!=chrSK&&SKT.find(z=>z.id==q).k==kk)SKS.eq[j]=null});SKS.eq[chrSK]=id}skCdSync()}
 const SKB=[...document.querySelectorAll('#sks .sl')];let skg=['','',''];
 function sksUp(){for(let i=0;i<3;i++){const b=SKB[i],id=SKS.eq[i],s=id&&SKT.find(z=>z.id==id),o=s&&SKS.own[id],lk=P.lv<SKL[i],key=lk?'L'+SKL[i]:s?id+o.lv:'E';
 if(skg[i]!=key){skg[i]=key;b.className='sl'+(lk?' lock':!s?' empty':'');b.style.borderColor=!lk&&s&&s.t?TC[s.t]:'';b.innerHTML=lk?'<span>Lv.'+SKL[i]+'</span><kbd>'+(i+1)+'</kbd>':s?'<svg viewBox="0 0 24 24">'+s.ic+'</svg><span>'+s.n+'</span><kbd>'+(i+1)+'</kbd>':'<span>비었음</span><kbd>'+(i+1)+'</kbd>'}
@@ -869,6 +869,11 @@ function ldSan(a){const o=[null,null,null];if(!Array.isArray(a))return o;for(let
     am=[0,1,2].map(j=>{const v=Array.isArray(p.am)?p.am[j]|0:0;return v>=0&&v<=2?v:0}),
     ps=[0,1,2].map(j=>{const v=Array.isArray(p.ps)?p.ps[j]:null;return Number.isInteger(v)&&PV[v]?v:null});
   o[i]={sk,am,ps,nm:typeof p.nm==='string'?Array.from(p.nm.replace(/[\u0000-\u001f<>&"'\\]/g,'').trim()).slice(0,8).join(''):''}}return o}
+/* 스킬 쿨타임은 슬롯과 스킬 둘 다 따라가요: 칸을 옮기거나 프리셋을 바꿔도 방금 쓴 스킬은 남은 시간만큼 기다려요 *//* 새로고침으로 쿨타임이 사라지지 않게: 스킬을 쓸 때마다 '끝나는 시각'을 따로 적어 두고, 접속할 때 남은 시간만큼 되살려요 */
+const SKCK='ashen_skcd';
+function skCdSave(){try{const o={},n=Date.now();for(const k in SKCD)if(SKCD[k]>0)o[k]=M.round(n+SKCD[k]*1000);localStorage.setItem(SKCK,JSON.stringify(o))}catch(e){}}
+function skCdLoad(){try{const o=JSON.parse(localStorage.getItem(SKCK)||'{}'),n=Date.now();if(!o||typeof o!=='object')return;for(const k in o){const r=(+o[k]-n)/1000;if(r>0&&r<600&&SKT.some(z=>z.id==k))SKCD[k]=M.max(SKCD[k]||0,r)}skCdSync()}catch(e){}}
+function skCdSync(){for(let j=0;j<3;j++){const q=SKS.eq[j];if(q&&SKCD[q]>SKC[j])SKC[j]=SKCD[q]}}
 const ldTag=i=>'세트 '+(i+1)+(LDP[i]&&LDP[i].nm?'('+LDP[i].nm+')':'');
 /* 지금 끼운 구성이 이 세트와 같은지 (잠긴 슬롯은 비교하지 않아요) */
 function ldOn(p){if(!p)return false;const n=v=>v==null?null:v;let any=0;for(let j=0;j<3;j++){if(P.lv>=SKL[j]){any=1;if(n(SKS.eq[j])!==n(p.sk[j]))return false;if(p.sk[j]!=null&&(SKS.am[j]|0)!==(p.am[j]|0))return false}if(P.lv>=PSL[j]){any=1;if(n(PS[j])!==n(p.ps[j]))return false}}return !!any}
@@ -881,7 +886,7 @@ async function ldAct(id){const [,m,n]=id.split(':'),i=+n;if(!(i>=0&&i<3))return 
       if(!z||!SKS.own[v]||ws.indexOf(v)>=0||wk.has(z.k)){miss++;continue}ws[j]=v;wk.add(z.k)}
     for(let j=0;j<3;j++){if(P.lv<PSL[j])continue;const v=p.ps[j];if(v==null)continue;
       if(!PU.includes(v)||wp.indexOf(v)>=0){miss++;continue}wp[j]=v}
-    for(let j=0;j<3;j++){if(P.lv>=SKL[j]){SKS.eq[j]=ws[j];SKS.am[j]=p.am[j]|0}if(P.lv>=PSL[j])PS[j]=wp[j]}
+    for(let j=0;j<3;j++){if(P.lv>=SKL[j]){SKS.eq[j]=ws[j];SKS.am[j]=p.am[j]|0}if(P.lv>=PSL[j])PS[j]=wp[j]}skCdSync();
     return ldTag(i)+'을 적용했어요'+(miss?' · 지금은 쓸 수 없는 '+miss+'개는 비웠어요':'')}
   if(m==='n'){const p=LDP[i];if(!p)return '';let v=null;try{v=prompt('세트 이름 (최대 8자 · 비우면 기본 이름)',p.nm||'')}catch(e){}if(v===null||v===undefined)return '';p.nm=Array.from(String(v).replace(/[\u0000-\u001f<>&"'\\]/g,'').trim()).slice(0,8).join('');return p.nm?'세트 '+(i+1)+' 이름: '+p.nm:'세트 '+(i+1)+' 이름을 기본으로 돌렸어요'}
   if(m==='c'){if(!LDP[i])return '';if(!await afAsk(ldTag(i)+'을 비울까요?\n지금 끼운 스킬·패시브는 그대로예요.'))return chrMsg;const t=ldTag(i);LDP[i]=null;ldCf={i:-1,t:0};return t+'을 비웠어요'}
@@ -1158,7 +1163,7 @@ if(Array.isArray(d.pu))d.pu=d.pu.filter(pi);else delete d.pu;
 if(ob(d.ir)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir)o[k]=n(d.ir[k],0,1e12,0);d.ir=o}else delete d.ir; if(ob(d.ir2)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir2)o[k]=n(d.ir2[k],0,1e12,0);d.ir2=o}else delete d.ir2;
 let lc=0;const ic={};d.inv=Array.isArray(d.inv)?d.inv.map(x=>x&&SK.includes(x.sl)?it(x,x.sl):null).filter(Boolean).filter(x=>(ic[x.sl]=(ic[x.sl]||0)+1)<=INVC).map(x=>{x.lk=x.lk&&lc<INVLK?(lc++,1):0;return x}):[];d.invt=[0,1,2,3,9].includes(+d.invt)?+d.invt:2;
 return d}
-function applySave(d){LDP=ldSan(d.lo);INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}PUB=!(d.pv&&d.pv.sh===0);PSD=!!(d.pv&&d.pv.sd===1);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.ir2)Object.assign(IR2,d.ir2);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
+function applySave(d){LDP=ldSan(d.lo);INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}skCdLoad();PUB=!(d.pv&&d.pv.sh===0);PSD=!!(d.pv&&d.pv.sd===1);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.ir2)Object.assign(IR2,d.ir2);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
 function load(){let d;try{d=JSON.parse(localStorage.getItem('ashen1'))}catch(e){return}if(!d||typeof d!='object'||Array.isArray(d))return;try{applySave(sane(migrate(d)))}catch(e){console.warn('load',e)}}
 function offCalc(){if(ot<60)return;const w=IR.w;
 if(!(w>=OFF.minw)){og=M.round(ot*(.2+stage*.05));return}
@@ -1346,7 +1351,7 @@ const w=big?140:105,x0=P.f>0?P.x:P.x-w;
 for(const e of E)if(!e.dead&&e.x+e.w/2>x0&&e.x-e.w/2<x0+w&&e.y>P.y-130&&e.y-e.h<P.y+10)hit(e,atk()*(big?1.8:1),P.f)}
 if(fs&&P.sc<=0&&P.mp>=20){P.mp-=20;P.sc=.5;P.at=.2;sfx(500,.3,'sawtooth',.04,2.5);PR.push({x:P.x+P.f*30,y:P.y-50,vx:P.f*760,l:.9,d:P.f,h:new Set()})}
 uc-=dt;if(uc<=0&&ci<=0&&P.mp>=40&&(K.u||(auto&&(E.filter(e=>!e.dead&&M.abs(e.x-P.x)<230&&e.y>P.y-160).length>=3||E.some(e=>e.t=='g'&&!e.dead&&M.abs(e.x-P.x)<230))))){uc=9;P.mp-=40;shake=12;sfx(90,.5,'sawtooth',.1,3);RG.push({x:P.x,t:0});nz(.7,1800,50,'lowpass',.3,.7);for(const e of E)if(!e.dead&&M.abs(e.x-P.x)<260&&e.y>P.y-180)hit(e,atk()*3,e.x>=P.x?1:-1,1)}
-SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=WBM?60:btf(b0.mini,stage);ci=2.4;if(WBM||DG||bkr){sbT=0;sdT=0;SKC.fill(0);uc=0;P.sc=0;bkr=0}if(WBM||DG){if(chrOpen)closeChr();if(shopOpen)toggleShop()}slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
+SKU(dt);RG=RG.filter(r=>(r.t+=dt)<.6);{const b0=E.find(e=>e.t=='g'&&!e.dead&&!e.intro&&M.abs(e.x-P.x)<800);if(b0){b0.intro=1;bt=WBM?60:btf(b0.mini,stage);ci=2.4;if(WBM||DG||bkr){sbT=0;sdT=0;SKC.fill(0);for(const k in SKCD)delete SKCD[k];skCdSave();uc=0;P.sc=0;bkr=0}if(WBM||DG){if(chrOpen)closeChr();if(shopOpen)toggleShop()}slw=.6;slf=.2;sfx(65,1,'sawtooth',.1,.6);nz(.9,300,60,'lowpass',.3,.7);shake=10}}
 {const bb=E.find(e=>e.t=='g'&&!e.dead&&e.intro);if(bb&&bt>0&&ci<=0&&st==1){bt-=dt;if(bt<=5&&bt>0&&M.ceil(bt)!=btl){btl=M.ceil(bt);sfx(880,.08,'square',.05)}if(bt<=0){const rp=M.ceil(bb.hp/bb.mh*100);bt=0;P.hp=0;st=2;csys('시간 초과! 보스 체력 '+rp+'% 남음','#ff7a7a');TX.push({x:P.x,y:P.y-100,t:'시간 초과! 보스 '+rp+'% 남음',l:1.8,c:'#ff7a7a'});slw=.7;slf=.25;zm=1.1;sfx(240,1,'sawtooth',.08,.15)}}}
 if((ab||atr)&&(abt-=dt)<=0){abt=2;buyAll()}
 PR=PR.filter(p=>{p.x+=p.vx*dt;p.l-=dt;FX.push({x:p.x,y:p.y+rn(-25,25),vx:0,vy:rn(-40,40),l:.3,c:'#7dffe0'});
