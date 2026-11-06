@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-visual">
 <title>잿빛 숲의 검사</title>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-<meta name="build" content="202611041200">
+<meta name="build" content="202611061900">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:#070d12;color:#e8f1ee;font-family:'Do Hyeon',sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -792,7 +792,7 @@ const TB={spin:[.06,.08],pierce:[.07,.095],slam:[.1,.13],flurry:[.08,.105],drain
 SKT.forEach(z=>{z.t=0;z.m=1});
 SKT.slice().forEach(b=>{for(let t=1;t<3;t++){const f=[1,1.35,1.8][t];SKT.push(Object.assign({},b,{id:b.id+t,t,m:[1,1.2,1.4][t],p:b.p*f,g:b.g*f,mpp:TB[b.k][t-1]}))}});
 const SKN=[3,6,12,24],SKL=[20,100,300];
-let NK='',SKS={own:{},eq:[null,null,null],am:[0,0,0]},SKC=[0,0,0],SKQ=[],sbT=0,sbA=0,sdT=0,sdV=0,SKRES=0,chrSK=0;
+let LDP=[null,null,null],ldCf={i:-1,t:0};let NK='',SKS={own:{},eq:[null,null,null],am:[0,0,0]},SKC=[0,0,0],SKQ=[],sbT=0,sbA=0,sdT=0,sdV=0,SKRES=0,chrSK=0;
 const skMp=z=>z.mpp?M.max(1,M.round(mmp()*z.mpp)):z.mp,skHi=()=>SKS.eq.some((q,i)=>{if(!q||P.lv<SKL[i])return 0;const z=SKT.find(y=>y.id==q);return z&&z.t>0}),skDup=id=>{const k=SKT.find(z=>z.id==id).k;return SKS.eq.some(q=>q&&SKT.find(z=>z.id==q).k==k)},skW=z=>{if(stage<TMIN[z.t])return 0;const o=SKS.own[z.id];return !o?3:o.lv<5?1:0},skTP=q=>{const w=SKT.map(z=>z.t==q?skW(z):0),tot=w.reduce((a,b)=>a+b,0);if(!tot)return null;let r=R()*tot,i=0;for(;i<w.length-1;i++){r-=w[i];if(r<0)break}return SKT[i].id},skRoll=()=>{const r=R();let t=r<TDP[1]?2:r<TDP[0]+TDP[1]?1:0;if(stage<TMIN[t])t=0;for(let q=t;q>=0;q--){const id=skTP(q);if(id)return id}for(let q=t+1;q<3;q++){const id=skTP(q);if(id)return id}return null},skN=z=>z.n+(z.t?'('+TN[z.t]+')':'');
 const skd=(s,L)=>{const pw=s.p+s.g*(L-1),q=v=>M.round(v*100);return({spin:'주변 적에게 공격력 '+q(pw)+'%',pierce:'적을 관통하는 검기 · 공격력 '+q(pw)+'%',slam:'전방 강타 공격력 '+q(pw)+'% · 방패 무시',flurry:'5연타 · 타당 공격력 '+q(pw)+'%',drain:'주변 공격 '+q(pw)+'% · 적중 시 체력 회복',heal:'최대 체력의 '+q((.25+.08*L)*s.m)+'% 회복',rally:'8초간 주는 피해 +'+q((.15+.05*L)*s.m)+'%',ward:'8초간 받는 피해 -'+q((.2+.04*L)*s.m)+'%',focus:'최대 마나의 '+q((.3+.05*L)*s.m)+'% 회복'})[s.k]};
 const skNear=(r,fw)=>E.filter(e=>!e.dead&&!e.gh&&M.abs(e.x-P.x)<r+e.w/2&&(!fw||(e.x-P.x)*P.f>-20)&&e.y>P.y-190&&e.y-e.h<P.y+20);
@@ -863,6 +863,31 @@ g.restore();g.textAlign='center';g.font='13px "Do Hyeon",sans-serif';for(const e
 
 const dmg=e=>{let m=sbT>0?1+sbA:1;if(e.el||e.t=='g')m*=1+M.min(BDCAP,bon('bd'))/100;if(pas(5)&&(e.el||e.t=='g'))m*=1.15;if(pas(4)&&E.filter(z=>!z.dead&&M.abs(z.x-P.x)<300).length>=5)m*=1.15;if(pas(13)&&e.mh&&e.hp<=e.mh*.3)m*=1.25;return m};
 function gainPts(n){for(let i=0;i<n;i++){if(PT.auto){const w=[3,3,2,2],ks=['str','vit','dex','wis'];let b=0;for(let j=1;j<4;j++)if(w[j]/(PT[ks[j]]+1)>w[b]/(PT[ks[b]]+1))b=j;PT[ks[b]]++}else PT.free++}}
+/* ===== 스킬·패시브 프리셋(LDP): 세트 3개 · 저장/적용 버튼을 직접 눌렀을 때만 PS·SKS 가 바뀌어요 (불러오기·업데이트·접속 때는 절대 건드리지 않아요) ===== */
+function ldSan(a){const o=[null,null,null];if(!Array.isArray(a))return o;for(let i=0;i<3;i++){const p=a[i];if(!p||typeof p!=='object')continue;
+  const sk=[0,1,2].map(j=>{const v=Array.isArray(p.sk)?p.sk[j]:null,z=v!=null&&SKT.find(q=>q.id==v);return z?z.id:null}),
+    am=[0,1,2].map(j=>{const v=Array.isArray(p.am)?p.am[j]|0:0;return v>=0&&v<=2?v:0}),
+    ps=[0,1,2].map(j=>{const v=Array.isArray(p.ps)?p.ps[j]:null;return Number.isInteger(v)&&PV[v]?v:null});
+  o[i]={sk,am,ps,nm:typeof p.nm==='string'?Array.from(p.nm.replace(/[\u0000-\u001f<>&"'\\]/g,'').trim()).slice(0,8).join(''):''}}return o}
+const ldTag=i=>'세트 '+(i+1)+(LDP[i]&&LDP[i].nm?'('+LDP[i].nm+')':'');
+/* 지금 끼운 구성이 이 세트와 같은지 (잠긴 슬롯은 비교하지 않아요) */
+function ldOn(p){if(!p)return false;const n=v=>v==null?null:v;let any=0;for(let j=0;j<3;j++){if(P.lv>=SKL[j]){any=1;if(n(SKS.eq[j])!==n(p.sk[j]))return false;if(p.sk[j]!=null&&(SKS.am[j]|0)!==(p.am[j]|0))return false}if(P.lv>=PSL[j]){any=1;if(n(PS[j])!==n(p.ps[j]))return false}}return !!any}
+async function ldAct(id){const [,m,n]=id.split(':'),i=+n;if(!(i>=0&&i<3))return '';
+  if(m==='s'){if(LDP[i]&&!(ldCf.i===i&&performance.now()-ldCf.t<5000)){ldCf={i,t:performance.now()};return ldTag(i)+'에 이미 저장돼 있어요 · 덮어쓰려면 5초 안에 한 번 더 눌러 주세요'}
+    ldCf={i:-1,t:0};LDP[i]={sk:SKS.eq.slice(0,3),am:SKS.am.slice(0,3).map(x=>x|0),ps:PS.slice(0,3),nm:LDP[i]?LDP[i].nm||'':''};return ldTag(i)+'에 지금 끼운 스킬·패시브를 저장했어요'}
+  if(m==='a'){const p=LDP[i];if(!p)return ldTag(i)+'는 비어 있어요 · 먼저 저장해 주세요';let miss=0;
+    const ws=[null,null,null],wk=new Set(),wp=[null,null,null];
+    for(let j=0;j<3;j++){if(P.lv<SKL[j])continue;const v=p.sk[j];if(!v)continue;const z=SKT.find(q=>q.id==v);
+      if(!z||!SKS.own[v]||ws.indexOf(v)>=0||wk.has(z.k)){miss++;continue}ws[j]=v;wk.add(z.k)}
+    for(let j=0;j<3;j++){if(P.lv<PSL[j])continue;const v=p.ps[j];if(v==null)continue;
+      if(!PU.includes(v)||wp.indexOf(v)>=0){miss++;continue}wp[j]=v}
+    for(let j=0;j<3;j++){if(P.lv>=SKL[j]){SKS.eq[j]=ws[j];SKS.am[j]=p.am[j]|0}if(P.lv>=PSL[j])PS[j]=wp[j]}
+    return ldTag(i)+'을 적용했어요'+(miss?' · 지금은 쓸 수 없는 '+miss+'개는 비웠어요':'')}
+  if(m==='n'){const p=LDP[i];if(!p)return '';let v=null;try{v=prompt('세트 이름 (최대 8자 · 비우면 기본 이름)',p.nm||'')}catch(e){}if(v===null||v===undefined)return '';p.nm=Array.from(String(v).replace(/[\u0000-\u001f<>&"'\\]/g,'').trim()).slice(0,8).join('');return p.nm?'세트 '+(i+1)+' 이름: '+p.nm:'세트 '+(i+1)+' 이름을 기본으로 돌렸어요'}
+  if(m==='c'){if(!LDP[i])return '';if(!await afAsk(ldTag(i)+'을 비울까요?\n지금 끼운 스킬·패시브는 그대로예요.'))return chrMsg;const t=ldTag(i);LDP[i]=null;ldCf={i:-1,t:0};return t+'을 비웠어요'}
+  return ''}
+function ldH(){const E=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),n1=v=>{const z=v!=null&&SKT.find(q=>q.id==v);return z?z.n:'—'},n2=v=>v!=null&&PV[v]?PV[v].n:'—',nb='background:none;border:0;box-shadow:none;border-radius:0;padding:0;margin:0;min-width:0;width:auto;height:auto;font:inherit;color:inherit;text-decoration:underline dotted #8a7a50;text-underline-offset:3px;cursor:pointer';
+  return '<div class="cw-set" style="margin-bottom:6px"><div class="cw-ln"><span>프리셋 <small>스킬·패시브를 세트로 저장해요 · 직접 누를 때만 바뀌고, 지금 끼운 건 그대로예요 · 이름을 누르면 바꿀 수 있어요</small></span></div>'+LDP.map((p,i)=>{const on=ldOn(p),nm=p&&p.nm?E(p.nm):'세트 '+(i+1);return '<div class="cw-ln"><span>'+(p?'<button type="button" data-c="ld:n:'+i+'" title="이름 바꾸기" style="'+nb+'">'+nm+' ✎</button>':nm)+(on?' <small style="color:#7dffe0;display:inline">● 사용 중</small>':'')+' <small>'+(p?'스킬 '+p.sk.map(n1).join(' · ')+'<br>패시브 '+p.ps.map(n2).join(' · '):'비어 있음')+'</small></span><span style="display:flex;gap:6px"><button class="ac" data-c="ld:a:'+i+'"'+(p?'':' disabled')+'>적용</button><button class="ac" data-c="ld:s:'+i+'">저장</button><button class="ac" data-c="ld:c:'+i+'" title="세트 비우기" aria-label="세트 비우기"'+(p?'':' disabled')+'>✕</button></span></div>'}).join('')+'</div>'}
 function eqPas(i){if(P.lv<PSL[chrPS]||!PU.includes(i))return;const c=PS.indexOf(i);if(c==chrPS)PS[chrPS]=null;else{if(c>=0)PS[c]=null;PS[chrPS]=i}}/* dc 연속 사망 · bk 후퇴 상태 {s 원래 스테이지, c 후퇴 시 전투력, n 클리어 횟수} */
 /* 전투력 = √(기대 공격력 × 기대 체력): 공격력·치명타 / 체력·흡혈 */
 const cpC=q=>{const cr=M.min(.8,.15+bon('cr',q)/100),ls=M.min(CAP.ls,bon('ls',q)),as=M.min(CAP.as,bon('as',q)),dr=M.min(CAP.dr,bon('dr',q)),bd=M.min(BDCAP,bon('bd',q));return M.round(M.sqrt(atk(q)*(1+cr*(CDM()-1))*(1+as/100)*(1+bd/100*.3)*mhp(q)*(1+ls/50)/(1-dr/100)))};
@@ -1109,7 +1134,7 @@ if(better(it,c)){psRec(it,1);invV++;const v=c?swapV(it,c):null;EQ[it.sl]=it;if(c
 let resetting=false,svAt=-1e9;
 /* 자동 저장은 마지막 저장 후 2.5초가 지났을 때만 (백그라운드 틱·타이머가 겹쳐도 한 번만) */
 function autoSave(){if(performance.now()-svAt>=2500)save()}
-function save(){if(resetting)return;svAt=performance.now();try{localStorage.setItem('ashen1',JSON.stringify({nk:NK,stage:DG?DGS.stage:stage,best,farm:DG?DGS.farm:farm,mute,ab,ae,lk:LK,atr,frm:DG?DGS.frm:frm,dg:DGD,vol:VOL,ts:(st==0&&ot?lts:tnow()),lv:P.lv,xp:P.xp,gold,up,hu,cdu,EQ,en:EN,pt:PT,ps:PS,pu:PU,ir:DG?DGS.ir:IR,ir2:DG?DGS.ir2:IR2,fr:frs,sk:SKS,pv:mkPv(),wb:WB,inv:INV.map(({iid,...r})=>r),invt:INVT,tv:SAVE_V}))}catch(e){}}
+function save(){if(resetting)return;svAt=performance.now();try{localStorage.setItem('ashen1',JSON.stringify({nk:NK,stage:DG?DGS.stage:stage,best,farm:DG?DGS.farm:farm,mute,ab,ae,lk:LK,atr,frm:DG?DGS.frm:frm,dg:DGD,vol:VOL,ts:(st==0&&ot?lts:tnow()),lv:P.lv,xp:P.xp,gold,up,hu,cdu,EQ,en:EN,pt:PT,ps:PS,pu:PU,ir:DG?DGS.ir:IR,ir2:DG?DGS.ir2:IR2,fr:frs,sk:SKS,lo:LDP.some(x=>x)?LDP:undefined,pv:mkPv(),wb:WB,inv:INV.map(({iid,...r})=>r),invt:INVT,tv:SAVE_V}))}catch(e){}}
 /* ===== 세이브 불러오기: migrate(옛 버전 → 최신 모양) → sane(타입·범위 정리) → applySave(게임 변수에 넣기) =====
    새 저장 형식을 만들 땐 SAVE_V 를 올리고, migrate 에 '이전 버전 → 새 버전' 단계를 하나 추가하세요. */
 const SAVE_V=5;
@@ -1133,7 +1158,7 @@ if(Array.isArray(d.pu))d.pu=d.pu.filter(pi);else delete d.pu;
 if(ob(d.ir)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir)o[k]=n(d.ir[k],0,1e12,0);d.ir=o}else delete d.ir; if(ob(d.ir2)){const o={};for(const k of['g','x','n','b','w','k'])if(k in d.ir2)o[k]=n(d.ir2[k],0,1e12,0);d.ir2=o}else delete d.ir2;
 let lc=0;const ic={};d.inv=Array.isArray(d.inv)?d.inv.map(x=>x&&SK.includes(x.sl)?it(x,x.sl):null).filter(Boolean).filter(x=>(ic[x.sl]=(ic[x.sl]||0)+1)<=INVC).map(x=>{x.lk=x.lk&&lc<INVLK?(lc++,1):0;return x}):[];d.invt=[0,1,2,3,9].includes(+d.invt)?+d.invt:2;
 return d}
-function applySave(d){INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}PUB=!(d.pv&&d.pv.sh===0);PSD=!!(d.pv&&d.pv.sd===1);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.ir2)Object.assign(IR2,d.ir2);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
+function applySave(d){LDP=ldSan(d.lo);INV=Array.isArray(d.inv)?d.inv:[];INV.forEach(x=>{x.iid=++INVN});INVT=d.invt==null?2:d.invt;if(d.dg&&d.dg.d)DGD={d:d.dg.d|0};NK=typeof d.nk=='string'?d.nk.slice(0,12):'';stage=d.stage||1;best=d.best||stage;farm=!!d.farm;mute=!!d.mute;ab=d.ab!==false;ae=d.ae!==false;if(d.lk)for(const k in LK){const q=d.lk[k];LK[k]=q===0||q===1||q===2||q===3?q:0}atr=!!d.atr;frm=!!d.frm;VOL=d.vol==null?.7:d.vol;if(d.ts){const o=(tnow()-d.ts)/1000;lts=d.ts;if(o>60)ot=M.min(o,OFF.max)}if(d.sk&&d.sk.own){for(const id in d.sk.own){const o=d.sk.own[id];if(SKT.some(z=>z.id==id)&&o&&o.lv>=1)SKS.own[id]={lv:M.min(5,o.lv|0),c:o.c|0}}SKS.eq=[0,1,2].map(i=>{const id=d.sk.eq&&d.sk.eq[i];return id&&SKS.own[id]?id:null});SKS.am=[0,1,2].map(i=>{const v=d.sk.am&&d.sk.am[i]|0;return v==1||v==2?v:0})}PUB=!(d.pv&&d.pv.sh===0);PSD=!!(d.pv&&d.pv.sd===1);PUT=d.pv&&+d.pv.pt>0?M.min(+d.pv.pt,tnow()):0;P.lv=d.lv||1;P.xp=d.xp||0;gold=d.gold||0;up=d.up||0;hu=d.hu||0;cdu=d.cdu||0;EQ=Object.assign(EQ,d.EQ);if(d.en)Object.assign(EN,d.en);if(d.pt)Object.assign(PT,d.pt);else if(P.lv>1)gainPts((P.lv-1)*3);frs=d.fr!=null?d.fr:(P.lv>1?1:0);if(d.ps)for(let i=0;i<3;i++)PS[i]=d.ps[i]==null?null:d.ps[i];if(d.pu)d.pu.forEach(i=>{if(!PU.includes(i))PU.push(i)});{const bb=d.best||d.stage||1;for(const m of PMS)if(bb>m[0]&&!PU.includes(m[1]))PU.push(m[1])}for(const i of PS)if(i!=null&&!PU.includes(i))PU.push(i);if(d.ir)Object.assign(IR,d.ir);if(d.ir2)Object.assign(IR2,d.ir2);if(d.wb&&typeof d.wb=='object'){const w=d.wb,n=v=>M.max(0,+v||0)|0;WB.c=n(w.c);WB.rr=n(w.rr);WB.pb=n(w.pb);WB.capes=[0].concat((Array.isArray(w.capes)?w.capes:[]).filter(i=>CAPES[i]));WB.cape=WB.capes.includes(w.cape)?w.cape:0;WB.bds=[0].concat((Array.isArray(w.bds)?w.bds:[]).filter(i=>BORDERS[i]));WB.bd=WB.bds.includes(w.bd)?w.bd:0;WB.mt=Math.min(MT_MAX,n(w.mt));WB.mp=n(w.mp);WB.mv=w.mv===0?0:1;WB.mu=n(w.mu)}offCalc();P.hp=mhp();P.mp=mmp()}
 function load(){let d;try{d=JSON.parse(localStorage.getItem('ashen1'))}catch(e){return}if(!d||typeof d!='object'||Array.isArray(d))return;try{applySave(sane(migrate(d)))}catch(e){console.warn('load',e)}}
 function offCalc(){if(ot<60)return;const w=IR.w;
 if(!(w>=OFF.minw)){og=M.round(ot*(.2+stage*.05));return}
@@ -1634,8 +1659,8 @@ else{const q=rc(x);d=`<div class="cw-nm" style="color:${icol(x)}">${e?'+'+e+' ':
 const sets=ST.map((z,i)=>{const n=cn[i]|0;return `<div class="cw-set"><div>${z[0]} <small>${n}/4</small></div>${z[1].map(b=>`<small class="${n>=b[0]?'act':''}">${b[0]}세트 · ${b[1].map(o=>OP[o[0]][0]+' +'+o[1]+OP[o[0]][3]).join(', ')}</small>`).join('')}</div>`}).join('');
 const SNM=[['str','힘','공격력',1],['vit','활력','최대 체력',1.5],['dex','민첩','치명타 확률',.1],['wis','지혜','최대 마나·회복',2]];
 const stt=`<div class="cw-sets"><h3>스탯 포인트 <small>남은 ${PT.free}점</small></h3><div class="cw-set">${SNM.map(([k,n,dd,u])=>`<div class="cw-ln"><span>${n} ${PT[k]} <small>${k=='wis'?'최대 마나 +'+(PT[k]*2).toFixed(1)+'% · 마나 회복 +'+(PT[k]*1.5).toFixed(1)+'%':dd+' +'+(PT[k]*u).toFixed(1)+'%'}</small></span><button class="ac" data-c="p:${k}:1" ${PT.free?'':'disabled'}>+1</button><button class="ac" data-c="p:${k}:5" ${PT.free?'':'disabled'}>+5</button><button class="ac" data-c="p:${k}:all" ${PT.free?'':'disabled'}>전부</button></div>`).join('')}<div class="cw-ln"><span>자동 분배 <small>${PT.auto?'힘·활력·민첩·지혜 3:3:2:2':'직접 분배'}</small></span><button class="ac" data-c="pauto">${PT.auto?'끄기':'켜기'}</button><button class="ac" data-c="prst" ${!frs&&gold<P.lv*100?'disabled':''}>재분배 ${frs?'무료 1회':P.lv*100+'G'}</button></div></div></div>`;
-const pvh=`<div class="cw-sets"><h3>패시브 <small>슬롯을 고른 뒤 장착 · 자유롭게 교체</small></h3><div class="cw-set"><div class="cw-ln">${PSL.map((lv,i)=>{const pp=PS[i]!=null?PV[PS[i]]:null,lk=P.lv<lv;return `<button class="ac" data-c="q:${i}" ${lk?'disabled':''} style="${chrPS==i?'outline:2px solid #ffd27a;outline-offset:2px':''}">${lk?'Lv.'+lv+' 해금':pp?pp.n:'비어 있음'}</button>`}).join('')}</div>${PV.map((pp,i)=>{const at=PS.indexOf(i);if(!PU.includes(i)){const mm=PMS.find(x=>x[1]==i)[0];return `<div class="cw-ln" style="opacity:.5"><span>${pp.n} <small>STAGE ${mm} 보스 처치 시 획득</small></span><button class="ac" disabled>잠김</button></div>`}return `<div class="cw-ln"><span>${pp.n} <small>${pp.d}</small></span><button class="ac" data-c="v:${i}" ${P.lv<PSL[chrPS]?'disabled':''}>${at==chrPS?'해제':at>=0?'이동':'장착'}</button></div>`}).join('')}</div></div>`;
-const skh=`<div class="cw-sets"><h3>스킬 <small>보스·정예가 스킬북을 떨어뜨려요 (고급은 스테이지 200~, 희귀는 300~부터 아주 가끔) · 고급 이상은 마나를 %로 쓰고 장착하면 마나 회복이 느려져요 · 같은 종류는 한 슬롯에만 · 같은 책을 모으면 강화 · 슬롯 고른 뒤 장착 (키 1·2·3)</small></h3><div class="cw-set"><div class="cw-ln">${SKL.map((lv,i)=>{const id=SKS.eq[i],ss=id&&SKT.find(z=>z.id==id),lk=P.lv<lv;return `<button class="ac" data-c="sq:${i}" ${lk?'disabled':''} style="${chrSK==i?'outline:2px solid #ffd27a;outline-offset:2px':''}">${lk?'Lv.'+lv+' 해금':ss?ss.n:'비어 있음'}</button>`}).join('')}</div><div class="cw-ln"><span>자동 사용 <small>슬롯마다 눌러 바꿔요 · 항상 → 보스만(월드보스 포함) → 끔 · 직접 누르는 건 언제나 돼요 · 자동 전투가 꺼진(수동) 상태에서는 자동 사용도 멈춰요</small></span></div><div class="cw-ln">${SKL.map((lv,i)=>`<button class="ac" data-c="am:${i}" ${P.lv<lv?'disabled':''}>슬롯 ${i+1}: ${['항상','보스만','끔'][SKS.am[i]|0]}</button>`).join('')}</div>${SKT.map(ss=>{const o=SKS.own[ss.id],at=SKS.eq.indexOf(ss.id);if(!o)return `<div class="cw-ln" style="opacity:.5"><span>${ss.n}${ss.t?` <b style="color:${TC[ss.t]}">${TN[ss.t]}</b>`:''} <small>[${ss.cls}] ${stage>=TMIN[ss.t]?'보스·정예 처치 시 스킬북 획득':'STAGE '+TMIN[ss.t]+' 이상에서 획득'}</small></span><button class="ac" disabled>미획득</button></div>`;return `<div class="cw-ln${at==chrSK?' cur':at>=0?' oth':''}"><span>${ss.n}${ss.t?` <b style="color:${TC[ss.t]}">${TN[ss.t]}</b>`:''}${at>=0?` <i class="sk-at">슬롯 ${at+1}</i>`:''} <small>[${ss.cls}] Lv.${o.lv}${o.lv<5?' · 조각 '+o.c+'/'+SKN[o.lv-1]:' · MAX'} · MP ${ss.mpp?M.round(ss.mpp*100)+'%':ss.mp} · 쿨 ${ss.cd}초<br>${skd(ss,o.lv)}</small></span><button class="ac" data-c="sv:${ss.id}" ${P.lv<SKL[chrSK]?'disabled':''}>${at==chrSK?'해제':at>=0?'이동':'장착'}</button></div>`}).join('')}</div></div>`;
+const pvh=`<div class="cw-sets"><h3>패시브 <small>슬롯을 고른 뒤 장착 · 자유롭게 교체</small></h3>${ldH()}<div class="cw-set"><div class="cw-ln">${PSL.map((lv,i)=>{const pp=PS[i]!=null?PV[PS[i]]:null,lk=P.lv<lv;return `<button class="ac" data-c="q:${i}" ${lk?'disabled':''} style="${chrPS==i?'outline:2px solid #ffd27a;outline-offset:2px':''}">${lk?'Lv.'+lv+' 해금':pp?pp.n:'비어 있음'}</button>`}).join('')}</div>${PV.map((pp,i)=>{const at=PS.indexOf(i);if(!PU.includes(i)){const mm=PMS.find(x=>x[1]==i)[0];return `<div class="cw-ln" style="opacity:.5"><span>${pp.n} <small>STAGE ${mm} 보스 처치 시 획득</small></span><button class="ac" disabled>잠김</button></div>`}return `<div class="cw-ln"><span>${pp.n} <small>${pp.d}</small></span><button class="ac" data-c="v:${i}" ${P.lv<PSL[chrPS]?'disabled':''}>${at==chrPS?'해제':at>=0?'이동':'장착'}</button></div>`}).join('')}</div></div>`;
+const skh=`<div class="cw-sets"><h3>스킬 <small>보스·정예가 스킬북을 떨어뜨려요 (고급은 스테이지 200~, 희귀는 300~부터 아주 가끔) · 고급 이상은 마나를 %로 쓰고 장착하면 마나 회복이 느려져요 · 같은 종류는 한 슬롯에만 · 같은 책을 모으면 강화 · 슬롯 고른 뒤 장착 (키 1·2·3)</small></h3>${ldH()}<div class="cw-set"><div class="cw-ln">${SKL.map((lv,i)=>{const id=SKS.eq[i],ss=id&&SKT.find(z=>z.id==id),lk=P.lv<lv;return `<button class="ac" data-c="sq:${i}" ${lk?'disabled':''} style="${chrSK==i?'outline:2px solid #ffd27a;outline-offset:2px':''}">${lk?'Lv.'+lv+' 해금':ss?ss.n:'비어 있음'}</button>`}).join('')}</div><div class="cw-ln"><span>자동 사용 <small>슬롯마다 눌러 바꿔요 · 항상 → 보스만(월드보스 포함) → 끔 · 직접 누르는 건 언제나 돼요 · 자동 전투가 꺼진(수동) 상태에서는 자동 사용도 멈춰요</small></span></div><div class="cw-ln">${SKL.map((lv,i)=>`<button class="ac" data-c="am:${i}" ${P.lv<lv?'disabled':''}>슬롯 ${i+1}: ${['항상','보스만','끔'][SKS.am[i]|0]}</button>`).join('')}</div>${SKT.map(ss=>{const o=SKS.own[ss.id],at=SKS.eq.indexOf(ss.id);if(!o)return `<div class="cw-ln" style="opacity:.5"><span>${ss.n}${ss.t?` <b style="color:${TC[ss.t]}">${TN[ss.t]}</b>`:''} <small>[${ss.cls}] ${stage>=TMIN[ss.t]?'보스·정예 처치 시 스킬북 획득':'STAGE '+TMIN[ss.t]+' 이상에서 획득'}</small></span><button class="ac" disabled>미획득</button></div>`;return `<div class="cw-ln${at==chrSK?' cur':at>=0?' oth':''}"><span>${ss.n}${ss.t?` <b style="color:${TC[ss.t]}">${TN[ss.t]}</b>`:''}${at>=0?` <i class="sk-at">슬롯 ${at+1}</i>`:''} <small>[${ss.cls}] Lv.${o.lv}${o.lv<5?' · 조각 '+o.c+'/'+SKN[o.lv-1]:' · MAX'} · MP ${ss.mpp?M.round(ss.mpp*100)+'%':ss.mp} · 쿨 ${ss.cd}초<br>${skd(ss,o.lv)}</small></span><button class="ac" data-c="sv:${ss.id}" ${P.lv<SKL[chrSK]?'disabled':''}>${at==chrSK?'해제':at>=0?'이동':'장착'}</button></div>`}).join('')}</div></div>`;
 const CTB=['장비','능력치','패시브','스킬','세트','보관함'],dollH=`<div class="cw-doll"><svg class="fig" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><circle cx="50" cy="26" r="15"/><path d="M14 100c0-26 14-44 36-44s36 18 36 44z"/></svg>${['h','w','a','r','n','f'].map(eq).join('')}</div>`,ddH=`<div class="cw-d"><div class="cw-m">${chrMsg}</div>${d}</div>`,lvH=`<div class="cw-lv"><b>Lv.${P.lv}</b><div class="xb"><i style="width:${pc}%"></i></div><span>${pc}%</span></div>`,stsH=`<div class="cw-s">${sr('전투력',kn(cp())+(cp()>=1e4?' ('+M.round(cp()).toLocaleString()+')':''))+sr('체력',kn(mhp()))+sr('마나',kn(mmp()))+sr('공격력',kn(atk()))+sr('치명타 확률',M.round(M.min(80,15+bon('cr'))*10)/10+'%'+' (상한 80%)')+sr('치명타 피해',M.round(CDM()*100)+'%')+sr('흡혈',M.min(CAP.ls,bon('ls'))+'%'+' (상한 '+CAP.ls+'%)')+sr('공격 속도','+'+M.min(CAP.as,bon('as'))+'%'+' (상한 '+CAP.as+'%)')+sr('이동 속도','+'+M.min(CAP.ms,bon('ms'))+'%'+' (상한 '+CAP.ms+'%)')+sr('피해 감소',M.min(CAP.dr,bon('dr'))+'%'+' (상한 '+CAP.dr+'%)')+sr('보스 피해','+'+M.min(BDCAP,bon('bd'))+'%'+' (상한 '+BDCAP+'%)')+sr('마나 회복','+'+bon('mr')+'%')+sr('경험치 획득','+'+bon('xp')+'%')+sr('골드 획득','+'+bon('gd')+'%')+sr('공격 단련','+'+up)}</div>`,setH=`<div class="cw-sets"><h3>세트 효과</h3>${sets}</div>`,drH=`<div class="cw-sets"><h3>드롭 등급 해금</h3><div class="cw-set">${RMIN.map((m,i)=>i?`<small style="color:${stage>=m?RA[i].c:'#6f8080'}">${RN[i]}${TIERS[i].uq?' · 유니크':''} — ${stage>=m?'해금':isFinite(m)?'STAGE '+m+' 이상':'준비 중'}</small>`:'').join('')}</div></div>`;
 const skT=`<div class="cw-sets"><h3>스킬북 등급 해금</h3><div class="cw-set">${TN.map((n,i)=>`<small style="color:${stage>=TMIN[i]?TC[i]:'#6f8080'}">${n}${i?' · 스킬북 중 '+M.round(TDP[i-1]*100)+'%':''} — ${stage>=TMIN[i]?'해금':'STAGE '+TMIN[i]+' 이상'}</small>`).join('')}</div></div>`;
 const ctH='<div class="cw-tabs">'+CTB.map((n,i)=>`<button data-ct="${i}" class="${chrTab==i?'on':''}">${n}${i==1&&PT.free?' ●':''}</button>`).join('')+'</div>',W1='<div class="cw-r" style="grid-column:1/-1">',cbH=[`<div class="cw-l">${dollH}</div><div class="cw-r">${ddH}</div>`,W1+lvH+stsH+stt+'</div>',W1+pvh+'</div>',W1+skT+skh+'</div>',W1+setH+drH+'</div>',W1+invHtml()+'</div>'][chrTab]||'';
@@ -1649,6 +1674,7 @@ else if(id.startsWith('q:'))chrPS=+id.slice(2);
 else if(id.startsWith('v:'))eqPas(+id.slice(2));
 else if(id.startsWith('sq:'))chrSK=+id.slice(3);
 else if(id.startsWith('am:')){const i=+id.slice(3);if(i>=0&&i<3&&P.lv>=SKL[i]){SKS.am[i]=((SKS.am[i]|0)+1)%3;chrMsg='슬롯 '+(i+1)+' 자동 사용: '+['항상','보스만','끔'][SKS.am[i]]}}
+else if(id.startsWith('ld:'))chrMsg=await ldAct(id);
 else if(id.startsWith('sv:'))skEq(id.slice(3));
 else if(id=='it'){const o=[0,1,2,3,9];INVT=o[(o.indexOf(INVT)+1)%5];chrMsg='보관 기준: '+(INVT>8?'꺼짐':TIERS[INVT].n+' 이상')}else if(id.startsWith('if:'))invF=id.slice(3);else if(id.startsWith('ie:'))chrMsg=invEq(INV.findIndex(z=>z.iid==+id.slice(3)));else if(id=='ic:*')chrMsg=await invCleanAll();else if(id.startsWith('ic:'))chrMsg=await invClean(id.slice(3));else if(id.startsWith('is:'))chrMsg=await invSell(INV.findIndex(z=>z.iid==+id.slice(3)));else if(id.startsWith('il:'))chrMsg=invLock(INV.findIndex(z=>z.iid==+id.slice(3)));
 else if(id=='eb'){chrMsg=await bulkEnh()}else if(id=='e'){const o=EN[chrSel]|0;enh(chrSel);chrMsg=(EN[chrSel]|0)>o?'강화 성공! +'+EN[chrSel]:'강화 실패 · 단계는 그대로예요'}else if(id[0]=='r'&&x){const j=+id.slice(1);if(RRC.k==chrSel&&RRC.j===j){RRC={k:'',j:-1,t:0};chrMsg=reroll(x,j)?'옵션을 재굴림했어요':''}else{RRC={k:chrSel,j:j,t:0};chrMsg='재굴림은 같은 버튼을 한 번 더 눌러야 실행돼요'}}
@@ -1890,9 +1916,8 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026110501',d:'11/5',t:['추천인 보상 한도가 늘었어요 — 최근 7일간 받을 수 있는 인원이 10명에서 20명으로 올랐어요 (한도 때문에 대기 중이던 친구는 자동으로 지급돼요)']},
-{v:'2026110401',d:'11/4',t:['새 최상위 등급 "무극"이 추가됐어요 — 창세 위 등급이고 STAGE 640부터 드롭돼요 (유니크 6종 · 옵션 6개 · 기본 능력치는 창세의 약 1.3배)','무극 장비는 전용 외형이 캐릭터에 보여요 — 떠 있는 칼날 조각 대검 · 별빛 투구 · 우주빛 성갑']},
-{v:'2026110303',d:'11/3',t:['아레나가 테스트 오픈했어요 — 비슷한 전투력의 상대와 겨뤄요 (테스트 중에는 보상이 없어요 · 월드보스 코인은 정식 오픈하면 받아요 · 점수·순위도 그때 초기화돼요)','테스트 중에는 정보 비공개 유저와 제재받은 유저도 순위에 보여요 — 정식 오픈부터는 나오지 않아요','설정 → 공개에 "상세 정보 공개"가 생겼어요 — 켜면 다른 사람이 내 단련·스탯 포인트·패시브·스킬 세팅을 볼 수 있어요 (기본은 꺼짐이고, 내 정보 공개가 켜져 있을 때만 적용돼요)','월드보스 개인 도전의 피해 상한이 늘었어요 — 상한에 걸리던 높은 피해도 그대로 기록돼요','채팅에서 다른 사람 닉네임을 누르면 작은 메뉴가 떠요 — 프로필 보기와 차단을 할 수 있어요 (차단은 프로필 창에서 이 메뉴로 옮겼어요 · 친선 PvP·귓속말은 준비 중이에요)']},
+{v:'2026110602',d:'11/6',t:['스킬·패시브 프리셋이 생겼어요 — 스킬 탭과 패시브 탭 맨 위에서 지금 끼운 스킬·패시브를 세트 1~3에 저장해 두고, 필요할 때 [적용]으로 한 번에 바꿔요','저장·적용을 직접 누를 때만 바뀌어요 — 이번 업데이트로 지금 끼고 있는 스킬·패시브는 바뀌지 않아요','프리셋 세트에 이름을 붙일 수 있어요 — 세트 이름을 누르면 바꿀 수 있고(최대 8자), 지금 끼운 구성과 같은 세트에는 "사용 중"이 떠요 · 필요 없는 세트는 ✕로 비워요']},
+{v:'2026110502',d:'11/5',t:['추천인 보상 한도가 늘었어요 — 최근 7일간 받을 수 있는 인원이 10명에서 20명으로 올랐어요 (한도 때문에 대기 중이던 친구는 자동으로 지급돼요)','귓속말이 열렸어요 — 채팅에서 닉네임을 누르고 [귓속말]을 고르거나 /w 닉네임 내용 으로 보내요 · /r 은 마지막 상대에게 답장, 귓속말 탭에서는 그냥 입력해도 돼요','귓속말은 나와 상대에게만 보이고 7일 뒤 지워져요 — 다만 신고·제재 확인을 위해 운영자는 볼 수 있어요']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
 function pmark(){try{localStorage.setItem(PSK,PATCH[0].v)}catch(e){}document.body.classList.remove('pnew')}
@@ -2488,14 +2513,14 @@ buildTitle();document.body.classList.add('ttl');tm.classList.add('on');focusFirs
    서버 쪽에서도 길이·도배 제한을 꼭 걸어 주세요(클라이언트 제한은 우회 가능). */
 (function(){
 const $=id=>document.getElementById(id),box=$('cht'),lg=$('chlg'),ct=$('chct'),inp=$('chin'),hud=$('hud');
-const TABS=[{id:'all',n:'전체',f:()=>true},{id:'chat',n:'채팅',f:m=>m.ch==='chat'},{id:'sys',n:'시스템',f:m=>m.ch==='sys'},{id:'vl',n:'마을',f:m=>m.ch==='vl',vh:1},{id:'gd',n:'길드',f:m=>m.ch==='gd',vh:1}];/* vh: 마을에 있을 때만 보이는 탭 */ const UN={chat:0,vl:0,gd:0};let sc=-1,sg=-1,hc=0,hg=0;/* 채팅 버튼 뱃지: 마지막으로 본 채팅·길드채팅 번호(sc·sg)와 하트비트가 알려준 최신 번호(hc·hg) · 서버 요청 없이 하트비트 응답만 써요 */
+const TABS=[{id:'all',n:'전체',f:()=>true},{id:'chat',n:'채팅',f:m=>m.ch==='chat'},{id:'sys',n:'시스템',f:m=>m.ch==='sys'},{id:'vl',n:'마을',f:m=>m.ch==='vl',vh:1},{id:'gd',n:'길드',f:m=>m.ch==='gd',vh:1},{id:'wh',n:'귓속말',f:m=>m.ch==='wh'}];/* vh: 마을에 있을 때만 보이는 탭 */ const UN={chat:0,vl:0,gd:0,wh:0};let sc=-1,sg=-1,hc=0,hg=0;/* 채팅 버튼 뱃지: 마지막으로 본 채팅·길드채팅 번호(sc·sg)와 하트비트가 알려준 최신 번호(hc·hg) · 서버 요청 없이 하트비트 응답만 써요 */
 const nbb=document.createElement('b');nbb.className='nbb';$('chtg').appendChild(nbb);
 const nbShow=n=>{nbb.textContent=n>9?'9+':n;nbb.classList.toggle('on',n>0)};
 const mark=m=>{const v=typeof m.id==='string'&&m.id[0]==='g'?+m.id.slice(1):+m.id;if(!(v>=0))return;if(m.ch==='gd'){if(v>sg)sg=v}else if(m.ch==='chat'){if(v>sc)sc=v}};
 let hl=0;/* 안 읽은 새 메시지 수(탭 뱃지) · hl: 이전 기록을 불러오는 중이면 세지 않아요 */ const nbSet=id=>{const b=ct.querySelector('i[data-t="'+id+'"] .nb');if(!b)return;const n=UN[id]|0;b.textContent=n>99?'99+':n;b.classList.toggle('on',n>0)};/* 탭 추가: 길드·귓속말 등은 여기 한 줄 + 메시지의 ch 값만 늘리면 돼요 */
 const LIM={len:100,gap:1000,dup:5000,keep:200},SAVE='ashen1c',BMAX=50;
 const TOUCH=matchMedia('(pointer:coarse)').matches,vv=window.visualViewport;
-let vlOn=false,gdOn=false,tab='all',isOpen=false,keep=false,pend=false,hist=[],hi=-1,lastT=0,lastM='',lastMT=0,seq=0,welcomed=false;
+let lastW=null,wHint=false;const wUid={};let vlOn=false,gdOn=false,tab='all',isOpen=false,keep=false,pend=false,hist=[],hi=-1,lastT=0,lastM='',lastMT=0,seq=0,welcomed=false;
 const seen=new Set(),ignN=new Set(),blk=new Map();/* blk: 차단한 유저 uid → {n:닉네임, t:차단 시각} · ignN: 예전 방식(이름 기준) 차단 — 그 사람 채팅이 다시 오면 uid 차단으로 바뀌어요 */
 const ME={id:'local-'+(Math.random()*1e9|0).toString(36),name:'모험가'+(1000+(Math.random()*9000|0))};
 try{const d=JSON.parse(localStorage.getItem(SAVE));if(d){if(d.name)ME.name=String(d.name).slice(0,12);if(d.id)ME.id=d.id;if(Array.isArray(d.ign))d.ign.forEach(n=>ignN.add(String(n).slice(0,12)));if(Array.isArray(d.blk))d.blk.slice(0,BMAX).forEach(x=>{if(Array.isArray(x)&&typeof x[0]==='string'&&x[0])blk.set(x[0],{n:String(x[1]||'').slice(0,12),t:+x[2]||0})})}}catch(e){}
@@ -2503,7 +2528,7 @@ const saveMe=()=>{try{localStorage.setItem(SAVE,JSON.stringify({name:ME.name,id:
 const hue=n=>{let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%360;return h},hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 const CHAT={me:ME,filter:t=>t/* 욕설 필터 자리: 나중에 여기서 치환 */,net:{mode:'local',connect(){return Promise.resolve()},send(){return Promise.resolve()},history(){return Promise.resolve([])}}};
 {const st=document.createElement('style');st.textContent='.ln .gtag{display:inline-flex;align-items:center;gap:3px;margin-right:5px;padding:0 5px 0 3px;border:0;border-radius:4px;background:#ffd98a24;color:#ffd98a;opacity:1;font-size:.88em;line-height:1.45;vertical-align:1px;white-space:nowrap}.ln .gtag svg{width:.95em;height:.95em;flex:none}.ln .gtag svg path{fill:none;stroke:currentColor}.ln .gtag i{font-style:normal}.ln .gch{padding:0 7px;color:#9dffb8;border:1px solid #4fbf7a99;border-radius:9px;background:linear-gradient(#17402a66,#06150d66);opacity:1;font-size:.84em;vertical-align:1px}';document.head.appendChild(st)}
-/* ---- 닉네임 메뉴: 채팅에서 닉네임을 누르면 작은 메뉴(프로필 · 친선 PvP · 귓속말 · 차단)가 닉네임 근처에 떠요. 친선 PvP·귓속말은 아직 준비 중이라 누르면 안내만 나와요. 차단은 예전 정보창 아래 버튼에서 이 메뉴로 옮겼어요 ---- */
+/* ---- 닉네임 메뉴: 채팅에서 닉네임을 누르면 작은 메뉴(프로필 · 친선 PvP · 귓속말 · 차단)가 닉네임 근처에 떠요. 귓속말은 열려 있고, 친선 PvP는 아직 준비 중이라 누르면 안내만 나와요. 차단은 예전 정보창 아래 버튼에서 이 메뉴로 옮겼어요 ---- */
 let nmEl=null;
 {const st=document.createElement('style');st.textContent="#nmenu{position:fixed;z-index:9100;min-width:160px;max-width:min(240px,calc(100vw - 16px));display:flex;flex-direction:column;gap:2px;padding:4px;border:2px solid #8a6a30;border-radius:10px;background:linear-gradient(#161f26,#070b0e);box-shadow:0 10px 30px #000a;font-family:'Do Hyeon',sans-serif;color:#e8f1ee}#nmenu .nh{padding:6px 10px 5px;margin-bottom:2px;border-bottom:1px solid #3a2c12;color:#ffd98a;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#nmenu .nh.q{white-space:normal;color:#ffb0b0;line-height:1.3}#nmenu button{all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:42px;padding:8px 10px;border-radius:6px;font-size:16px;color:#e8f1ee;cursor:pointer;-webkit-tap-highlight-color:transparent}#nmenu button:active{background:#ffffff14}#nmenu button.off{color:#7d8c88;cursor:default}#nmenu button.dg{color:#ff9a9a}#nmenu button small{font-size:12px;color:#7d8c88}";document.head.appendChild(st)}
 function nmClose(){if(nmEl){nmEl.remove();nmEl=null}}
@@ -2511,7 +2536,7 @@ function nmOpen(anchor,m){nmClose();const d=document.createElement('div');d.id='
   const place=()=>{const r=anchor.getBoundingClientRect(),w=d.offsetWidth,h=d.offsetHeight,vw=innerWidth,vh=innerHeight;let x=Math.max(8,Math.min(r.left,vw-w-8)),y=r.bottom+4;if(y+h>vh-8)y=Math.max(8,r.top-h-4);d.style.left=x+'px';d.style.top=y+'px'};
   const head=(t,q)=>{d.innerHTML='<div class="nh'+(q?' q':'')+'"></div>';d.firstChild.textContent=t};
   const main=()=>{const on=!!(CHAT.isBlocked&&CHAT.isBlocked(m.uid));head(m.name);
-    d.insertAdjacentHTML('beforeend','<button type="button" role="menuitem" data-n="pf">프로필</button><button type="button" role="menuitem" class="off" data-n="pvp" aria-disabled="true">친선 PvP <small>(준비중)</small></button><button type="button" role="menuitem" class="off" data-n="wh" aria-disabled="true">귓속말 <small>(준비중)</small></button><button type="button" role="menuitem"'+(on?'':' class="dg"')+' data-n="'+(on?'ublk':'blk')+'">'+(on?'차단 해제':'차단')+'</button>');place()};
+    d.insertAdjacentHTML('beforeend','<button type="button" role="menuitem" data-n="pf">프로필</button><button type="button" role="menuitem" class="off" data-n="pvp" aria-disabled="true">친선 PvP <small>(준비중)</small></button><button type="button" role="menuitem" data-n="wh">귓속말</button><button type="button" role="menuitem"'+(on?'':' class="dg"')+' data-n="'+(on?'ublk':'blk')+'">'+(on?'차단 해제':'차단')+'</button>');place()};
   d.addEventListener('pointerdown',e=>e.stopPropagation());
   d.addEventListener('click',e=>{const bt=e.target.closest&&e.target.closest('button');if(!bt)return;const k=bt.dataset.n;
     if(k==='pf'){nmClose();try{AF.showProfile(m.uid,m.name)}catch(x){}}
@@ -2519,6 +2544,7 @@ function nmOpen(anchor,m){nmClose();const d=document.createElement('div');d.id='
     else if(k==='blk2'){nmClose();let er='';try{er=CHAT.block(m.uid,m.name)}catch(x){er='차단하지 못했어요.'}if(er){try{AF.toast(er,'#ff9a8a')}catch(x){}}}
     else if(k==='ublk'){nmClose();try{CHAT.unblock(m.uid)}catch(x){}}
     else if(k==='x'){main()}
+    else if(k==='wh'){nmClose();whisperTo(m.uid,m.name)}
     else{try{AF.toast('아직 준비 중인 기능이에요','#9fb5b0')}catch(x){}}});
   d._pl=()=>{if(!anchor.isConnected){nmClose();return}const r=anchor.getBoundingClientRect(),q=lg.getBoundingClientRect();if(r.bottom<q.top||r.top>q.bottom){nmClose();return}place()};document.body.appendChild(d);nmEl=d;main()}
 document.addEventListener('pointerdown',e=>{if(nmEl&&!nmEl.contains(e.target))nmClose()},true);
@@ -2528,16 +2554,18 @@ function recv(m){
   if(!m||typeof m.text!=='string'||!m.text)return;
   if(m.id!=null){if(seen.has(m.id))return;seen.add(m.id);if(seen.size>500)seen.delete(seen.values().next().value);if(isOpen||m.uid===ME.id)mark(m)}
   if(m.ch!=='sys'&&m.uid!==ME.id){if(m.uid&&blk.has(m.uid))return;if(ignN.has(m.name)){if(m.uid&&blk.size<BMAX){blk.set(m.uid,{n:m.name,t:Date.now()});ignN.delete(m.name);saveMe()}return}}
-  m={ch:m.ch==='sys'?'sys':m.ch==='vl'?'vl':m.ch==='gd'?'gd':'chat',uid:m.uid,name:String(m.name||'').slice(0,12),text:m.text.slice(0,200),ts:m.ts||Date.now(),c:m.c,g:m.ch==='chat'&&m.g?String(m.g).slice(0,10):''};
+  m={ch:m.ch==='sys'?'sys':m.ch==='vl'?'vl':m.ch==='gd'?'gd':m.ch==='wh'?'wh':'chat',out:!!m.out,to:m.to,tn:String(m.tn||'').slice(0,12),uid:m.uid,name:String(m.name||'').slice(0,12),text:m.text.slice(0,200),ts:m.ts||Date.now(),c:m.c,g:m.ch==='chat'&&m.g?String(m.g).slice(0,10):''};
+  if(m.ch==='wh'){const pu=m.out?m.to:m.uid,pn=m.out?m.tn:m.name;if(pu&&pn){wUid[pn]=pu;lastW={uid:pu,name:pn};if(tab==='wh'){try{inp.placeholder='→ '+pn+' 귓속말'}catch(e){}}}}
   const el=document.createElement('div');el.className='ln';el._m=m;el._t=Date.now();if(m.ch==='sys'&&m.text.length>18)el._L=1;
   const ts=document.createElement('span');ts.className='ts';ts.textContent=hm(m.ts);el.appendChild(ts);
   if(m.g){const g=document.createElement('span');g.className='gtag';g.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l11 4v9c0 7-5 11-11 13C10 27 5 23 5 16V7z" fill="#2d5a8a" stroke="#ffd98a" stroke-width="2.4"/><path d="M16 9v13M11 14h10" stroke="#ffd98a" stroke-width="2.4" stroke-linecap="round"/></svg><i></i>';g.lastChild.textContent=m.g;el.appendChild(g)}
   if(m.ch==='gd'){const l=document.createElement('span');l.className='gtag gch';l.textContent='길드';el.appendChild(l)}
-  if(m.ch==='chat'||m.ch==='vl'||m.ch==='gd'){const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=m.name+': ';if(m.uid){b.style.cursor='pointer';b.title='프로필·메뉴';b.addEventListener('pointerdown',e=>e.preventDefault());b.addEventListener('click',()=>{try{if(m.uid===ME.id)AF.showProfile(m.uid,m.name);else nmOpen(b,m)}catch(e){}})}el.appendChild(b)}
-  const tx=document.createElement('span');if(m.ch==='sys')tx.style.color=m.c||'#ffd98a';else if(m.ch==='gd')tx.style.color='#b8f5c8';tx.textContent=m.text;el.appendChild(tx);
+  if(m.ch==='wh'){const l=document.createElement('span');l.className='gtag gch';l.textContent='귓속말';l.style.cssText='color:#e0b8ff;border-color:#a06ad099;background:linear-gradient(#3a1a5a66,#14062266)';el.appendChild(l)}
+  if(m.ch==='chat'||m.ch==='vl'||m.ch==='gd'||m.ch==='wh'){const o=m.ch==='wh'&&m.out?{uid:m.to,name:m.tn}:m;const b=document.createElement('b');b.style.fontWeight='400';b.style.color=m.uid===ME.id?'#7dffe0':'hsl('+hue(m.name)+' 65% 72%)';b.textContent=(m.ch==='wh'&&m.out?'→ '+m.tn:m.name)+': ';if(o.uid){b.style.cursor='pointer';b.title='프로필·메뉴';b.addEventListener('pointerdown',e=>e.preventDefault());b.addEventListener('click',()=>{try{if(o.uid===ME.id)AF.showProfile(o.uid,o.name);else nmOpen(b,o)}catch(e){}})}el.appendChild(b)}
+  const tx=document.createElement('span');if(m.ch==='sys')tx.style.color=m.c||'#ffd98a';else if(m.ch==='gd')tx.style.color='#b8f5c8';else if(m.ch==='wh')tx.style.color='#e8d0ff';tx.textContent=m.text;el.appendChild(tx);
   if(!TABS.find(x=>x.id===tab).f(m)){el.style.display='none';if(isOpen&&!hl&&m.uid!==ME.id&&m.ch in UN){UN[m.ch]++;nbSet(m.ch)}}
   /* column-reverse: 첫 자식이 맨 아래 줄 · 시간(ts) 순으로 끼워 넣어요: 나중에 도착한 옛 기록이 맨 아래(최신 자리)로 가지 않게 */let ref=lg.firstChild;while(ref&&ref._m&&ref._m.ts>m.ts)ref=ref.nextSibling;lg.insertBefore(el,ref);
-  while(lg.children.length>LIM.keep)lg.removeChild(lg.lastChild);if(nmEl&&nmEl._pl)nmEl._pl()}
+  while(lg.children.length>LIM.keep)lg.removeChild(lg.lastChild);if(nmEl&&nmEl._pl)nmEl._pl();if(m.ch==='wh'&&!m.out&&!isOpen&&!hl){try{AF.toast(m.name+' 님의 귓속말: '+m.text.slice(0,30),'#e0b8ff')}catch(e){}}}
 const recvH=m=>{hl=1;try{recv(m)}finally{hl=0}};
 const sys=(t,c)=>recv({ch:'sys',text:String(t),c});
 /* ---- 유저 차단: 채팅 닉네임 메뉴의 [차단] · 설정의 [차단 목록] · /ignore 가 이 함수들을 써요 ---- */
@@ -2547,6 +2575,18 @@ CHAT.isBlocked=u=>!!u&&blk.has(u);
 CHAT.block=(u,n)=>{if(!u||u===ME.id)return '차단할 수 없는 대상이에요.';if(blk.has(u))return '';if(blk.size+ignN.size>=BMAX)return '차단 목록이 가득 찼어요 (최대 '+BMAX+'명)';n=String(n||'').slice(0,12);blk.set(u,{n,t:Date.now()});ignN.delete(n);saveMe();purge(m=>m.uid===u);sys((n||'상대')+' 님을 차단했어요. 설정 → 차단 목록에서 해제할 수 있어요.');return ''};
 CHAT.unblock=k=>{let n='';if(typeof k==='string'&&k.slice(0,2)==='n:'){n=k.slice(2);if(!ignN.delete(n))return}else{const v=blk.get(k);if(!v)return;blk.delete(k);n=v.n}saveMe();sys((n||'상대')+' 님 차단을 풀었어요.')};
 CHAT.blocks=()=>[...blk].map(([u,v])=>({key:u,name:v.n||'(이름 없음)',t:v.t})).concat([...ignN].map(n=>({key:'n:'+n,name:n,t:0}))).sort((a,b)=>b.t-a.t);
+const wErr=(t)=>{sys(t,'#ff9a8a');try{AF.toast(t,'#ff9a8a')}catch(e){}};/* 귓속말 탭에서는 시스템 줄이 숨겨져서, 오류는 토스트로도 알려요 */
+const WE={login:'로그인이 필요해요.',banned:'이용이 제한된 계정이에요.',notfound:'찾을 수 없는 유저예요.',ambiguous:'같은 닉네임이 여러 명이에요. 채팅에서 닉네임을 눌러 귓속말을 보내 주세요.',self:'자신에게는 보낼 수 없어요.',empty:'내용을 적어 주세요.',too_fast:'너무 빨리 보내고 있어요.',too_many:'너무 빨리 보내고 있어요.'};
+function doW(uid,name,text){if(CHAT.net.mode!=='supabase'||!CHAT.net.wsend){wErr('귓속말은 로그인한 뒤에 쓸 수 있어요.','#ff9a8a');return}
+  Promise.resolve().then(()=>CHAT.net.wsend(uid,name,text)).catch(e=>{const c=String(e&&e.message||''),k=String(e&&e.code||'');wErr(k==='PGRST202'||k==='42883'?'귓속말 기능을 준비 중이에요.':(WE[c]||'전송에 실패했어요.'),'#ff9a8a')})}
+function findUid(n){if(wUid[n])return wUid[n];for(const el of lg.children){const m=el._m;if(m&&m.ch!=='sys'&&m.uid&&m.uid!==ME.id&&m.name===n)return m.uid}return null}
+function wcmd(c,a){
+  if(c==='r'||c==='reply'){if(!lastW){wErr('답장할 귓속말이 없어요.','#ff9a8a');return}if(!a){wErr('예) /r 내용','#ff9a8a');return}doW(lastW.uid,lastW.name,CHAT.filter(a.slice(0,LIM.len)));return}
+  const i=a.indexOf(' '),n=(i<0?a:a.slice(0,i)).trim(),t=i<0?'':a.slice(i+1).trim();
+  if(!n||!t){wErr('예) /w 닉네임 내용','#ff9a8a');return}
+  if(n===ME.name){wErr('자신에게는 보낼 수 없어요.','#ff9a8a');return}
+  doW(findUid(n),n,CHAT.filter(t.slice(0,LIM.len)))}
+function whisperTo(uid,name){if(!uid)return;wUid[name]=uid;lastW={uid,name};open(true);setTab('wh');if(!wHint){wHint=true;try{AF.toast('운영자는 신고·제재 확인을 위해 귓속말을 볼 수 있어요','#e0b8ff')}catch(e){}}try{inp.focus({preventScroll:true})}catch(e){}}
 function cmd(t){const p=t.slice(1).split(' '),c=p[0].toLowerCase(),a=p.slice(1).join(' ').trim();
   if(c==='clear')lg.textContent='';
   else if(c==='name'){if(AF.user){sys('닉네임은 타이틀 화면의 \'닉네임 변경\'에서 바꿀 수 있어요.','#ff9a8a');return}if(!/^[가-힣A-Za-z0-9_]{2,12}$/.test(a))sys('이름은 2~12자, 한글·영문·숫자·_ 만 쓸 수 있어요.','#ff9a8a');else{ME.name=a;saveMe();sys('이름을 '+a+'(으)로 바꿨어요.')}}
@@ -2555,7 +2595,7 @@ function cmd(t){const p=t.slice(1).split(' '),c=p[0].toLowerCase(),a=p.slice(1).
     else if(blk.size+ignN.size>=BMAX)sys('차단 목록이 가득 찼어요 (최대 '+BMAX+'명)','#ff9a8a');
     else{ignN.add(a);saveMe();purge(m=>m.name===a);sys(a+' 님의 채팅을 숨겨요. (최근 채팅에서 못 찾아 이름으로 차단했어요)')}}}
   else if(c==='unignore'){let k=null;for(const [u,v] of blk)if(v.n===a){k=u;break}if(!k&&ignN.has(a))k='n:'+a;if(k)CHAT.unblock(k);else sys('차단 목록에 없는 이름이에요.','#ff9a8a')}
-  else if(c==='w'||c==='r')sys('귓속말은 서버에 연결되면 쓸 수 있어요.');
+  else if(c==='w'||c==='r'||c==='whisper'||c==='reply')wcmd(c,a);
   else sys('알 수 없는 명령어예요.','#ff9a8a')}
 function submit(raw){let t=raw.replace(/\s+/g,' ').trim();if(!t)return;
   hist.unshift(t);if(hist.length>30)hist.length=30;hi=-1;
@@ -2564,6 +2604,7 @@ function submit(raw){let t=raw.replace(/\s+/g,' ').trim();if(!t)return;
   if(now-lastT<LIM.gap){sys('너무 빨리 보내고 있어요.','#ff9a8a');return}
   if(t===lastM&&now-lastMT<LIM.dup){sys('같은 말을 반복해서 보낼 수 없어요.','#ff9a8a');return}
   t=CHAT.filter(t.slice(0,LIM.len));lastT=now;lastM=t;lastMT=now;
+  if(tab==='wh'){if(!lastW){wErr('귓속말 대상이 없어요. 닉네임을 눌러 [귓속말]을 고르거나 /w 닉네임 내용 으로 보내요.');return}doW(lastW.uid,lastW.name,t);return}
   if(tab==='gd'){/* 길드 탭: 같은 길드원에게만 보여요 (서버 guild_say) */if(!gdOn||CHAT.net.mode!=='supabase'||!CHAT.net.gsend){sys('길드에 가입하면 길드 채팅을 쓸 수 있어요.','#ff9a8a');return}
     Promise.resolve().then(()=>CHAT.net.gsend(t)).catch(e=>{const c=String(e&&e.message||'');sys(c==='no_guild'?'길드에 가입돼 있지 않아요.':c==='too_fast'||c==='too_many'?'너무 빨리 보내고 있어요.':'전송에 실패했어요.','#ff9a8a');if(c==='no_guild')CHAT.gdMode(false)});return}
   if(tab==='vl'){/* 마을 탭: 서버(DB)에 저장하지 않고 마을 안 사람들에게만 전달해요 */t=t.slice(0,60);if(!(vlOn&&AF.vlChat&&AF.vlChat.send(t))){sys('마을에 아직 연결되지 않았어요. 잠시 후 다시 보내 주세요.','#ff9a8a');return}recv({id:ME.id+':v:'+(++seq)+':'+now,ch:'vl',uid:ME.id,name:String(AF.nk||ME.name).slice(0,12),text:t,ts:now});return}
@@ -2578,7 +2619,7 @@ function place(){const h=vv?vv.height:innerHeight,top=vv?vv.offsetTop:0;document
   if(isOpen){const kb=M_max(0,innerHeight-h-top);box.style.bottom=(kb>60?kb+6:(hud.offsetHeight||110)+8)+'px';lg.style.height=Math.max(56,Math.min(150,h-130))+'px'}
   else box.style.bottom=((hud.offsetHeight||110)+8)+'px'}
 const M_max=Math.max;
-function setTab(id){tab=id;if(id in UN){UN[id]=0;nbSet(id)}const f=TABS.find(x=>x.id===id).f;for(const el of lg.children)el.style.display=f(el._m)?'':'none';for(const i of ct.children)i.classList.toggle('sel',i.dataset.t===id)}
+function setTab(id){tab=id;try{inp.placeholder=id==='wh'?(lastW?'→ '+lastW.name+' 귓속말':'/w 닉네임 내용'):(TOUCH?'메시지 입력':'Enter 전송 · Esc 닫기')}catch(e){}if(id in UN){UN[id]=0;nbSet(id)}const f=TABS.find(x=>x.id===id).f;for(const el of lg.children)el.style.display=f(el._m)?'':'none';for(const i of ct.children)i.classList.toggle('sel',i.dataset.t===id)}
 TABS.forEach(x=>{const i=document.createElement('i');i.dataset.t=x.id;i.textContent=x.n;{const b=document.createElement('b');b.className='nb';i.appendChild(b)}if(x.vh)i.style.display='none';i.addEventListener('pointerdown',e=>{e.preventDefault();setTab(x.id);if(isOpen)inp.focus()});ct.appendChild(i)});setTab('all');
 function send(){const v=inp.value;inp.value='';if(!keep)close();if(v.trim())submit(v);if(keep&&isOpen)setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},0)}
 /* 입력창 키: 게임 조작키(Z X C Space …)가 채팅 글자와 겹치지 않도록 이벤트를 여기서 끊어요 */
@@ -2615,7 +2656,7 @@ CHAT.start=()=>Promise.resolve(CHAT.net.connect(recv)).then(()=>CHAT.net.history
 AF.CHAT=CHAT;AF.chatSys=sys;
 /* 최고 등급 획득 알림: 로그인 상태에서만, 아이템 1개당 1번. 서버 함수가 없거나 실패해도 게임엔 영향 없어요 */
 const ANW=new WeakSet();AF.announce=it=>{try{if(!it||ANW.has(it)||!AF.sb||!AF.user||CHAT.net.mode!=='supabase')return;ANW.add(it);AF.sb.rpc('announce_drop',{p_name:ME.name,p_item:String(it.n||'').slice(0,40),p_u:it.u!=null}).then(()=>{},()=>{})}catch(e){}};
-const row=x=>({id:x.id,ch:x.ch==='sys'?'sys':'chat',uid:x.uid,name:x.name,g:x.gname,text:x.text,ts:Date.parse(x.created_at),c:x.ch==='sys'?'#5df2ff':undefined});/* sys: 최고 등급 획득 알림(서버 함수 announce_drop 이 넣어요) */const grow=x=>({id:'g'+x.id,ch:'gd',uid:x.uid,name:x.name,text:x.text,ts:Date.parse(x.created_at)});/* 길드 채팅 줄: 같은 길드원 것만 서버가 내려줘요 */let chCh=null;
+const row=x=>({id:x.id,ch:x.ch==='sys'?'sys':'chat',uid:x.uid,name:x.name,g:x.gname,text:x.text,ts:Date.parse(x.created_at),c:x.ch==='sys'?'#5df2ff':undefined});/* sys: 최고 등급 획득 알림(서버 함수 announce_drop 이 넣어요) */const grow=x=>({id:'g'+x.id,ch:'gd',uid:x.uid,name:x.name,text:x.text,ts:Date.parse(x.created_at)});/* 길드 채팅 줄: 같은 길드원 것만 서버가 내려줘요 */let chCh=null;const wrow=x=>{const o=x.from_uid===ME.id;return{id:'w'+x.id,ch:'wh',uid:x.from_uid,name:x.from_name,out:o,to:o?x.to_uid:x.from_uid,tn:o?x.to_name:x.from_name,text:x.text,ts:Date.parse(x.created_at)}};
 /* 실시간(Realtime)은 로그인한 사람만 써요: 로그인 전에는 채널·전송 코드가 아예 실행되지 않아요(supabase-js 는 채널을 만들 때 처음 연결해요).
    서버에서 막는 건 server_lockdown.sql — RT_PRIVATE 는 그 파일의 '선택 2단계'까지 마친 뒤에만 true 로 바꾸세요. */
 const RT_PRIVATE=false;
@@ -2623,11 +2664,12 @@ function goNet(){const sb=AF.sb,u=AF.user;if(!sb||!u)return;if(chCh&&ME.id===u.i
   const gload=n=>sb.from('guild_chat').select().order('id',{ascending:false}).limit(n).then(r=>{if(r.error)throw r.error;return(r.data||[]).map(grow)});
   CHAT.gdLoad=()=>{if(gdOn&&chCh)gload(50).then(h=>h.slice().reverse().forEach(recvH)).catch(()=>{})};
   CHAT.net={mode:'supabase',
-    connect(on){if(chCh)sb.removeChannel(chCh);chCh=sb.channel('chat',RT_PRIVATE?{config:{private:true}}:{}).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>on(row(p.new))).on('postgres_changes',{event:'INSERT',schema:'public',table:'guild_chat'},p=>on(grow(p.new))).subscribe();return Promise.resolve()},
+    connect(on){if(chCh)sb.removeChannel(chCh);chCh=sb.channel('chat',RT_PRIVATE?{config:{private:true}}:{}).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>on(row(p.new))).on('postgres_changes',{event:'INSERT',schema:'public',table:'guild_chat'},p=>on(grow(p.new))).on('postgres_changes',{event:'INSERT',schema:'public',table:'whispers'},p=>on(wrow(p.new))).subscribe();return Promise.resolve()},
     send(m){if(!AF.user)return Promise.reject(new Error('login'));const go=b=>sb.from('chat_messages').insert(b).select().single();/* 닉네임을 같이 보내 보고, 서버가 name 을 거부하면 이름 없이 다시 보내요(서버가 이름을 정하는 경우) */
       return go({text:m.text,name:ME.name}).then(r=>r.error?go({text:m.text}):r).then(r=>{if(r.error)throw r.error;recv(row(r.data))})},
     gsend(t){return sb.rpc('guild_say',{p_text:t}).then(r=>{if(r.error)throw r.error;recv(grow(r.data))})},
-    history(ch,n){return Promise.all([sb.from('chat_messages').select().in('ch',['chat','sys']).order('id',{ascending:false}).limit(n).then(r=>{if(r.error)throw r.error;return(r.data||[]).map(row)}),gload(30).catch(()=>[])]).then(x=>x[0].concat(x[1]).sort((a,b)=>b.ts-a.ts))}};
+    wsend(uid,name,t){return sb.rpc('whisper_send',{p_to:uid||null,p_name:uid?null:name,p_text:t}).then(r=>{if(r.error)throw r.error;recv(wrow(r.data))})},
+    history(ch,n){return Promise.all([sb.from('chat_messages').select().in('ch',['chat','sys']).order('id',{ascending:false}).limit(n).then(r=>{if(r.error)throw r.error;return(r.data||[]).map(row)}),gload(30).catch(()=>[]),sb.rpc('whisper_recent',{p_limit:30}).then(r=>r.error?[]:(r.data||[]).map(wrow),()=>[])]).then(x=>x[0].concat(x[1],x[2]).sort((a,b)=>b.ts-a.ts))}};
   if(isOpen)chWake()}
 window.addEventListener('af-user',()=>{goNet();lockUI()});lockUI();window.addEventListener('af-nick',()=>{if(AF.user&&AF.nk){ME.name=String(AF.nk).slice(0,12);saveMe()}});goNet();
 /* 로그 절약: 탭이 1분 넘게 숨겨지면 실시간 연결을 끊고, 돌아오면 다시 연결해요 */
@@ -2844,7 +2886,7 @@ const st=document.createElement('style');st.textContent=`
 body.mnew .mb button[data-a=ml]::after{content:'NEW';position:absolute;top:50%;right:12px;transform:translateY(-50%);padding:1px 7px;border-radius:9px;background:#ff5a5a;color:#fff;font-size:11px;letter-spacing:0}
 `;document.head.appendChild(st);
 
-const S={tab:0,q:'',users:null,sel:null,logs:null,ban:{h:24,reason:''},mail:{u:0,tgt:'sel',title:'',body:'',g:'',c:'',box:'',rr:'',sl:'w',ri:5,n:'',days:'30'},msg:'',bad:0,busy:0,mails:null,pg:0,more:0,det:null,iq:{st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0},gc:{q:'',list:null,g:null,rows:null,more:0,busy:0},sp:{min:1,pg:0,more:0,rows:null,busy:0}};
+const S={tab:0,q:'',users:null,sel:null,logs:null,ban:{h:24,reason:''},mail:{u:0,tgt:'sel',title:'',body:'',g:'',c:'',box:'',rr:'',sl:'w',ri:5,n:'',days:'30'},msg:'',bad:0,busy:0,mails:null,pg:0,more:0,det:null,iq:{st:'open',pg:0,more:0,rows:null,open:0,dr:{},busy:0},gc:{q:'',list:null,g:null,rows:null,more:0,busy:0},sp:{min:1,pg:0,more:0,rows:null,busy:0},wh:{q:'',cand:null,uid:null,uname:'',rows:null,more:0,busy:0}};
 let opener=null;
 
 /* ---------- 관리자 화면 ---------- */
@@ -2877,8 +2919,8 @@ function tab1(){const m=S.mail;
 function tab2(){
   if(S.logs===null)return '<div class="em2">불러오는 중…</div>';
   if(!S.logs.length)return '<div class="em2">기록이 없어요</div>';
-  const A={ban:'정지',unban:'정지 해제',mail:'우편 발송',mail_all:'전체 우편',inq_reply:'문의 답변',board_del:'게시글 삭제',gchat_view:'길드 채팅 열람'};
-  return S.logs.map(l=>{const d=l.detail||{};let x='';if(l.action=='inq_reply')x='#'+d.id+(d.edit?' · 수정':'')+(d.preview?' · '+d.preview:'');else if(l.action=='ban')x=(d.hours?d.hours+'시간':'영구')+(d.reason?' · '+d.reason:'');else if(l.action=='gchat_view')x=d.name||('#'+d.gid);else if(l.action=='mail'||l.action=='mail_all')x=(d.title||'')+' · '+rw(d.payload||{})+(d.count!=null?' · '+d.count+'명':'');
+  const A={ban:'정지',unban:'정지 해제',mail:'우편 발송',mail_all:'전체 우편',inq_reply:'문의 답변',board_del:'게시글 삭제',gchat_view:'길드 채팅 열람',whisper_view:'귓속말 열람'};
+  return S.logs.map(l=>{const d=l.detail||{};let x='';if(l.action=='inq_reply')x='#'+d.id+(d.edit?' · 수정':'')+(d.preview?' · '+d.preview:'');else if(l.action=='ban')x=(d.hours?d.hours+'시간':'영구')+(d.reason?' · '+d.reason:'');else if(l.action=='gchat_view')x=d.name||('#'+d.gid);else if(l.action=='whisper_view')x=d.scope=='all'?'전체 최신':'유저별';else if(l.action=='mail'||l.action=='mail_all')x=(d.title||'')+' · '+rw(d.payload||{})+(d.count!=null?' · '+d.count+'명':'');
     return '<div class="ui"><div><b>'+esc(A[l.action]||l.action)+'</b>'+(l.target_uid?' · '+esc(l.target_nk||String(l.target_uid).slice(0,8)):'')+'<small>'+esc(x)+'</small></div><small style="white-space:nowrap">'+dt(l.at)+'</small></div>'}).join('')}
 const OPN={cr:['치명타','%'],ls:['흡혈','%'],xp:['경험치','%'],gd:['골드','%'],at:['공격력',''],hp:['체력',''],as:['공격 속도','%'],ms:['이동 속도','%'],mr:['마나 회복','%'],bd:['보스 피해','%'],dr:['피해 감소','%']};
 const TNM=(()=>{try{if(typeof TIERS!=='undefined'&&Array.isArray(TIERS))return TIERS.map(t=>t.n)}catch(e){}return['일반','고급','희귀','영웅','전설','신화','초월','천상','적룡','창세','무극']})();
@@ -2961,10 +3003,27 @@ async function gcFind(){const c=S.gc;c.g=null;c.rows=null;c.list=null;admBuild()
 async function gcOpen(g,before){const c=S.gc;if(c.busy)return;c.busy=1;if(!before){c.g=g;c.rows=null;admBuild()}else admBuild();
   try{const r=await rpc('admin_guild_chat',{p_gid:g.id,p_before:before||null,p_limit:80});c.g=Object.assign({},g,r.guild);c.rows=(before?(c.rows||[]):[]).concat(r.rows||[]);c.more=!!r.more;S.msg='';S.bad=0}
   catch(e){if(!before){c.g=null;c.rows=null}S.msg=em(e);S.bad=1}c.busy=0;if(S.tab==4)admBuild()}
+function tab6(){const w=S.wh;
+  let h='<small style="display:block;color:#9fb5b0;margin-bottom:6px">귓속말은 7일 뒤 지워져요 · 닉네임으로 찾으면 그 유저가 주고받은 귓속말만 보고, 비우면 전체 최신이 나와요 · 열람 기록은 \'기록\' 탭에 남아요</small><div style="display:flex;gap:6px;align-items:center"><input id="ad-wq" maxlength="12" autocomplete="off" placeholder="닉네임 (비우면 전체 최신)" value="'+esc(w.q)+'" style="flex:1"><button class="ab ok" data-a="ad-wf">검색</button></div>';
+  if(w.cand){if(!w.cand.length)return h+'<div class="em2">찾는 유저가 없어요</div>';
+    return h+w.cand.map((u,i)=>'<div class="ui"><div><b>'+esc(nm(u))+'</b><small>Lv.'+fmt(u.lv)+' · STAGE '+fmt(u.stage)+'</small></div><button class="ab" data-a="ad-wo" data-i="'+i+'">귓속말 보기</button></div>').join('')}
+  if(w.uid)h+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 2px"><b>'+esc(w.uname)+' 님의 귓속말</b><button class="ab" data-a="ad-wb">◀ 전체</button></div>';
+  if(w.rows===null)return h+'<div class="em2">불러오는 중…</div>';
+  if(!w.rows.length)return h+'<div class="em2">귓속말이 없어요</div>';
+  return h+w.rows.map(r=>'<div style="padding:5px 0;border-top:1px solid #ffffff12;word-break:break-all"><small style="color:#6f8580">'+dt(r.at)+'</small> <b style="color:#e0b8ff;font-weight:400">'+esc(r.from_name)+' → '+esc(r.to_name)+'</b> '+esc(r.text)+'</div>').join('')
+    +(w.more?'<div style="margin-top:8px"><button class="ab" data-a="ad-wm"'+(w.busy?' disabled':'')+'>이전 귓속말 더 보기</button></div>':'')}
+async function whLoad(before){const w=S.wh;if(w.busy)return;w.busy=1;if(!before){w.rows=null;admBuild()}else admBuild();
+  try{const r=await rpc('admin_whisper_list',{p_uid:w.uid||null,p_with:null,p_before:before||null,p_limit:80}),rows=r||[];w.rows=(before?(w.rows||[]):[]).concat(rows);w.more=rows.length>=80;S.msg='';S.bad=0}
+  catch(e){if(!before)w.rows=[];S.msg=em(e);S.bad=1}w.busy=0;if(S.tab==6)admBuild()}
+async function whFind(){const w=S.wh,q=w.q.trim();if(w.busy)return;
+  if(!q){w.uid=null;w.uname='';w.cand=null;whLoad();return}
+  try{const r=await rpc('admin_find_users',{p_q:q,p_limit:10,p_offset:0});w.cand=r||[];S.msg='';S.bad=0;if(w.cand.length==1){whOpen(w.cand[0]);return}}
+  catch(e){w.cand=[];S.msg=em(e);S.bad=1}if(S.tab==6)admBuild()}
+function whOpen(u){const w=S.wh;w.uid=u.uid;w.uname=nm(u);w.cand=null;w.rows=null;whLoad()}
 function admBuild(){
   const old=ad.querySelector('.pn'),sc=old?old.scrollTop:0;
-  const tabs='<div class="sg">'+['유저','우편 발송','기록','문의','길드챗','의심'].map((n,i)=>'<button data-a="ad-t" data-v="'+i+'" class="'+(S.tab==i?'on':'')+'">'+n+(i==3&&S.iq.open?' '+S.iq.open:'')+'</button>').join('')+'</div>';
-  ad.innerHTML='<div class="pn wide"><h2>관리자</h2><div class="st">서버에서 관리자로 확인된 계정만 쓸 수 있어요</div>'+tabs+(S.tab==0?tab0():S.tab==1?tab1():S.tab==2?tab2():S.tab==3?tab3():S.tab==4?tab4():tab5())
+  const tabs='<div class="sg">'+['유저','우편 발송','기록','문의','길드챗','의심','귓속말'].map((n,i)=>'<button data-a="ad-t" data-v="'+i+'" class="'+(S.tab==i?'on':'')+'">'+n+(i==3&&S.iq.open?' '+S.iq.open:'')+'</button>').join('')+'</div>';
+  ad.innerHTML='<div class="pn wide"><h2>관리자</h2><div class="st">서버에서 관리자로 확인된 계정만 쓸 수 있어요</div>'+tabs+(S.tab==0?tab0():S.tab==1?tab1():S.tab==2?tab2():S.tab==3?tab3():S.tab==4?tab4():S.tab==6?tab6():tab5())
     +'<div class="msg" id="ad-m"></div><div class="mb bk"><button class="pri" data-a="ad-x">돌아가기</button></div></div>';
   const pn=ad.querySelector('.pn');if(old)pn.style.animation='none';pn.scrollTop=sc;msg(S.msg,S.bad)}
 const refocus=q=>{const e=ad.querySelector(q);if(e)e.focus({preventScroll:true})};
@@ -3040,11 +3099,15 @@ AF.ovAct=function(a,b){
   if(a=='ad-x'){closeOv('ad');return}if(a=='ml-x'){closeOv('ml');return}
   if(a=='ml-get'){mlGet(b.dataset.id);return}if(a=='ml-all'){mlAll();return}
   if(!AF.isAdmin)return;
-  if(a=='ad-t'){S.tab=+v||0;S.msg='';admBuild();refocus('button[data-a=ad-t].on');if(S.tab==2)loadLogs();if(S.tab==3)loadInq(S.iq.pg);if(S.tab==4&&S.gc.list===null)gcFind();if(S.tab==5&&S.sp.rows===null)loadSus(0);return}
+  if(a=='ad-t'){S.tab=+v||0;S.msg='';admBuild();refocus('button[data-a=ad-t].on');if(S.tab==2)loadLogs();if(S.tab==3)loadInq(S.iq.pg);if(S.tab==4&&S.gc.list===null)gcFind();if(S.tab==5&&S.sp.rows===null)loadSus(0);if(S.tab==6&&S.wh.rows===null)whLoad();return}
   if(a=='ad-sm'){S.sp.min=+v||1;S.sp.rows=null;admBuild();loadSus(0);return}
   if(a=='ad-sp'){loadSus(S.sp.pg+(+v||0));return}
   if(a=='ad-ss'){const u=S.sp.rows&&S.sp.rows[+b.dataset.i];if(u){S.sel=u;S.det=null;S.tab=0;S.msg='';admBuild();ad.querySelector('.pn').scrollTop=0;loadDet()}return}
   if(a=='ad-gf'){gcFind();return}
+  if(a=='ad-wf'){whFind();return}
+  if(a=='ad-wo'){const u=S.wh.cand&&S.wh.cand[+b.dataset.i];if(u)whOpen(u);return}
+  if(a=='ad-wb'){S.wh.uid=null;S.wh.uname='';S.wh.cand=null;S.wh.q='';S.wh.rows=null;S.msg='';admBuild();whLoad();return}
+  if(a=='ad-wm'){if(S.wh.rows&&S.wh.rows.length)whLoad(S.wh.rows[S.wh.rows.length-1].id);return}
   if(a=='ad-go'){const g=S.gc.list&&S.gc.list[+b.dataset.i];if(g)gcOpen(g);return}
   if(a=='ad-gb'){S.gc.g=null;S.gc.rows=null;S.msg='';admBuild();return}
   if(a=='ad-gm'){if(S.gc.g&&S.gc.rows&&S.gc.rows.length)gcOpen(S.gc.g,S.gc.rows[S.gc.rows.length-1].id);return}
@@ -3064,9 +3127,9 @@ AF.ovAct=function(a,b){
   if(a=='ad-u'){S.mail.u=+v?1:0;admBuild();refocus('button[data-a=ad-u].on');return}
   if(a=='ad-send'){doSend();return}
 };
-ad.addEventListener('input',e=>{const t=e.target;if(!t)return;if(t.id=='ad-q')S.q=t.value;else if(t.id=='ad-gq')S.gc.q=t.value;else if(t.id=='ad-r')S.ban.reason=t.value;else if(t.dataset&&t.dataset.iq)S.iq.dr[t.dataset.iq]=t.value;else if(t.dataset&&t.dataset.k)S.mail[t.dataset.k]=t.value});
+ad.addEventListener('input',e=>{const t=e.target;if(!t)return;if(t.id=='ad-q')S.q=t.value;else if(t.id=='ad-gq')S.gc.q=t.value;else if(t.id=='ad-wq')S.wh.q=t.value;else if(t.id=='ad-r')S.ban.reason=t.value;else if(t.dataset&&t.dataset.iq)S.iq.dr[t.dataset.iq]=t.value;else if(t.dataset&&t.dataset.k)S.mail[t.dataset.k]=t.value});
 /* 게임의 키 처리(맨 위 창만 반응)가 먼저 돌기 때문에, 검색창 Enter 는 같은 단계(window · capture)에서 따로 받아요 */
-addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.isComposing&&e.target&&(e.target.id=='ad-q'||e.target.id=='ad-gq')&&ad.classList.contains('on')){e.preventDefault();if(!e.repeat){if(e.target.id=='ad-gq')gcFind();else find()}}},true);
+addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.isComposing&&e.target&&(e.target.id=='ad-q'||e.target.id=='ad-gq'||e.target.id=='ad-wq')&&ad.classList.contains('on')){e.preventDefault();if(!e.repeat){if(e.target.id=='ad-gq')gcFind();else if(e.target.id=='ad-wq')whFind();else find()}}},true);
 
 /* ---------- 관리자 여부 · 새 우편 확인 ---------- */
 let chkId='';
