@@ -3645,14 +3645,14 @@ const AF=window.AF;if(!AF||!AF.gld)return;
 const GC={make:1000000,don:[30000,100000,300000]};/* 길드 만들기 · 소/중/대 기부 골드 — 모두에게 같은 고정 금액이에요 */
 const $=id=>document.getElementById(id),esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]),nf=n=>Math.floor(+n||0).toLocaleString('ko-KR');
 const U=/^[0-9a-f-]{36}$/i,RN={leader:'길장',officer:'부길장',member:'길드원'};
-const EM={auth:'로그인이 필요해요',banned:'이용이 제한된 계정이에요',in_guild:'이미 길드에 가입돼 있어요',cooldown:'탈퇴·추방 후 잠시 기다려야 해요',name:'길드 이름은 한글·영문·숫자 2~10자예요',dup:'이미 있는 길드 이름이에요',nogd:'없어진 길드예요',full:'정원이 가득 찼어요',dup_req:'이미 가입 신청을 했어요',req_user:'동시에 신청할 수 있는 길드는 3곳까지예요',req_guild:'이 길드는 대기 중인 신청이 가득 찼어요',forbidden:'권한이 없어요',noreq:'이미 처리된 신청이에요',no_guild:'길드에 가입돼 있지 않아요',self:'자기 자신에게는 할 수 없어요',nomember:'길드원을 찾을 수 없어요',officer_max:'부길장은 더 임명할 수 없어요',don_max:'오늘 기부 횟수를 모두 썼어요',len:'공지는 100자까지 쓸 수 있어요',tier:'기부 종류가 올바르지 않아요',role:'직책이 올바르지 않아요',mode:'가입 방식이 올바르지 않아요',closed:'공성전은 아직 준비 중이에요',sg_time:'지금은 변경할 수 없는 시간이에요',sg_slot:'자리가 올바르지 않아요',sg_dup:'이미 다른 자리에 배치된 길드원이에요',sg_young:'가입한 지 얼마 안 된 길드원은 배치할 수 없어요',sg_cp:'전투력 정보가 아직 없어요',sg_notowner:'성을 가진 길드만 받을 수 있어요'};
+const EM={auth:'로그인이 필요해요',banned:'이용이 제한된 계정이에요',in_guild:'이미 길드에 가입돼 있어요',cooldown:'탈퇴·추방 후 잠시 기다려야 해요',name:'길드 이름은 한글·영문·숫자 2~10자예요',dup:'이미 있는 길드 이름이에요',nogd:'없어진 길드예요',full:'정원이 가득 찼어요',dup_req:'이미 가입 신청을 했어요',req_user:'동시에 신청할 수 있는 길드는 3곳까지예요',req_guild:'이 길드는 대기 중인 신청이 가득 찼어요',forbidden:'권한이 없어요',noreq:'이미 처리된 신청이에요',no_guild:'길드에 가입돼 있지 않아요',self:'자기 자신에게는 할 수 없어요',nomember:'길드원을 찾을 수 없어요',officer_max:'부길장은 더 임명할 수 없어요',don_max:'오늘 기부 횟수를 모두 썼어요',len:'공지는 100자까지 쓸 수 있어요',tier:'기부 종류가 올바르지 않아요',role:'직책이 올바르지 않아요',mode:'가입 방식이 올바르지 않아요',closed:'공성전은 아직 준비 중이에요',sg_time:'지금은 변경할 수 없는 시간이에요',sg_slot:'자리가 올바르지 않아요',sg_dup:'이미 다른 관문에 참가 중이에요',sg_notest:'공개 상태에서는 쓸 수 없어요',sg_full:'이 관문은 자리가 다 찼어요. 다른 관문을 골라 주세요',sg_young:'가입한 지 얼마 안 된 길드원은 배치할 수 없어요',sg_cp:'전투력 정보가 아직 없어요',sg_notowner:'성을 가진 길드만 받을 수 있어요'};
 const em=e=>{const m=String(e&&e.message||'').trim(),c=String(e&&e.code||'');if(c==='PGRST202'||c==='42883'||/Could not find the function/i.test(m))return '길드 기능을 준비 중이에요';if(Object.prototype.hasOwnProperty.call(EM,m))return EM[m];if(c==='40P01')return '다른 요청과 겹쳤어요. 잠시 후 다시 시도해 주세요';if(c)return '요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요';return '서버에 연결하지 못했어요. 네트워크를 확인해 주세요'};
 const dur=s=>s>=3600?Math.ceil(s/3600)+'시간':Math.max(1,Math.ceil(s/60))+'분';
-const G={me:null,tab:'',msg:'',bad:0,busy:0,tok:0,list:null,q:'',more:0,roster:null,reqs:null,rank:null,mk:{name:'',mode:'free'},nt:'',sg:null,sgp:null};
-/* 공성전: 아직 준비 중이라 SIEGE_ON=false 면 탭도 호출도 모두 막혀요. 서버(siege_cfg.open)도 따로 닫혀 있어요 */
-const SIEGE_ON=false;AF.siegeOn=SIEGE_ON;/* 도크 버튼도 이 값을 따라가요 */
+const G={me:null,tab:'',msg:'',bad:0,busy:0,tok:0,list:null,q:'',more:0,roster:null,reqs:null,rank:null,mk:{name:'',mode:'free'},nt:'',sg:null,sgp:null,sgk:null};
+/* 공성전: 지금은 운영자만 열려요. 일반 유저는 탭도 호출도 막히고, 서버(siege_cfg.admin_only)도 따로 막아요. 전체 공개는 서버 admin_only=false 로 바꾸고 여기 sgOn 을 true 로 */
+const sgOn=()=>!!AF.isAdmin;Object.defineProperty(AF,'siegeOn',{get:sgOn,configurable:true});/* 도크 버튼도 이 값을 따라가요 */
 const SG_SLOTS=[['gate','성문','피해감소 +8%'],['tower','망루','치명타 +6%'],['wall','성벽','체력 +10%'],['barr','병영','흡혈 +5%'],['keep','본성','전체 +15%']];
-const sgRpc=(f,a)=>{if(!SIEGE_ON)return Promise.reject({message:'closed'});return rpc(f,a)};
+const sgRpc=(f,a)=>{if(!sgOn())return Promise.reject({message:'closed'});return rpc(f,a)};
 const rpc=async(f,a)=>{const r=await AF.sb.rpc(f,a||{});if(r.error)throw r.error;return r.data};
 const apply=m=>{const o=G.me&&G.me.in?G.me.id:0,n=m&&m.in?m.id:0;G.me=m;AF.gb=m&&m.in?(m.bonus|0):0;try{const C=AF.CHAT;if(C&&C.gdMode){if(o&&n&&o!==n)C.gdMode(false);C.gdMode(!!n)}}catch(e){}};
 const mkCost=()=>GC.make,donCost=i=>GC.don[i];
@@ -3682,7 +3682,7 @@ const css=document.createElement('style');css.textContent=`#gd{z-index:23;align-
 const gd=document.createElement('div');gd.className='ov';gd.id='gd';document.body.appendChild(gd);
 
 const tabs=()=>{const m=G.me;if(!m)return[];if(!m.in)return[['find','찾기'],['make','만들기'],['rank','랭킹']];
-  return[['info','정보'],['ros','길드원'],...(AF.isAdmin?[['find','이동']]:[]),...(m.role!=='member'?[['req','신청'+(m.reqn>0?' '+m.reqn:'')]]:[]),...(SIEGE_ON?[['siege','공성']]:[]),['rank','랭킹'],['set','설정']]};
+  return[['info','정보'],['ros','길드원'],...(AF.isAdmin?[['find','이동']]:[]),...(m.role!=='member'?[['req','신청'+(m.reqn>0?' '+m.reqn:'')]]:[]),...(sgOn()?[['siege','공성']]:[]),['rank','랭킹'],['set','설정']]};
 const cdNote=()=>G.me&&G.me.cd>0?'<div class="nt">탈퇴·추방 후 대기 중이에요 · '+dur(G.me.cd)+' 뒤에 가입하거나 만들 수 있어요</div>':'';
 
 const myReqs=()=>{const m=G.me,r=(m&&!m.in&&m.reqs)||[];if(!r.length)return'';const dd=(m.req_days||7)*864e5,now=Date.now();
@@ -3736,18 +3736,46 @@ const vSet=()=>{const m=G.me,off=m.role==='member';
   h+='<h3 style="color:#ff7a7a">탈퇴</h3><div class="or"><span style="color:#ff8a8a">길드 나가기<small style="color:#d97a7a">'+(m.role==='leader'?(m.n>1?'길장은 부길장 → 공헌도 높은 길드원 순으로 자동 위임돼요':'혼자 남은 길드는 해체돼요'):(AF.isAdmin?'관리자는 나간 뒤 대기시간이 없어요':'나간 뒤 한동안 다른 길드에 가입할 수 없어요'))+'</small></span><button class="tg dg" data-g="lv"'+(G.busy?' disabled':'')+'>탈퇴</button></div>';
   return h};
 
-const vSiege=()=>{if(!SIEGE_ON)return'<div class="em">공성전은 아직 준비 중이에요</div>';const S=G.sg;if(!S)return'<div class="em">불러오는 중…</div>';
+const sgRem=S=>{if(!S||!(S.ends_ms>0)||!(S.now_ms>0))return null;if(S._off==null)S._off=S.now_ms-Date.now();return S.ends_ms-(Date.now()+S._off)};
+const sgFmt=ms=>{const t=Math.max(0,Math.floor(ms/1000)),d=Math.floor(t/86400),h=Math.floor(t%86400/3600),m=Math.floor(t%3600/60),s=t%60;return(d?d+'일 ':'')+(d||h?h+'시간 ':'')+m+'분 '+(d?'':s+'초')};
+const sgLeft=S=>{const r=sgRem(S);return r==null?'':'<br>편성 마감까지 <b id="sgt">'+(r>0?sgFmt(r):'곧 마감돼요')+'</b>'};
+const sgLast=S=>{const l=S&&S.last;if(!l)return'';return'<br>지난주 결과: '+(l.captured?'성을 차지했어요':'성을 차지하지 못했어요')+(l.wins!=null?' ('+(l.wins|0)+'승)':'')};
+const sgEv=L=>{const ev=[],atk=!!L.atk;(L.bouts||[]).forEach(it=>{const mA=atk?!it.rev:false,my=mA?it.ag:it.bg,op=mA?it.bg:it.ag;ev.push({t:'g',s:it.s,my,op});(it.d||[]).forEach(d=>{const mn=mA?d.an:d.bn,on=mA?d.bn:d.an;ev.push({t:'d',mn,on,w:mA?!!d.w:!d.w})});ev.push({t:'r',s:it.s,gw:mA?!!it.w:!it.w,aw:mA?it.aw|0:it.dw|0,dw:mA?it.dw|0:it.aw|0})});return ev};/* 서버가 저장한 관문별 전투 기록을 우리 길드 시점으로 바꿔요 */
+const sgL=S=>G.sgd||(S&&S.last);/* 샘플 연출(운영자)이면 그 데이터를, 아니면 지난주 실제 결과를 써요 */
+const sgDemo=()=>{const nm=['검사','궁수','마법사','도적','성기사','사제'],b=[];for(let i=0;i<5;i++){const d=[];for(let j=0;j<3;j++){if(i===4&&j===2){d.push({an:nm[j]+'A',bn:null,w:true});continue}d.push({an:nm[(i+j)%6]+'A',bn:nm[(i+j+2)%6]+'B',w:((i*3+j)%3)!==1})}const aw=d.filter(x=>x.w).length;b.push({s:i,ag:'샘플 공격 길드',bg:'샘플 성주 길드',w:aw>=2,aw,dw:3-aw,d,rev:false})}return{atk:true,captured:b.filter(x=>x.w).length>=3,wins:b.filter(x=>x.w).length,ag:'샘플 공격 길드',bg:'샘플 성주 길드',mode:'def',bouts:b}};
+const sgRb=S=>{const L=sgL(S);if(!L||!Array.isArray(L.bouts)||!L.bouts.length)return'';return'<div class="or"><span>지난주 공성 결과<small>관문별 승패를 한 판씩 볼 수 있어요</small></span><button class="tg on" data-g="rp">'+'보기</button></div>'};
+const sgView=S=>{const L=sgL(S),ev=sgEv(L),n=Math.min(G.sgr.n,ev.length),done=n>=ev.length;let h='<h3>지난주 공성 결과<small>'+esc(L.ag||'')+' vs '+esc(L.bg||'')+'</small></h3>';
+  ev.slice(0,n).forEach(e=>{if(e.t==='g')h+='<div class="nt"><b>'+esc(SG_SLOTS[e.s][1])+'</b> · '+esc(e.my||'우리')+' vs '+esc(e.op||'상대')+'</div>';
+    else if(e.t==='d')h+='<div class="or"><span>'+esc(e.mn||'빈 자리')+' vs '+esc(e.on||'빈 자리')+'<small style="color:'+(e.w?'#8fe39a':'#ff9a8a')+'">'+(!e.mn||!e.on?(e.w?'부전승':'부전패'):(e.w?'승리':'패배'))+'</small></span></div>';
+    else h+='<div class="or"><span><b style="color:'+(e.gw?'#8fe39a':'#ff9a8a')+'">'+esc(SG_SLOTS[e.s][1])+(e.gw?' 점령':' 실패')+'</b><small>'+e.aw+' : '+e.dw+'</small></span></div>'});
+  if(done){const mine=ev.filter(e=>e.t==='r'&&e.gw).length;h+='<h3>결과<small>'+mine+'관문 승리</small></h3><div class="nt">'+(L.atk?(L.captured?'성을 차지했어요':'성을 차지하지 못했어요'):(L.captured?'성을 빼앗겼어요':'성을 지켜냈어요'))+'</div><button class="mo" data-g="rx">닫기</button>'}
+  else h+='<button class="mo" data-g="rs">건너뛰기</button>';return h};
+const sgReplay=()=>{const S=G.sg,L=sgL(S);if(!S||!L||!Array.isArray(L.bouts))return;G.sgr={n:0};if(G.sgt)clearInterval(G.sgt);G.sgt=setInterval(()=>{if(!G.sgr||!gd.classList.contains('on')||G.tab!=='siege'){clearInterval(G.sgt);G.sgt=0;return}G.sgr.n++;if(G.sgr.n>=sgEv(sgL(S)).length){clearInterval(G.sgt);G.sgt=0}draw()},900);draw()};
+const vSiege=()=>{if(!sgOn())return'<div class="em">공성전은 아직 준비 중이에요</div>';const S=G.sg;if(!S)return'<div class="em">불러오는 중…</div>';
   if(!S.open)return'<div class="em">공성전은 아직 준비 중이에요</div>';
-  const lead=G.me.role!=='member',lock=!!S.locked,can=lead&&!lock,own=!!S.mine_owner,
+  if(G.sgr&&sgL(S)&&Array.isArray(sgL(S).bouts))return sgView(S);
+  const lead=G.me.role!=='member',lock=!!S.locked,own=!!S.mine_owner,cap=(S.cap|0)||3,
     ow=S.owner?'<b style="color:#ffd98a">'+esc(S.owner)+'</b> 길드':'주인 없음';
-  if(G.sgp){const L=(G.roster||[]).filter(x=>U.test(x.uid));return'<h3>'+SG_SLOTS[G.sgp.i][1]+(G.sgp.k==='d'?' 방어':' 공략')+' 배치<small>길드원을 골라요</small></h3>'+(L.length?L.map(x=>'<div class="or"><span>'+esc(x.name)+'<small>Lv.'+(x.lv||'?')+'</small></span><button class="tg on" data-g="sp:'+x.uid+'"'+(G.busy?' disabled':'')+'>선택</button></div>').join(''):'<div class="em">배치할 수 있는 길드원이 없어요</div>')+'<button class="mo" data-g="sq">취소</button>'}
-  /* 서버는 배치된 자리만 {slot,name,cp} 로 주므로 자리 번호로 맞춰요 */
-  const by=k=>{const m={};(Array.isArray(S[k])?S[k]:[]).forEach(x=>{if(x&&x.slot!=null)m[x.slot]=x});return m},mk=by(own?'def':'atk'),cnt=Object.keys(mk).length;
   const SL=o=>[['c','월드보스 코인'],['rr','재굴림 쿠폰'],['mu','탈것 강화권'],['dg','던전 입장권']].filter(([k])=>+o[k]>0).map(([k,n])=>n+' +'+o[k]).join(' · ');
   const sup=own&&S.sup?'<h3>성주 보급품<small>성을 지키는 동안 매일 한 번</small></h3><div class="or"><span>오늘의 보급 상자<small>'+(SL(S.sup)||'받을 수 있는 게 없어요')+(S.sup.young?' · 가입한 지 얼마 안 됐어요':'')+'</small></span><button class="tg on" data-g="sup"'+(G.busy||S.sup.got||S.sup.young?' disabled':'')+'>'+(S.sup.got?'받았어요':'받기')+'</button></div>':'';
-  let h='<div class="nt">이번 주 성 주인: '+ow+' · 마감 '+esc(S.ends||'')+'<br>'+(own?'우리 길드가 성을 지키고 있어요. 방어를 배치해 주세요':S.owner?'성 주인 길드를 공략해요. 5자리 중 3자리에서 이기면 성을 차지해요':'성 주인이 없는 첫 주예요. 공격을 편성한 길드끼리 대결해요 (한 곳뿐이면 NPC와 싸워요)')+'<br>마감 시점의 전투 정보로 서버가 한 번에 판정해요'+(lock?'<br><b style="color:#ff9a8a">편성이 마감됐어요</b>':'')+'</div>'
-    +sup+'<h3>'+(own?'방어 배치':'공격 편성')+'<small>'+cnt+'/5 · '+(lock?'마감됐어요':lead?'길장·부길장이 정해요':'길장·부길장만 바꿀 수 있어요')+'</small></h3>';
-  SG_SLOTS.forEach(([k,n,b],i)=>{const x=mk[i];h+='<div class="or"><span>'+n+(own?'':' 공략')+'<small>'+(own?b+' · ':'')+(x?esc(x.name)+' · 전투력 '+nf(x.cp):'비어 있음')+'</small></span>'+(can?'<button class="tg on" data-g="'+(own?'sd':'sa')+':'+i+'"'+(G.busy?' disabled':'')+'>'+(x?'변경':'배치')+'</button>':'')+'</div>'});
+  /* 서버는 배치된 사람을 {slot,pos,uid,me,name,cp} 로 주므로 관문 번호별로 묶어요 */
+  const list=(Array.isArray(own?S.def:S.atk)?(own?S.def:S.atk):[]).filter(x=>x&&x.slot!=null);
+  const by={};list.forEach(x=>{(by[x.slot]=by[x.slot]||[]).push(x)});
+  const mine=list.find(x=>x.me),total=list.filter(x=>x.ok!==false).length,
+    open=SG_SLOTS.filter((_,i)=>!(by[i]||[]).some(x=>x.ok!==false)).length,
+    held=SG_SLOTS.length-open;
+  let h='<div class="nt">이번 주 성 주인: '+ow+' · 마감 '+esc(S.ends||'')+'<br>'+(own?'우리 길드가 성을 지키고 있어요. 길드원이 각자 지킬 관문을 골라요':S.owner?'성 주인 길드를 공략해요. 길드원이 각자 공략할 관문을 골라요. 5관문 중 3관문에서 이기면 성을 차지해요':'성 주인이 없어요. 공격을 편성한 길드가 2곳 이상이면 길드끼리 대결해서 가장 많이 이긴 길드가 성을 차지해요 (한 곳뿐이면 성주가 정해지지 않아요)')
+    +'<br>관문마다 최대 '+cap+'명이 순서대로 1:1로 싸우고, 이긴 판이 많은 쪽이 관문을 가져가요. 마감 시점의 전투 정보로 서버가 한 번에 판정해요'
+    +(S.join_c>0?'<br>대결이 열리면 참가한 길드원은 결과 우편으로 월드보스 코인 +'+(S.join_c|0)+'을 받아요':'')
+    +(lock?'<br><b style="color:#ff9a8a">편성이 마감됐어요</b>':sgLeft(S))+sgLast(S)
+    +(!lock&&own&&open>0?'<br><b style="color:#ffb84a">사람이 없는 관문은 상대가 바로 이겨요 ('+open+'곳 비어 있어요)</b>':'')
+    +(!lock&&!own&&held<3?'<br><b style="color:#ffb84a">3관문 이상에 사람이 있어야 공성에 참가한 것으로 인정돼요'+(S.owner?' (3관문을 이겨야 성을 차지해요)':'')+'</b>':'')+'</div>'
+    +sgRb(S)+'<div class="or"><span>샘플 연출 보기<small>운영자 전용 · 가짜 데이터로 결과 화면을 미리 봐요</small></span><button class="tg" data-g="rd">보기</button></div>'+'<div class="or"><span>테스트 도구<small>운영자 전용 · 지금 바로 판정하거나 이번 주 기록을 지워요</small></span><button class="tg on" data-g="at"'+(G.busy?' disabled':'')+'>즉시 판정</button><button class="tg" data-g="ar"'+(G.busy?' disabled':'')+'>초기화</button></div>'+sup+'<h3>'+(own?'방어 배치':'공격 편성')+'<small>'+total+'명 참가 · '+(lock?'마감됐어요':mine?'내 관문: '+SG_SLOTS[mine.slot][1]:'내가 싸울 관문을 골라요')+'</small></h3>';
+  SG_SLOTS.forEach(([k,n,b],i)=>{const xs=by[i]||[],full=xs.length>=cap,inMe=mine&&mine.slot===i;
+    h+='<div class="or"><span>'+n+(own?'':' 공략')+'<small>'+(own?b+' · ':'')+xs.length+'/'+cap+'명'+(inMe?' · <b style="color:#8fd3ff">내가 참가 중</b>':'')+'</small></span>'
+      +(lock?'':inMe?'<button class="tg" data-g="sl"'+(G.busy?' disabled':'')+'>빠지기</button>':'<button class="tg on" data-g="sj:'+i+'"'+(G.busy||full?' disabled':'')+'>'+(full?'가득 참':mine?'여기로 이동':'참가')+'</button>')+'</div>';
+    xs.forEach(x=>{h+='<div class="or"><span style="padding-left:12px">'+esc(x.name)+(x.me?' (나)':'')+'<small>'+(x.ok===false?'<b style="color:#ff9a8a">지금은 빈 자리예요 (탈퇴했거나 전투 정보 없음)</b> · ':'')+'전투력 '+nf(x.cp)+(x.cur!=null&&+x.cur!==+x.cp?' · <span style="color:#ffb84a">지금 '+nf(x.cur)+'</span>':'')+'</small></span>'
+      +(lead&&!lock&&!x.me&&U.test(x.uid||'')?'<button class="tg" data-g="sk:'+x.uid+'"'+(G.busy?' disabled':'')+'>제외</button>':'')+'</div>'})});
   return h};
 const BODY={find:vFind,make:vMake,info:vInfo,ros:vRos,req:vReq,rank:vRank,set:vSet,siege:vSiege};
 const tabOk=()=>{const t=tabs();return !G.me||!t.length||t.some(x=>x[0]===G.tab)};
@@ -3759,15 +3787,17 @@ function draw(){const bd=gd.querySelector('.bd'),sp=bd?bd.scrollTop:0,m=G.me;if(
 const say=(t,bad)=>{G.msg=t;G.bad=bad?1:0};
 const settle=()=>{if(tabOk())draw();else{G.list=null;G.roster=G.reqs=G.rank=null;tabTo(tabs()[0][0])}};
 async function refresh(){if(!gd.classList.contains('on'))return;try{apply(await rpc('guild_me'))}catch(e){return}if(gd.classList.contains('on'))settle()}
-const fail=e=>{say(em(e),1);if(/^(no_guild|forbidden|nogd|nomember)$/.test(String(e&&e.message||'').trim()))refresh()};
+const sgRef=()=>{if(!sgOn())return;sgRpc('siege_state').then(s=>{G.sg=s;if(gd.classList.contains('on')&&G.tab==='siege')draw()}).catch(()=>{})};
+const sgOwnerNote=S=>{try{if(!S||!S.open)return;const k='af_sg_owner',v=S.owner||'',o=localStorage.getItem(k);localStorage.setItem(k,v);if(o!==null&&o!==v)tst(v?'이번 주 성 주인은 '+v+' 길드예요':'성 주인이 없어졌어요')}catch(e){}};
+const fail=e=>{const c=String(e&&e.message||'').trim();if(/^sg_/.test(c)){if(/^(sg_time|sg_slot)$/.test(c)){G.sgp=null;G.sgk=null}sgRef()}say(em(e),1);if(/^(no_guild|forbidden|nogd|nomember)$/.test(String(e&&e.message||'').trim()))refresh()};
 
-async function tabTo(t){const k=++G.tok;G.tab=t;say('');draw();
+async function tabTo(t){const k=++G.tok;G.tab=t;G.sgr=null;G.sgd=null;G.sgp=null;G.sgk=null;say('');draw();
   try{if(t==='find'&&G.list===null)await loadList(0);
     else if(t==='ros')G.roster=await rpc('guild_roster');
     else if(t==='req')G.reqs=await rpc('guild_reqs');
     else if(t==='rank')G.rank=await rpc('guild_rank');
     else if(t==='set')G.nt=G.me.notice||'';
-    else if(t==='siege'&&SIEGE_ON)G.sg=await sgRpc('siege_state')}catch(e){if(k===G.tok)fail(e)}
+    else if(t==='siege'&&sgOn()){G.sg=await sgRpc('siege_state');if(k===G.tok)sgOwnerNote(G.sg)}}catch(e){if(k===G.tok)fail(e)}
   if(k===G.tok)draw()}
 let sq=0;
 async function loadList(off){const s=sq,d=await rpc('guild_list',{p_q:G.q.trim()||null,p_off:off});if(s!==sq)return;G.list=off?(G.list||[]).concat(d):d;G.more=d.length>=20}
@@ -3775,9 +3805,10 @@ async function run(f){if(G.busy)return;G.busy=1;say('');draw();try{await f()}cat
 
 async function open(tab){G.tok++;gd.classList.add('on');G.me=null;G.tab='';G.list=null;G.roster=G.reqs=G.rank=G.sg=G.sgp=null;say('');draw();
   try{apply(await rpc('guild_me'))}catch(e){fail(e);draw();return}
-  await tabTo(G.me.in?((tab==='siege'&&SIEGE_ON)?'siege':'info'):'find');
+  if(tab==='siege'&&sgOn()&&!G.me.in)tst('길드에 가입하면 공성전에 참여할 수 있어요');
+  await tabTo(G.me.in?((tab==='siege'&&sgOn())?'siege':'info'):'find');
   if(G.me&&G.me.in){try{const r=await rpc('guild_act');apply(r);if(r.got>0)say('오늘의 활동 공헌도 +'+r.got);if(G.tab==='info')draw()}catch(e){}}}
-function close(){G.tok++;gd.classList.remove('on');gd.innerHTML=''}
+function close(){G.tok++;G.sgr=null;G.sgd=null;G.sgp=null;G.sgk=null;gd.classList.remove('on');gd.innerHTML=''}
 AF.openGd=open;AF.gdTag=()=>G.me&&G.me.in?{n:G.me.name,l:G.me.lv}:null;
 
 const search=()=>{const i=$('gq');if(i)G.q=i.value;sq++;G.list=null;draw();loadList(0).then(()=>draw(),e=>{fail(e);G.list=[];draw()})};
@@ -3818,11 +3849,13 @@ const leave=async()=>{const m=G.me;if(!await afAsk(m.role==='leader'&&m.n<=1?'�
 gd.addEventListener('click',e=>{if(e.target===gd&&dn===gd){close();return}const b=e.target.closest('[data-g]');if(!b||b.disabled)return;const[a,p,q]=b.dataset.g.split(':');
   if(a==='x')close();else if(a==='tab')tabTo(p);else if(a==='q')search();else if(a==='more')more();else if(a==='j')join(+p);else if(a==='cx')cancel(+p);else if(a==='am')adminMove(+p);
   else if(a==='md'){G.mk.mode=G.mk.mode=='free'?'approve':'free';draw()}else if(a==='mk')make();else if(a==='d')donate(+p);else if(a==='act')actNow();
-  else if(a==='r')role(p,q);else if(a==='k')kick(p);else if(a==='ok')decide(p,true);else if(a==='no')decide(p,false);else if(a==='sv')saveNote();else if(a==='sm')setMode();else if(a==='lv')leave();else if(a==='sd')sgPick('d',+p);else if(a==='sa')sgPick('a',+p);else if(a==='sp')sgSet(p);else if(a==='sup')supClaim();else if(a==='sq'){G.sgp=null;draw()}});
-const supClaim=()=>{if(!SIEGE_ON)return;run(async()=>{const r=await sgRpc('siege_supply_claim');if(r&&!r.done){const l=AF.attendGrant?AF.attendGrant(r,'성주 보급'):[];say(l.length?'받았어요: '+l.join(' · '):'받았어요')}else say('오늘은 이미 받았어요');G.sg=await sgRpc('siege_state');try{if(AF.atdRefresh)AF.atdRefresh()}catch(e){}})};
-const sgPick=(kind,i)=>{if(!SIEGE_ON||G.busy)return;run(async()=>{G.roster=await rpc('guild_roster');G.sgp={k:kind,i}})};/* 열 때마다 길드원 목록을 새로 받아요 */
-const sgSet=uid=>{if(!SIEGE_ON||!G.sgp||!U.test(uid))return;const q=G.sgp;
-  run(async()=>{G.sg=await sgRpc(q.k==='d'?'siege_set_def':'siege_set_atk',{p_slot:q.i,p_uid:uid});G.sgp=null;say('배치했어요')})};/* 실패하면 선택 창을 그대로 두고 이유만 보여줘요 */
+  else if(a==='r')role(p,q);else if(a==='k')kick(p);else if(a==='ok')decide(p,true);else if(a==='no')decide(p,false);else if(a==='sv')saveNote();else if(a==='sm')setMode();else if(a==='lv')leave();else if(a==='sj')sgJoin(+p);else if(a==='sl')sgLeave();else if(a==='sk')sgKick(p);else if(a==='rp')sgReplay();else if(a==='at')sgTest('admin_siege_resolve');else if(a==='ar')sgTest('admin_siege_reset');else if(a==='rd'){G.sgd=sgDemo();sgReplay()}else if(a==='rs'){if(G.sgr&&G.sg&&sgL(G.sg))G.sgr.n=sgEv(sgL(G.sg)).length;draw()}else if(a==='rx'){G.sgr=null;G.sgd=null;draw()}else if(a==='sup')supClaim()});
+const supClaim=()=>{if(!sgOn())return;run(async()=>{const r=await sgRpc('siege_supply_claim');if(!r)throw{message:'server'};if(!r.done){const l=AF.attendGrant?AF.attendGrant(r,'성주 보급'):[];say(l.length?'받았어요: '+l.join(' · '):'받았어요')}else say('오늘은 이미 받았어요');G.sg=await sgRpc('siege_state');try{if(AF.atdRefresh)AF.atdRefresh()}catch(e){}})};
+const sgJoin=i=>{if(!sgOn()||G.busy||!(i>=0&&i<5))return;run(async()=>{G.sg=await sgRpc('siege_join',{p_slot:i});say('참가했어요')})};/* 길드원이 직접 관문을 골라요. 같은 주에 한 관문만 가능해서 다른 관문을 누르면 옮겨져요 */
+const sgTest=async f=>{if(!sgOn()||G.busy)return;const rs=f==='admin_siege_resolve';if(!await afAsk(rs?'지금 바로 이번 주 공성전을 판정할까요?\n성주가 바뀌고 참가자에게 결과 우편이 가요. 끝나면 초기화로 되돌릴 수 있어요.':'이번 주 공성전 배치와 결과, 성주 변경, 결과 우편을 모두 지울까요?\n이미 받은 보상은 회수되지 않아요.'))return;
+  run(async()=>{const r=await rpc(f);G.sg=await sgRpc('siege_state');say(rs?(r&&r.skipped?'판정하지 않았어요 ('+r.skipped+')':'판정했어요. 위의 지난주 결과에서 확인해요'):'초기화했어요')})};/* 운영자 전용 테스트 도구. 서버가 운영자 전용 모드일 때만 허용해요 */
+const sgLeave=()=>{if(!sgOn()||G.busy)return;run(async()=>{G.sg=await sgRpc('siege_leave');say('빠졌어요')})};
+const sgKick=uid=>{if(!sgOn()||G.busy||!U.test(uid))return;run(async()=>{G.sg=await sgRpc('siege_kick',{p_uid:uid});say('제외했어요')})};/* 길장·부길장만 가능, 서버가 한 번 더 확인해요 */
 let dn=null;gd.addEventListener('pointerdown',e=>{dn=e.target===gd?gd:null},true);
 gd.addEventListener('input',e=>{const t=e.target;if(t.id==='gq')G.q=t.value;else if(t.id==='gn')G.mk.name=t.value;else if(t.id==='gt')G.nt=t.value});
 gd.addEventListener('keydown',e=>{if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){e.stopPropagation();if(e.key==='Enter'&&e.target.id==='gq'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();search()}}});
@@ -3844,6 +3877,7 @@ const sync=async()=>{if(!AF.sb||!AF.user||document.hidden)return;const o=G.me;le
     if(gd.classList.contains('on')&&(ch||!tabOk()))settle()}catch(e){}};
 addEventListener('af-user',()=>{AF.gb=0;G.me=null;try{AF.CHAT&&AF.CHAT.gdMode&&AF.CHAT.gdMode(false)}catch(e){}G.list=null;G.roster=G.reqs=G.rank=null;if(gd.classList.contains('on'))close();if(AF.user)setTimeout(sync,3000)});
 setInterval(sync,600000);setTimeout(sync,6000);
+let sgFin=0;setInterval(()=>{if(!sgOn()||!gd.classList.contains('on')||G.tab!=='siege'||!G.sg||G.sg.locked)return;const r=sgRem(G.sg);if(r==null)return;const el=document.getElementById('sgt');if(el)el.textContent=r>0?sgFmt(r):'곧 마감돼요';if(r<=0&&Date.now()-sgFin>5000){sgFin=Date.now();sgRef()}},1000);
 })();
 </script>
 <script>/* ===== 출석체크 ===== */
