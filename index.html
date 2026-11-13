@@ -1921,7 +1921,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026111301',d:'11/13',t:['길드 공성전이 열려요 — 11월 18일(수) 12시부터 길드 창의 [공성] 탭에서 5개 관문에 길드원을 배치할 수 있어요 (관문당 3명)','첫 공성은 11월 22일(일) 21시에 결판나요 — 배치는 그때까지 바꿀 수 있고, 길드에 가입한 지 72시간이 지난 길드원만 배치할 수 있어요','성을 차지한 길드는 매일 성주 보급품을 받고 골드·드랍이 늘어나요 — 성은 매주 일요일 21시에 새로 겨뤄요']},
+{v:'2026111301',d:'11/13',t:['길드 공성전이 열려요 — 11월 18일(수) 12시부터 길드 창의 [공성] 탭에서 5개 관문에 길드원을 배치할 수 있어요 (관문당 3명)','첫 공성은 11월 22일(일) 21시에 결판나요 — 배치는 그때까지 바꿀 수 있고, 길드에 가입한 지 24시간이 지난 길드원만 배치할 수 있어요','성을 차지한 길드는 매일 성주 보급품을 받고 골드·드랍이 늘어나요 — 성은 매주 일요일 21시에 새로 겨뤄요']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
 function pmark(){try{localStorage.setItem(PSK,PATCH[0].v)}catch(e){}document.body.classList.remove('pnew')}
@@ -3648,7 +3648,7 @@ const em=e=>{const m=String(e&&e.message||'').trim(),c=String(e&&e.code||'');if(
 const dur=s=>s>=3600?Math.ceil(s/3600)+'시간':Math.max(1,Math.ceil(s/60))+'분';
 const G={me:null,tab:'',msg:'',bad:0,busy:0,tok:0,list:null,q:'',more:0,roster:null,reqs:null,rank:null,mk:{name:'',mode:'free'},nt:'',sg:null,sgp:null,sgk:null};
 /* 공성전: 지금은 운영자만 열려요. 일반 유저는 탭도 호출도 막히고, 서버(siege_cfg.admin_only)도 따로 막아요. 전체 공개는 서버 admin_only=false 로 바꾸고 여기 sgOn 을 true 로 */
-let SG_PUB=false;const sgOn=()=>!!AF.isAdmin||SG_PUB;/* SG_PUB: 서버(siege_public)가 '전체 공개'라고 알려주면 true. 공개는 서버 admin_only 만 바꾸면 돼요 */const SG_PRE=true,SG_FIRST='11월 22일(일) 21:00',SG_OPEN='11월 18일(수)',SG_JOIN='11월 19일(목) 21:00';const SG_REW={join:'월드보스 코인 3개',day:'월드보스 코인 15 · 재굴림 쿠폰 3',wk:'탈것 강화권 2 · 던전 입장권 2',buf:'골드 획득 +10% · 아이템 드랍률 +10%'};/* 보상 수량은 서버 siege_cfg(join_c, sup_c, sup_rr, wk_mu, wk_dg)와 맞춰서 바꿔요 *//* SG_PRE: 일반 유저는 공성 버튼으로 '안내 창'만 열려요(서버 호출 없음). 전체 공개 때는 sgOn 을 true 로 바꾸고 SG_PRE 는 false 로 */Object.defineProperty(AF,'siegeOn',{get:()=>sgOn()||SG_PRE,configurable:true});/* 도크 버튼도 이 값을 따라가요 */
+let SG_PUB=false;const sgOn=()=>!!AF.isAdmin||SG_PUB;/* SG_PUB: 서버(siege_public)가 '전체 공개'라고 알려주면 true. 공개는 서버 admin_only 만 바꾸면 돼요 */const SG_PRE=true,SG_FIRST='11월 22일(일) 21:00',SG_OPEN='11월 18일(수)',SG_JOIN='11월 21일(토) 21:00';const SG_REW={join:'월드보스 코인 3개',day:'월드보스 코인 15 · 재굴림 쿠폰 3',wk:'탈것 강화권 2 · 던전 입장권 2',buf:'골드 획득 +10% · 아이템 드랍률 +10%'};/* 보상 수량은 서버 siege_cfg(join_c, sup_c, sup_rr, wk_mu, wk_dg)와 맞춰서 바꿔요 *//* SG_PRE: 일반 유저는 공성 버튼으로 '안내 창'만 열려요(서버 호출 없음). 전체 공개 때는 sgOn 을 true 로 바꾸고 SG_PRE 는 false 로 */Object.defineProperty(AF,'siegeOn',{get:()=>sgOn()||SG_PRE,configurable:true});/* 도크 버튼도 이 값을 따라가요 */
 const SG_SLOTS=[['gate','성문','피해감소 +8%'],['tower','망루','치명타 +6%'],['wall','성벽','체력 +10%'],['barr','병영','흡혈 +5%'],['keep','본성','전체 +15%']];
 AF.cb={g:0,d:0};/* 성주 길드원 버프(비율). 골드 획득 · 아이템 드랍률에 더해져요. 성주가 바뀌면 다음 갱신 때 빠져요 */
 const cbRef=async()=>{try{if(!AF.user||!(G.me&&G.me.in)){AF.cb={g:0,d:0};return}const r=await rpc('siege_buff');if(!r)return;const f=v=>Math.max(0,Math.min(.5,(+v||0)/100));AF.cb={g:f(r.g),d:f(r.d)}}catch(e){}};
@@ -3697,7 +3697,7 @@ const csView=()=>{const D=CSX.d;let h='<div class="pn"><div class="csh"><b>'+esc
     +'<h3 class="csk">첫 공성<small>준비 중</small></h3>'+R('배치 기간',SG_OPEN+' ~ 22일(일) 21:00')+R('첫 판정','마감 직후 자동')
     +'<h3 class="csk">배치</h3>'
     +'<div class="csn">길드원이 직접 5개 관문(성문·망루·성벽·병영·본성) 중 한 곳에 배치해요. 한 주에 한 관문만 되고, 다른 관문을 누르면 옮겨져요. 관문마다 최대 3명이고, 싸우는 순번은 그 관문에 먼저 들어온 순서예요. 길드에 가입해 있어야 참가할 수 있고, 마감 전까지는 바꾸거나 뺄 수 있어요.</div>'
-    +'<div class="csn">가입한 지 72시간이 지나야 해요. 이번 첫 공성은 '+SG_JOIN+'까지 길드에 가입해 있어야 배치할 수 있어요. 그리고 최근 14일 안에 게임을 저장한 기록(전투 정보)이 있어야 해요. 판정 때는 그 시점의 능력치로 싸워서, 마감 뒤 판정 전까지의 성장도 반영돼요. 길드를 나가면 배치에서 빠지고, 다른 길드로 옮기면 72시간을 다시 기다려야 해요.</div>'
+    +'<div class="csn">가입한 지 24시간이 지나야 해요. 이번 첫 공성은 '+SG_JOIN+'까지 길드에 가입해 있어야 배치할 수 있어요. 그리고 최근 14일 안에 게임을 저장한 기록(전투 정보)이 있어야 해요. 판정 때는 그 시점의 능력치로 싸워서, 마감 뒤 판정 전까지의 성장도 반영돼요. 길드를 나가면 배치에서 빠지고, 다른 길드로 옮기면 24시간을 다시 기다려야 해요.</div>'
     +'<div class="csn">성주 길드원도 같은 방식으로 관문에 배치해서 성을 지켜요. 길드장과 부길장은 배치를 제외할 수 있어요.</div>'
     +'<div class="csn">배치는 일요일 21:00에 마감되고, 곧바로 자동 판정돼요. 결과는 우편으로 오고, 성 화면에서 관문별 전투를 다시 볼 수 있어요.</div>'
     +'<details class="csd"><summary>전투 방식<small>눌러서 보기</small></summary>'
@@ -3713,7 +3713,7 @@ const csView=()=>{const D=CSX.d;let h='<div class="pn"><div class="csh"><b>'+esc
     +'<h3 class="csk">보상</h3>'
     +R('참가 보상',SG_REW.join)+R('성주 보급품 (매일 1회)',SG_REW.day)+R('성주 보급품 (주 1회 추가)',SG_REW.wk)+R('성주 길드원 버프',SG_REW.buf)
     +'<div class="csn">참가 보상은 대결이 실제로 열렸고 3관문 이상에 사람이 있는 길드가 받아요. 공격과 방어 모두 같고, 3관문 미만이면 없어요. 결과 우편은 14일 안에 받아 가세요.</div>'
-    +'<div class="csn">성을 차지한 길드는 다음 주 월요일부터 길드원이 성주 보급품과 버프를 받아요. (가입 72시간 이후) 성을 빼앗기면 그 주 월요일부터 버프는 새 성주 길드에게 넘어가요. 버프는 접속 중에 10분 안팎으로 갱신돼요.</div>'
+    +'<div class="csn">성을 차지한 길드는 다음 주 월요일부터 길드원이 성주 보급품과 버프를 받아요. (가입 24시간 이후) 성을 빼앗기면 그 주 월요일부터 버프는 새 성주 길드에게 넘어가요. 버프는 접속 중에 10분 안팎으로 갱신돼요.</div>'
     +'<details class="csd"><summary>관문 효과<small>성주 방어 때만</small></summary>'+SG_SLOTS.map(x=>R(x[1],x[2])).join('')
     +'<div class="csn">성주 길드가 성을 지킬 때만 해당 관문에서 적용돼요. 성주가 없는 주의 길드 대결에는 없어요.</div>'
     +'</details>'
