@@ -1921,7 +1921,7 @@ const pt=$('div','ov');pt.id='pt';document.body.append(pt);
    · t 는 유저가 알아볼 변화만 2~4줄 (내부 코드 정리·버그 원인 설명은 빼요) · 같은 날 또 패치하면 같은 항목에 줄을 더하고 v 만 올려요
    · 오래된 항목은 10개쯤 넘으면 아래에서부터 지워요 */
 const PATCH=[
-{v:'2026111301',d:'11/13',t:['길드 공성전이 열려요 — 11월 18일(수) 12시부터 길드 창의 [공성] 탭에서 5개 관문에 길드원을 배치할 수 있어요 (관문당 3명)','첫 공성은 11월 22일(일) 21시에 결판나요 — 배치는 그때까지 바꿀 수 있고, 길드에 가입한 지 24시간이 지난 길드원만 배치할 수 있어요','성을 차지한 길드는 매일 성주 보급품을 받고 골드·드랍이 늘어나요 — 성은 매주 일요일 21시에 새로 겨뤄요']},
+{v:'2026111302',d:'11/13',t:['길드 공성전이 열려요 — 11월 18일(수) 12시부터 길드 창의 [공성] 탭에서 5개 관문에 길드원을 배치할 수 있어요 (관문당 3명)','첫 공성은 11월 22일(일) 21시에 결판나요 — 배치는 그때까지 바꿀 수 있고, 길드에 가입한 지 24시간이 지난 길드원만 배치할 수 있어요','성을 차지한 길드는 매일 성주 보급품을 받고 골드·드랍이 늘어나요 — 성은 매주 일요일 21시에 새로 겨뤄요','일요일 12시에 참가 길드와 관문별 인원수가 공개돼요 — 상대 배치를 보고 마감 전까지 배치를 바꿔 대응할 수 있어요 (개인 이름·전투력은 공개되지 않아요)']},
 ];
 const PSK='ashen_pseen',pgot=()=>{try{return localStorage.getItem(PSK)||''}catch(e){return ''}};
 function pmark(){try{localStorage.setItem(PSK,PATCH[0].v)}catch(e){}document.body.classList.remove('pnew')}
@@ -3696,7 +3696,7 @@ const csView=()=>{const D=CSX.d;let h='<div class="pn"><div class="csh"><b>'+esc
     return h+'<div class="csa">'+csArt(false)+'<div class="csl"><small>성주</small><b class="no">주인 없음</b><small>첫 공성 · '+SG_FIRST+' 마감</small></div></div><div class="csb">'
     +'<h3 class="csk">첫 공성<small>준비 중</small></h3>'+R('배치 기간',SG_OPEN+' ~ 22일(일) 21:00')+R('첫 판정','마감 직후 자동')
     +'<h3 class="csk">배치</h3>'
-    +'<div class="csn">길드원이 직접 5개 관문(성문·망루·성벽·병영·본성) 중 한 곳에 배치해요. 한 주에 한 관문만 되고, 다른 관문을 누르면 옮겨져요. 관문마다 최대 3명이고, 싸우는 순번은 그 관문에 먼저 들어온 순서예요. 길드에 가입해 있어야 참가할 수 있고, 마감 전까지는 바꾸거나 뺄 수 있어요.</div>'
+    +'<div class="csn">길드원이 직접 5개 관문(성문·망루·성벽·병영·본성) 중 한 곳에 배치해요. 한 주에 한 관문만 되고, 다른 관문을 누르면 옮겨져요. 관문마다 최대 3명이고, 싸우는 순번은 그 관문에 먼저 들어온 순서예요. 길드에 가입해 있어야 참가할 수 있고, 마감 전까지는 바꾸거나 뺄 수 있어요.</div>'     +'<div class="csn">마감 9시간 전(일요일 12:00)에 참가 길드와 관문별 인원수가 한 번 공개돼요. 개인 이름과 전투력은 공개되지 않고, 공개 뒤에도 마감 전까지 배치를 바꿀 수 있어요.</div>'
     +'<div class="csn">가입한 지 24시간이 지나야 해요. 이번 첫 공성은 '+SG_JOIN+'까지 길드에 가입해 있어야 배치할 수 있어요. 그리고 최근 14일 안에 게임을 저장한 기록(전투 정보)이 있어야 해요. 판정 때는 그 시점의 능력치로 싸워서, 마감 뒤 판정 전까지의 성장도 반영돼요. 길드를 나가면 배치에서 빠지고, 다른 길드로 옮기면 24시간을 다시 기다려야 해요.</div>'
     +'<div class="csn">성주 길드원도 같은 방식으로 관문에 배치해서 성을 지켜요. 길드장과 부길장은 배치를 제외할 수 있어요.</div>'
     +'<div class="csn">배치는 일요일 21:00에 마감되고, 곧바로 자동 판정돼요. 결과는 우편으로 오고, 성 화면에서 관문별 전투를 다시 볼 수 있어요.</div>'
@@ -3825,7 +3825,15 @@ const sgView=S=>{const L=sgL(S),ev=sgEv(L),R=G.sgr,n=Math.min(R.n,ev.length),don
   if(done){const mine=ev.filter(e=>e.t==='r'&&e.gw).length;h+='<h3>결과<small>'+mine+'관문 승리</small></h3><div class="nt">'+(L.atk?(L.captured?'성을 차지했어요':'성을 차지하지 못했어요'):(L.captured?'성을 빼앗겼어요':'성을 지켜냈어요'))+'</div><button class="mo" data-g="rx">닫기</button>'}
   else h+='<div style="display:flex;gap:6px"><button class="mo" style="flex:1;width:auto" data-g="rv">속도 ×'+(R.sp===2?2:1)+'</button><button class="mo" style="flex:1;width:auto" data-g="rs">건너뛰기</button></div>';return h};
 const sgRun=()=>{if(G.sgt)clearInterval(G.sgt);const S=G.sg;G.sgt=setInterval(()=>{const R=G.sgr;if(!R||!gd.classList.contains('on')||G.tab!=='siege'){clearInterval(G.sgt);G.sgt=0;return}const ev=sgEv(sgL(S)),cur=R.n>0?ev[R.n-1]:null;if(cur&&cur.t==='d'&&cur.lg&&cur.lg.length&&R.r<=cur.lg.length)R.r++;else{R.n++;R.r=0}if(R.n>=ev.length){clearInterval(G.sgt);G.sgt=0}draw()},G.sgr&&G.sgr.sp===2?260:520)};/* 한 번에 한 라운드씩(속도 ×2면 절반 간격) 넘겨요 */
-const sgReplay=()=>{const S=G.sg,L=sgL(S);if(!S||!L||!Array.isArray(L.bouts))return;G.sgr={n:0,r:0,sp:1};sgRun();draw()}; const vSiege=()=>{if(!sgOn())return'<div class="em">공성전은 아직 준비 중이에요</div>';const S=G.sg;if(!S)return'<div class="em">불러오는 중…</div>';
+const sgReplay=()=>{const S=G.sg,L=sgL(S);if(!S||!L||!Array.isArray(L.bouts))return;G.sgr={n:0,r:0,sp:1};sgRun();draw()}; const sgRv=()=>{const V=G.sgv;if(!V||!V.open||V.off)return'';
+  if(!V.revealed&&G.sg&&G.sg.locked)return'<h3>배치 현황 공개</h3><div class="nt">이번 주는 마감 전에 공개되지 않았어요</div>';if(!V.revealed)return'<h3>배치 현황 공개<small>'+esc(V.at||'')+'</small></h3><div class="nt">마감 '+(V.hrs|0)+'시간 전('+esc(V.at||'')+')에 참가 길드와 관문별 인원수가 한 번 공개돼요. 개인 이름과 전투력은 공개되지 않아요<br>공개된 뒤에도 마감 전까지 배치를 바꿀 수 있어요</div>';
+  const rows=Array.isArray(V.rows)?V.rows:[];let h='<h3>배치 현황<small>'+esc(V.at||'')+' 기준 · 마감 전까지 바뀔 수 있어요</small></h3>';
+  if(!rows.length)return h+'<div class="nt">공개 시점에 배치한 길드가 없었어요</div>';
+  rows.forEach(r=>{const s=Array.isArray(r.s)?r.s:[],held=s.filter(v=>(v|0)>0).length;
+    h+='<div class="or"><span>'+esc(r.g)+(r.mine?' <b style="color:#8fd3ff">(우리)</b>':'')+'<small>'+(r.side==='def'?'<b style="color:#ffd98a">성주</b> · ':'도전 · ')+SG_SLOTS.map((x,i)=>x[1]+' '+((s[i]|0)>0?(s[i]|0):'<span style="color:#ff9a8a">0</span>')).join(' · ')+'</small></span><b style="min-width:62px;text-align:right;color:'+(held>=3?'#8fe39a':'#ffb84a')+'">'+held+'관문</b></div>'});
+  return h};/* 마감 전에 한 번 공개된 길드별·관문별 인원수 (개인 이름·전투력은 서버가 주지 않아요) */
+const sgAv=()=>{if(!sgOn()||G.busy)return;run(async()=>{await rpc('admin_siege_reveal');G.sgv=await sgRpc('siege_reveal');G.sgvF=Date.now();say('이번 주 배치 현황을 공개했어요 (테스트)')})};/* 운영자 테스트: 공개 시각을 기다리지 않고 지금 공개 */
+const vSiege=()=>{if(!sgOn())return'<div class="em">공성전은 아직 준비 중이에요</div>';const S=G.sg;if(!S)return'<div class="em">불러오는 중…</div>';
   if(!S.open)return'<div class="em">공성전은 아직 준비 중이에요</div>';
   if(G.sgr&&sgL(S)&&Array.isArray(sgL(S).bouts))return sgView(S);
   const lead=G.me.role!=='member',lock=!!S.locked,own=!!S.mine_owner,cap=(S.cap|0)||3,
@@ -3844,7 +3852,7 @@ const sgReplay=()=>{const S=G.sg,L=sgL(S);if(!S||!L||!Array.isArray(L.bouts))ret
     +(lock?'<br><b style="color:#ff9a8a">편성이 마감됐어요</b>':sgLeft(S))+sgLast(S)
     +(!lock&&own&&open>0?'<br><b style="color:#ffb84a">사람이 없는 관문은 상대가 바로 이겨요 ('+open+'곳 비어 있어요)</b>':'')+(!lock&&own&&held<3?'<br><b style="color:#ffb84a">3관문 이상에 사람이 있어야 참가 보상을 받아요</b>':'')
     +(!lock&&!own&&held<3?'<br><b style="color:#ffb84a">3관문 이상에 사람이 있어야 공성에 참가한 것으로 인정돼요'+(S.owner?' (3관문을 이겨야 성을 차지해요)':'')+'</b>':'')+'</div>'
-    +sgRb(S)+(AF.isAdmin?'<div class="or"><span>샘플 연출 보기<small>운영자 전용 · 가짜 데이터로 결과 화면을 미리 봐요</small></span><button class="tg" data-g="rd">보기</button></div>'+'<div class="or"><span>테스트 도구<small>운영자 전용 · 지금 바로 판정하거나 이번 주 기록을 지워요</small></span><button class="tg on" data-g="at"'+(G.busy?' disabled':'')+'>즉시 판정</button><button class="tg" data-g="ar"'+(G.busy?' disabled':'')+'>초기화</button></div>':'')+sup+'<h3>'+(own?'방어 배치':'공격 편성')+'<small>'+total+'명 참가 · '+(lock?'마감됐어요':mine?'내 관문: '+SG_SLOTS[mine.slot][1]:'내가 싸울 관문을 골라요')+'</small></h3>';
+    +sgRb(S)+(AF.isAdmin?'<div class="or"><span>샘플 연출 보기<small>운영자 전용 · 가짜 데이터로 결과 화면을 미리 봐요</small></span><button class="tg" data-g="rd">보기</button></div>'+'<div class="or"><span>테스트 도구<small>운영자 전용 · 지금 바로 판정하거나 이번 주 기록을 지워요</small></span><button class="tg on" data-g="at"'+(G.busy?' disabled':'')+'>즉시 판정</button><button class="tg" data-g="ar"'+(G.busy?' disabled':'')+'>초기화</button></div><div class="or"><span>배치 현황 공개 테스트<small>운영자 전용 · 이번 주 현황을 지금 바로 공개해요</small></span><button class="tg on" data-g="av"'+(G.busy?' disabled':'')+'>공개</button></div>':'')+sup+sgRv()+'<h3>'+(own?'방어 배치':'공격 편성')+'<small>'+total+'명 참가 · '+(lock?'마감됐어요':mine?'내 관문: '+SG_SLOTS[mine.slot][1]:'내가 싸울 관문을 골라요')+'</small></h3>';
   SG_SLOTS.forEach(([k,n,b],i)=>{const xs=by[i]||[],full=xs.length>=cap,inMe=mine&&mine.slot===i;
     h+='<div class="or"><span>'+n+(own?'':' 공략')+'<small>'+(own?b+' · ':'')+xs.length+'/'+cap+'명'+(inMe?' · <b style="color:#8fd3ff">내가 참가 중</b>':'')+'</small></span>'
       +(lock?'':inMe?'<button class="tg" data-g="sl"'+(G.busy?' disabled':'')+'>빠지기</button>':'<button class="tg on" data-g="sj:'+i+'"'+(G.busy||full?' disabled':'')+'>'+(full?'가득 참':mine?'여기로 이동':'참가')+'</button>')+'</div>';
@@ -3871,18 +3879,18 @@ async function tabTo(t){const k=++G.tok;G.tab=t;G.sgr=null;G.sgd=null;G.sgp=null
     else if(t==='req')G.reqs=await rpc('guild_reqs');
     else if(t==='rank')G.rank=await rpc('guild_rank');
     else if(t==='set')G.nt=G.me.notice||'';
-    else if(t==='siege'&&sgOn()){G.sg=await sgRpc('siege_state');if(k===G.tok)sgOwnerNote(G.sg)}}catch(e){if(k===G.tok)fail(e)}
+    else if(t==='siege'&&sgOn()){G.sg=await sgRpc('siege_state');if(k===G.tok)sgOwnerNote(G.sg);sgRpc('siege_reveal').then(v=>{if(k===G.tok){G.sgv=v;G.sgvF=Date.now();if(G.tab==='siege'&&!G.sgr)draw()}}).catch(()=>{G.sgv=null})}}catch(e){if(k===G.tok)fail(e)}
   if(k===G.tok)draw()}
 let sq=0;
 async function loadList(off){const s=sq,d=await rpc('guild_list',{p_q:G.q.trim()||null,p_off:off});if(s!==sq)return;G.list=off?(G.list||[]).concat(d):d;G.more=d.length>=20}
 async function run(f){if(G.busy)return;G.busy=1;say('');draw();try{await f()}catch(e){fail(e)}G.busy=0;draw()}
 
-async function open(tab){G.tok++;gd.classList.add('on');G.me=null;G.tab='';G.list=null;G.roster=G.reqs=G.rank=G.sg=G.sgp=null;say('');draw();
+async function open(tab){G.tok++;gd.classList.add('on');G.me=null;G.tab='';G.list=null;G.roster=G.reqs=G.rank=G.sg=G.sgp=G.sgv=null;say('');draw();
   try{apply(await rpc('guild_me'))}catch(e){fail(e);draw();return}
   if(tab==='siege'&&sgOn()&&!G.me.in)tst('길드에 가입하면 공성전에 참여할 수 있어요');
   await tabTo(G.me.in?((tab==='siege'&&sgOn())?'siege':'info'):'find');
   if(G.me&&G.me.in){try{const r=await rpc('guild_act');apply(r);if(r.got>0)say('오늘의 활동 공헌도 +'+r.got);if(G.tab==='info')draw()}catch(e){}}}
-function close(){G.tok++;G.sgr=null;G.sgd=null;G.sgp=null;G.sgk=null;gd.classList.remove('on');gd.innerHTML=''}
+function close(){G.tok++;G.sgr=null;G.sgd=null;G.sgp=null;G.sgk=null;G.sgv=null;gd.classList.remove('on');gd.innerHTML=''}
 AF.openGd=open;AF.openCs=()=>csOpen();AF.gdTag=()=>G.me&&G.me.in?{n:G.me.name,l:G.me.lv}:null;
 
 const search=()=>{const i=$('gq');if(i)G.q=i.value;sq++;G.list=null;draw();loadList(0).then(()=>draw(),e=>{fail(e);G.list=[];draw()})};
@@ -3923,11 +3931,11 @@ const leave=async()=>{const m=G.me;if(!await afAsk(m.role==='leader'&&m.n<=1?'�
 gd.addEventListener('click',e=>{if(e.target===gd&&dn===gd){close();return}const b=e.target.closest('[data-g]');if(!b||b.disabled)return;const[a,p,q]=b.dataset.g.split(':');
   if(a==='x')close();else if(a==='tab')tabTo(p);else if(a==='q')search();else if(a==='more')more();else if(a==='j')join(+p);else if(a==='cx')cancel(+p);else if(a==='am')adminMove(+p);
   else if(a==='md'){G.mk.mode=G.mk.mode=='free'?'approve':'free';draw()}else if(a==='mk')make();else if(a==='d')donate(+p);else if(a==='act')actNow();
-  else if(a==='r')role(p,q);else if(a==='k')kick(p);else if(a==='ok')decide(p,true);else if(a==='no')decide(p,false);else if(a==='sv')saveNote();else if(a==='sm')setMode();else if(a==='lv')leave();else if(a==='sj')sgJoin(+p);else if(a==='sl')sgLeave();else if(a==='sk')sgKick(p);else if(a==='rp')sgReplay();else if(a==='at')sgTest('admin_siege_resolve');else if(a==='ar')sgTest('admin_siege_reset');else if(a==='rd'){G.sgd=sgDemo();sgReplay()}else if(a==='rs'){if(G.sgr&&G.sg&&sgL(G.sg)){G.sgr.n=sgEv(sgL(G.sg)).length;G.sgr.r=0}draw()}else if(a==='rv'){if(G.sgr){G.sgr.sp=G.sgr.sp===2?1:2;sgRun();draw()}}else if(a==='rx'){G.sgr=null;G.sgd=null;draw()}else if(a==='sup')supClaim()});
+  else if(a==='r')role(p,q);else if(a==='k')kick(p);else if(a==='ok')decide(p,true);else if(a==='no')decide(p,false);else if(a==='sv')saveNote();else if(a==='sm')setMode();else if(a==='lv')leave();else if(a==='sj')sgJoin(+p);else if(a==='sl')sgLeave();else if(a==='sk')sgKick(p);else if(a==='rp')sgReplay();else if(a==='at')sgTest('admin_siege_resolve');else if(a==='ar')sgTest('admin_siege_reset');else if(a==='av')sgAv();else if(a==='rd'){G.sgd=sgDemo();sgReplay()}else if(a==='rs'){if(G.sgr&&G.sg&&sgL(G.sg)){G.sgr.n=sgEv(sgL(G.sg)).length;G.sgr.r=0}draw()}else if(a==='rv'){if(G.sgr){G.sgr.sp=G.sgr.sp===2?1:2;sgRun();draw()}}else if(a==='rx'){G.sgr=null;G.sgd=null;draw()}else if(a==='sup')supClaim()});
 const supClaim=()=>{if(!sgOn())return;run(async()=>{const r=await sgRpc('siege_supply_claim');if(!r)throw{message:'server'};if(!r.done){const l=AF.attendGrant?AF.attendGrant(r,'성주 보급'):[];say(l.length?'받았어요: '+l.join(' · '):'받았어요')}else say('오늘은 이미 받았어요');G.sg=await sgRpc('siege_state');try{if(AF.atdRefresh)AF.atdRefresh()}catch(e){}})};
 const sgJoin=i=>{if(!sgOn()||G.busy||!(i>=0&&i<5))return;run(async()=>{G.sg=await sgRpc('siege_join',{p_slot:i});say('참가했어요')})};/* 길드원이 직접 관문을 골라요. 같은 주에 한 관문만 가능해서 다른 관문을 누르면 옮겨져요 */
 const sgTest=async f=>{if(!sgOn()||G.busy)return;const rs=f==='admin_siege_resolve';if(!await afAsk(rs?'지금 바로 이번 주 공성전을 판정할까요?\n성주가 바뀌고 참가자에게 결과 우편이 가요. 끝나면 초기화로 되돌릴 수 있어요.':'이번 주 공성전 배치와 결과, 성주 변경, 결과 우편을 모두 지울까요?\n이미 받은 보상은 회수되지 않아요.'))return;
-  run(async()=>{const r=await rpc(f);G.sg=await sgRpc('siege_state');say(rs?(r&&r.skipped?'판정하지 않았어요 ('+r.skipped+')':'판정했어요. 위의 지난주 결과에서 확인해요'):'초기화했어요')})};/* 운영자 전용 테스트 도구. 서버가 운영자 전용 모드일 때만 허용해요 */
+  run(async()=>{const r=await rpc(f);G.sg=await sgRpc('siege_state');G.sgv=await sgRpc('siege_reveal').catch(()=>null);G.sgvF=Date.now();say(rs?(r&&r.skipped?'판정하지 않았어요 ('+r.skipped+')':'판정했어요. 위의 지난주 결과에서 확인해요'):'초기화했어요')})};/* 운영자 전용 테스트 도구. 서버가 운영자 전용 모드일 때만 허용해요 */
 const sgLeave=()=>{if(!sgOn()||G.busy)return;run(async()=>{G.sg=await sgRpc('siege_leave');say('빠졌어요')})};
 const sgKick=uid=>{if(!sgOn()||G.busy||!U.test(uid))return;run(async()=>{G.sg=await sgRpc('siege_kick',{p_uid:uid});say('제외했어요')})};/* 길장·부길장만 가능, 서버가 한 번 더 확인해요 */
 let dn=null;gd.addEventListener('pointerdown',e=>{dn=e.target===gd?gd:null},true);
@@ -3952,6 +3960,7 @@ const sync=async()=>{if(!AF.sb||!AF.user||document.hidden)return;const o=G.me;le
 addEventListener('af-user',()=>{AF.gb=0;AF.cb={g:0,d:0};SG_PUB=false;setTimeout(sgPub,1800);G.me=null;try{AF.CHAT&&AF.CHAT.gdMode&&AF.CHAT.gdMode(false)}catch(e){}G.list=null;G.roster=G.reqs=G.rank=null;if(gd.classList.contains('on'))close();if(AF.user)setTimeout(sync,3000)});
 setInterval(sync,600000);setTimeout(sync,6000);
 let sgFin=0;setInterval(()=>{if(!sgOn()||!gd.classList.contains('on')||G.tab!=='siege'||!G.sg||G.sg.locked)return;const r=sgRem(G.sg);if(r==null)return;const el=document.getElementById('sgt');if(el)el.textContent=r>0?sgFmt(r):'곧 마감돼요';if(r<=0&&Date.now()-sgFin>5000){sgFin=Date.now();sgRef()}},1000);
+ let sgvT=0;setInterval(()=>{if(!sgOn()||!gd.classList.contains('on')||G.tab!=='siege'||G.sgr)return;const V=G.sgv;if(!V||!V.open||V.off||V.revealed)return;const now=Date.now()+(V.now_ms-(G.sgvF||Date.now()));if(now<V.at_ms||Date.now()-sgvT<30000)return;sgvT=Date.now();sgRpc('siege_reveal').then(v=>{G.sgv=v;G.sgvF=Date.now();if(gd.classList.contains('on')&&G.tab==='siege'&&!G.sgr)draw()}).catch(()=>{})},5000);
 })();
 </script>
 <script>/* ===== 출석체크 ===== */
